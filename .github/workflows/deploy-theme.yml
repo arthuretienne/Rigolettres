@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'blocksy-child/**'   # déclenché uniquement si le child theme change
+      - 'blocksy-child/**'
 
 jobs:
   deploy:
@@ -15,16 +15,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Déployer via rsync SSH
-        uses: burnett01/rsync-deployments@7.0.1
-        with:
-          switches: -avz --delete --exclude='.git' --exclude='README.md' --exclude='_INDEX.md'
-          path: blocksy-child/
-          remote_path: /home/${{ secrets.SSH_USER }}/public_html/wp-content/themes/blocksy-child/
-          remote_host: ${{ secrets.SSH_HOST }}
-          remote_port: 65002
-          remote_user: ${{ secrets.SSH_USER }}
-          remote_key: ${{ secrets.SSH_KEY }}
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -p 65002 -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Déployer via rsync
+        run: |
+          rsync -avz --delete \
+            --exclude='.git' \
+            --exclude='README.md' \
+            -e "ssh -i ~/.ssh/deploy_key -p 65002 -o StrictHostKeyChecking=no" \
+            blocksy-child/ \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USER }}/public_html/wp-content/themes/blocksy-child/
 
       - name: Purger le cache LiteSpeed
         run: |
