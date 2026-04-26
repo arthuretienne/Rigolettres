@@ -22,6 +22,12 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -p 65002 -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
 
+      - name: Créer le dossier distant si absent
+        run: |
+          ssh -i ~/.ssh/deploy_key -p 65002 -o StrictHostKeyChecking=no \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+            "mkdir -p /home/${{ secrets.SSH_USER }}/public_html/wp-content/themes/blocksy-child"
+
       - name: Déployer via rsync
         run: |
           rsync -avz --delete \
