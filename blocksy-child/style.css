@@ -1,0 +1,1124 @@
+/*
+Theme Name:   Blocksy Child Rigolettres
+Theme URI:    https://rigolettres.fr/
+Description:  Thème enfant de Blocksy pour Rigolettres — design system éditorial (Fraunces + Nunito), palette crème/vert, boutons pill.
+Author:       Arthur Etienne
+Author URI:   https://rigolettres.fr/
+Template:     blocksy
+Version:      1.0.0
+Text Domain:  blocksy-child
+*/
+
+/* ===========================================================
+   1. TOKENS — variables design system
+   =========================================================== */
+:root{
+  --rigo-cream:#FBF8F1;
+  --rigo-cream-warm:#F4EFE3;
+  --rigo-paper:#FFFFFF;
+  --rigo-ink:#2A1D0F;
+  --rigo-ink-soft:#4B3A28;
+  --rigo-muted:#6B7280;
+  --rigo-border:#E7E2D5;
+  --rigo-green:#5C8E2E;
+  --rigo-green-dark:#4A7325;
+  --rigo-sky:#1E9FCB;
+  --rigo-sky-dark:#167FA3;
+  --rigo-accent:#E8553D;
+  --rigo-serif:'Fraunces','Cormorant Garamond',Georgia,serif;
+  --rigo-sans:'Nunito',system-ui,-apple-system,sans-serif;
+  --rigo-script:'Caveat',cursive;
+  --rigo-r-sm:8px;
+  --rigo-r-md:14px;
+  --rigo-r-lg:24px;
+  --rigo-r-pill:9999px;
+  --rigo-container:1200px;
+  --rigo-sh-1:0 1px 2px rgba(42,29,15,.05);
+  --rigo-sh-2:0 6px 18px rgba(42,29,15,.08);
+  --rigo-sh-3:0 12px 32px rgba(42,29,15,.12);
+}
+
+/* ===========================================================
+   2. BASE — body, typo de fond
+   =========================================================== */
+body{
+  background:var(--rigo-cream);
+  color:var(--rigo-ink-soft);
+  font-family:var(--rigo-sans);
+  font-size:17px;
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ===========================================================
+   3. TYPOGRAPHIE — titres & paragraphes
+   =========================================================== */
+h1, h2, h3, h4, .h1, .h2, .h3, .h4{
+  font-family:var(--rigo-serif);
+  color:var(--rigo-ink);
+  font-weight:700;
+  line-height:1.15;
+  letter-spacing:-0.015em;
+}
+h1, .h1{font-size:clamp(2.4rem,5vw,4rem);letter-spacing:-0.025em;}
+h2, .h2{font-size:clamp(1.9rem,3.4vw,2.8rem);}
+h3, .h3{font-size:clamp(1.2rem,1.8vw,1.5rem);font-family:var(--rigo-sans);letter-spacing:-0.005em;line-height:1.3;}
+h4{font-size:1.1rem;font-family:var(--rigo-sans);line-height:1.35;}
+
+.rigo-eyebrow,
+.rigo-script,
+.rigo-signature,
+.quote-author{
+  font-family:var(--rigo-script);
+  font-weight:700;
+  color:var(--rigo-green-dark);
+}
+
+p, li{
+  font-family:var(--rigo-sans);
+  font-size:17px;
+  line-height:1.65;
+  color:var(--rigo-ink-soft);
+}
+p{margin-bottom:1.1em;}
+
+a{color:var(--rigo-green-dark);text-underline-offset:3px;text-decoration-thickness:1.5px;}
+a:hover{color:var(--rigo-green);}
+
+/* ===========================================================
+   4. BOUTONS — primary, secondary, ghost
+   =========================================================== */
+.btn,
+.btn-primary,
+.btn-secondary,
+.btn-ghost,
+a.button,
+button.button,
+.wp-block-button__link,
+.woocommerce a.button,
+.woocommerce button.button,
+button.single_add_to_cart_button,
+.wc-block-components-button,
+.rigo-cta{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  font-family:var(--rigo-sans);
+  font-weight:700;
+  font-size:16px;
+  line-height:1;
+  padding:14px 26px;
+  border-radius:var(--rigo-r-pill);
+  border:1.5px solid transparent;
+  cursor:pointer;
+  text-decoration:none;
+  letter-spacing:-0.005em;
+  transition:transform 200ms ease,box-shadow 200ms ease,background 200ms ease,border-color 200ms ease,color 200ms ease;
+}
+
+.btn-primary,
+.wp-block-button.is-style-primary .wp-block-button__link,
+.woocommerce button.single_add_to_cart_button,
+button.single_add_to_cart_button,
+.woocommerce a.button.alt,
+.wc-block-components-button.contained,
+.rigo-cta--primary{
+  background:var(--rigo-green);
+  color:#fff;
+  border-color:var(--rigo-green);
+  box-shadow:0 1px 0 rgba(255,255,255,.2) inset, 0 6px 18px rgba(92,142,46,.25);
+}
+.btn-primary:hover,
+.woocommerce button.single_add_to_cart_button:hover,
+button.single_add_to_cart_button:hover,
+.woocommerce a.button.alt:hover,
+.wc-block-components-button.contained:hover,
+.rigo-cta--primary:hover{
+  background:var(--rigo-green-dark);
+  border-color:var(--rigo-green-dark);
+  color:#fff;
+  transform:translateY(-1px);
+  box-shadow:0 10px 24px rgba(92,142,46,.32);
+}
+
+.btn-secondary,
+.rigo-cta--secondary{
+  background:var(--rigo-sky);
+  color:#fff;
+  border-color:var(--rigo-sky);
+  box-shadow:0 6px 18px rgba(30,159,203,.25);
+}
+.btn-secondary:hover,
+.rigo-cta--secondary:hover{
+  background:var(--rigo-sky-dark);
+  border-color:var(--rigo-sky-dark);
+  transform:translateY(-1px);
+}
+
+.btn-ghost,
+.wp-block-button.is-style-outline .wp-block-button__link,
+.woocommerce a.button:not(.alt){
+  background:transparent;
+  color:var(--rigo-ink);
+  border:1.5px solid var(--rigo-ink);
+  box-shadow:none;
+}
+.btn-ghost:hover,
+.woocommerce a.button:not(.alt):hover{
+  background:var(--rigo-ink);
+  color:#fff;
+  transform:translateY(-1px);
+}
+
+.btn-sm{font-size:14px;padding:10px 18px;}
+.btn-lg{font-size:17px;padding:18px 32px;}
+
+/* ===========================================================
+   5. LAYOUT — containers, sections
+   =========================================================== */
+.ct-container, .container, .rigo-container{
+  max-width:var(--rigo-container);
+  margin-left:auto;
+  margin-right:auto;
+  padding-left:clamp(16px,4vw,32px);
+  padding-right:clamp(16px,4vw,32px);
+}
+
+section{
+  padding-top:clamp(56px,7vw,96px);
+  padding-bottom:clamp(56px,7vw,96px);
+}
+section.marquee-wrap{padding-top:18px;padding-bottom:18px;background:var(--rigo-ink);}
+section.hero{padding-top:clamp(48px,6vw,80px);padding-bottom:clamp(48px,6vw,80px);}
+
+/* Alternance : sections crème / cream-warm */
+.rigol-preview-root > section.story,
+.rigol-preview-root > section.methode,
+.rigol-preview-root > section.press,
+.rigol-preview-root > section.proof{
+  background:var(--rigo-cream-warm);
+}
+
+/* ===========================================================
+   6. CARDS — produits & contenus
+   =========================================================== */
+.rigo-card,
+ul.products li.product,
+.wc-block-grid__product{
+  background:#fff;
+  border-radius:var(--rigo-r-md);
+  border:1px solid var(--rigo-border);
+  padding:20px;
+  box-shadow:var(--rigo-sh-1);
+  transition:box-shadow 200ms ease, transform 200ms ease;
+}
+.rigo-card:hover,
+ul.products li.product:hover{
+  box-shadow:var(--rigo-sh-2);
+  transform:translateY(-2px);
+}
+
+ul.products li.product .woocommerce-loop-product__title,
+.wc-block-grid__product-title{
+  font-family:var(--rigo-serif);
+  font-weight:700;
+  font-size:1.2rem;
+  color:var(--rigo-ink);
+  margin-bottom:8px;
+  line-height:1.3;
+}
+
+.price, .woocommerce-Price-amount{
+  font-family:var(--rigo-sans);
+  font-weight:800;
+  color:var(--rigo-ink);
+}
+body.woocommerce div.product p.price,
+body.woocommerce div.product p.price .woocommerce-Price-amount,
+body.woocommerce div.product p.price bdi,
+body.woocommerce ul.products li.product .price,
+body.woocommerce ul.products li.product .price .woocommerce-Price-amount,
+body.woocommerce ul.products li.product .price bdi{
+  font-family:var(--rigo-sans);
+  font-weight:800;
+  color:var(--rigo-ink);
+}
+body.woocommerce div.product p.price{
+  font-size:1.6rem;
+  margin-top:.4em;
+  margin-bottom:1em;
+}
+
+/* ===========================================================
+   7. WOOCOMMERCE — fiche produit & shop
+   =========================================================== */
+.product_title,
+.woocommerce-products-header__title{
+  font-family:var(--rigo-serif);
+  font-weight:700;
+  color:var(--rigo-ink);
+}
+.woocommerce-products-header__title{
+  font-size:clamp(2.4rem,5vw,4rem);
+  text-align:center;
+}
+.woocommerce-tabs .panel{
+  background:#fff;
+  border-radius:var(--rigo-r-md);
+  border:1px solid var(--rigo-border);
+  padding:24px;
+}
+
+/* ===========================================================
+   8. HEADER — navigation
+   =========================================================== */
+header, .site-header{
+  background:rgba(251,248,241,.92);
+  backdrop-filter:saturate(140%) blur(14px);
+  -webkit-backdrop-filter:saturate(140%) blur(14px);
+  border-bottom:1px solid var(--rigo-border);
+}
+header a, .site-header a{
+  font-family:var(--rigo-sans);
+  font-weight:600;
+  color:var(--rigo-ink);
+}
+
+/* ===========================================================
+   9. FORMS — input, textarea, select
+   =========================================================== */
+input[type=text], input[type=email], input[type=tel], input[type=number], input[type=password],
+textarea, select{
+  font-family:var(--rigo-sans);
+  font-size:16px;
+  padding:12px 14px;
+  border:1.5px solid var(--rigo-border);
+  border-radius:var(--rigo-r-sm);
+  background:#fff;
+  color:var(--rigo-ink);
+  transition:border-color 150ms ease, box-shadow 150ms ease;
+}
+input:focus, textarea:focus, select:focus{
+  outline:none;
+  border-color:var(--rigo-green);
+  box-shadow:0 0 0 3px rgba(92,142,46,.18);
+}
+
+/* ===========================================================
+   7b. FICHE PRODUIT — refonte UX/UI
+   =========================================================== */
+
+/* --- Breadcrumb : séparateur ›, padding, font --- */
+.woocommerce-breadcrumb,
+.ct-breadcrumbs{
+  font-family:var(--rigo-sans);
+  font-size:14px;
+  color:var(--rigo-muted);
+  padding:18px 0 8px;
+  margin-bottom:0;
+  letter-spacing:.005em;
+}
+.woocommerce-breadcrumb a,
+.ct-breadcrumbs a{
+  color:var(--rigo-ink-soft);
+  text-decoration:none;
+  border-bottom:1px solid transparent;
+  transition:border-color 150ms ease, color 150ms ease;
+}
+.woocommerce-breadcrumb a:hover,
+.ct-breadcrumbs a:hover{
+  color:var(--rigo-green-dark);
+  border-bottom-color:currentColor;
+}
+.woocommerce-breadcrumb{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:6px;
+  white-space:normal;
+}
+.woocommerce-breadcrumb > *{display:inline;}
+/* Force separator with content (fallback if WC outputs ` / `) */
+.woocommerce-breadcrumb .delimiter,
+.ct-breadcrumbs .ct-divider{
+  color:var(--rigo-border);
+  margin:0 6px;
+}
+
+/* --- Wrapper produit : respiration & fond --- */
+body.woocommerce div.product{
+  margin-top:24px;
+}
+body.woocommerce div.product .product-entry-wrapper{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:48px;
+  align-items:start;
+}
+/* Override Blocksy : .ct-default-gallery .entry-summary force width:calc(100% - 50%) + margin-inline-start:40px
+   → on remet en grid-cell natif sinon les enfants se rétrécissent à 50% */
+body.woocommerce div.product .product-entry-wrapper > .summary,
+body.woocommerce div.product .product-entry-wrapper > .entry-summary,
+body.woocommerce div.product .product-entry-wrapper > .woocommerce-product-gallery,
+body.ct-default-gallery div.product .summary,
+body.ct-default-gallery div.product .entry-summary,
+body.ct-default-gallery div.product .woocommerce-product-gallery,
+body.ct-stacked-gallery div.product .summary,
+body.ct-stacked-gallery div.product .entry-summary,
+body.ct-stacked-gallery div.product .woocommerce-product-gallery{
+  width:auto !important;
+  max-width:none !important;
+  margin-inline-start:0 !important;
+  margin-inline-end:0 !important;
+  float:none !important;
+}
+@media (max-width:900px){
+  body.woocommerce div.product .product-entry-wrapper{
+    grid-template-columns:1fr;
+    gap:24px;
+  }
+}
+
+/* --- Galerie produit : ratio respectueux + ombre douce --- */
+body.woocommerce div.product .woocommerce-product-gallery{
+  background:#fff;
+  border-radius:var(--rigo-r-md);
+  border:1px solid var(--rigo-border);
+  padding:16px;
+  box-shadow:var(--rigo-sh-1);
+  overflow:hidden;
+}
+body.woocommerce div.product .woocommerce-product-gallery__image img{
+  border-radius:var(--rigo-r-sm);
+  object-fit:contain;
+  background:var(--rigo-cream);
+  width:100%;
+  height:auto;
+  max-height:560px;
+  display:block;
+}
+body.woocommerce div.product .flex-control-thumbs{
+  display:flex;
+  gap:8px;
+  margin-top:12px;
+  padding:0;
+  list-style:none;
+}
+body.woocommerce div.product .flex-control-thumbs li{
+  width:64px;
+  margin:0;
+}
+body.woocommerce div.product .flex-control-thumbs img{
+  border:2px solid transparent;
+  border-radius:var(--rigo-r-sm);
+  cursor:pointer;
+  opacity:.7;
+  transition:opacity 150ms ease, border-color 150ms ease;
+}
+body.woocommerce div.product .flex-control-thumbs img:hover,
+body.woocommerce div.product .flex-control-thumbs img.flex-active{
+  opacity:1;
+  border-color:var(--rigo-green);
+}
+body.woocommerce div.product .woocommerce-product-gallery__trigger{
+  background:rgba(255,255,255,.92);
+  border-radius:50%;
+  border:1px solid var(--rigo-border);
+  width:36px;
+  height:36px;
+  top:24px;
+  right:24px;
+}
+
+/* --- Summary : titre + prix + meta --- */
+body.woocommerce div.product .summary{
+  padding:8px 0;
+}
+body.woocommerce div.product .product_title{
+  margin:0 0 12px;
+  letter-spacing:-0.02em;
+}
+body.woocommerce div.product .product_meta{
+  font-size:13px;
+  color:var(--rigo-muted);
+  border-top:1px solid var(--rigo-border);
+  padding-top:16px;
+  margin-top:24px;
+}
+body.woocommerce div.product .product_meta a{
+  color:var(--rigo-green-dark);
+  text-decoration:none;
+}
+body.woocommerce div.product .product_meta > span{
+  display:block;
+  margin-bottom:4px;
+}
+
+/* --- Quantité + ATC --- */
+body.woocommerce div.product form.cart{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin:24px 0 16px;
+}
+body.woocommerce div.product .quantity input.qty{
+  width:80px;
+  padding:14px 8px;
+  text-align:center;
+  font-weight:700;
+  font-size:16px;
+  border:1.5px solid var(--rigo-border);
+  border-radius:var(--rigo-r-sm);
+  background:#fff;
+}
+body.woocommerce div.product form.cart .single_add_to_cart_button{
+  flex:1;
+  padding:16px 24px;
+  font-size:16px;
+}
+
+/* --- Onglets : pills + ombre douce ---
+   Override de la CSS inline Blocksy (ct-main-styles-inline-css) :
+   spécificité plus haute (body.single-product) + !important sur les
+   propriétés ciblées (color/border) car la CSS Customizer arrive après. */
+body.woocommerce div.product .woocommerce-tabs{
+  margin-top:48px;
+}
+body.single-product div.product .woocommerce-tabs ul.tabs,
+body.single-product div.product .woocommerce-tabs ul.wc-tabs{
+  display:flex !important;
+  gap:8px;
+  list-style:none;
+  padding:0 !important;
+  margin:0 0 -1px !important;
+  border-bottom:1px solid var(--rigo-border) !important;
+  flex-wrap:wrap;
+  background:transparent !important;
+}
+body.single-product div.product .woocommerce-tabs ul.tabs::before,
+body.single-product div.product .woocommerce-tabs ul.tabs::after,
+body.single-product div.product .woocommerce-tabs ul.wc-tabs::before,
+body.single-product div.product .woocommerce-tabs ul.wc-tabs::after{display:none !important;}
+body.single-product div.product .woocommerce-tabs ul.tabs li,
+body.single-product div.product .woocommerce-tabs ul.wc-tabs li{
+  background:transparent !important;
+  border:none !important;
+  margin:0 !important;
+  padding:0 !important;
+  border-radius:0 !important;
+}
+body.single-product div.product .woocommerce-tabs ul.tabs li::before,
+body.single-product div.product .woocommerce-tabs ul.tabs li::after,
+body.single-product div.product .woocommerce-tabs ul.wc-tabs li::before,
+body.single-product div.product .woocommerce-tabs ul.wc-tabs li::after{display:none !important;}
+body.single-product div.product .woocommerce-tabs ul.tabs li a,
+body.single-product div.product .woocommerce-tabs ul.wc-tabs li a{
+  display:inline-block !important;
+  padding:14px 20px !important;
+  font-family:var(--rigo-sans) !important;
+  font-weight:700 !important;
+  font-size:15px !important;
+  color:var(--rigo-muted) !important;
+  text-decoration:none !important;
+  border:none !important;
+  border-bottom:2px solid transparent !important;
+  background:transparent !important;
+  transition:color 150ms ease, border-color 150ms ease;
+}
+body.single-product div.product .woocommerce-tabs ul.tabs li.active a,
+body.single-product div.product .woocommerce-tabs ul.wc-tabs li.active a,
+body.single-product div.product .woocommerce-tabs ul.tabs li a:hover,
+body.single-product div.product .woocommerce-tabs ul.wc-tabs li a:hover{
+  color:var(--rigo-ink) !important;
+  border-bottom-color:var(--rigo-green) !important;
+}
+body.single-product div.product .woocommerce-tabs .panel{
+  background:#fff !important;
+  border-radius:0 0 var(--rigo-r-md) var(--rigo-r-md) !important;
+  border:1px solid var(--rigo-border) !important;
+  border-top:none !important;
+  padding:32px !important;
+  margin:0 !important;
+  box-shadow:var(--rigo-sh-1);
+}
+body.woocommerce div.product .woocommerce-tabs .panel h2{
+  font-size:1.4rem;
+  margin:0 0 16px;
+}
+body.woocommerce div.product .woocommerce-tabs .panel p{
+  color:var(--rigo-ink-soft);
+}
+
+/* --- Tableau "Informations complémentaires" --- */
+body.woocommerce div.product .shop_attributes{
+  border:none;
+  border-collapse:separate;
+  border-spacing:0;
+  width:100%;
+}
+body.woocommerce div.product .shop_attributes tr{
+  border-bottom:1px solid var(--rigo-border);
+}
+body.woocommerce div.product .shop_attributes tr:last-child{
+  border-bottom:none;
+}
+body.woocommerce div.product .shop_attributes th,
+body.woocommerce div.product .shop_attributes td{
+  padding:14px 16px;
+  border:none;
+  font-size:15px;
+}
+body.woocommerce div.product .shop_attributes th{
+  background:var(--rigo-cream-warm);
+  font-family:var(--rigo-sans);
+  font-weight:700;
+  color:var(--rigo-ink);
+  width:35%;
+}
+body.woocommerce div.product .shop_attributes td{
+  background:#fff;
+  color:var(--rigo-ink-soft);
+  font-style:normal;
+}
+body.woocommerce div.product .shop_attributes td p{margin:0;}
+
+/* --- Related & Upsells --- */
+body.woocommerce div.product .related,
+body.woocommerce div.product .upsells{
+  margin-top:64px;
+  padding-top:48px;
+  border-top:1px solid var(--rigo-border);
+}
+body.woocommerce div.product .related > h2,
+body.woocommerce div.product .upsells > h2{
+  font-family:var(--rigo-serif);
+  font-size:clamp(1.6rem,2.4vw,2.2rem);
+  font-weight:700;
+  text-align:center;
+  margin:0 0 32px;
+  color:var(--rigo-ink);
+}
+body.woocommerce div.product .related ul.products,
+body.woocommerce div.product .upsells ul.products{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:20px;
+}
+body.woocommerce div.product .related ul.products li.product,
+body.woocommerce div.product .upsells ul.products li.product{
+  width:auto;
+  margin:0;
+  float:none;
+}
+body.woocommerce div.product .related ul.products li.product img,
+body.woocommerce div.product .upsells ul.products li.product img{
+  border-radius:var(--rigo-r-sm);
+  background:var(--rigo-cream);
+}
+
+/* --- Avis tab --- */
+body.woocommerce div.product #reviews .commentlist{
+  list-style:none;
+  padding:0;
+}
+body.woocommerce div.product #reviews .comment_container{
+  background:var(--rigo-cream);
+  border-radius:var(--rigo-r-sm);
+  padding:16px;
+  margin-bottom:12px;
+}
+
+/* ===========================================================
+   11. UNIVERSAL CHROME — header/footer injectés par PHP
+       (cf. includes/universal-header-footer-chrome.php)
+   =========================================================== */
+
+/* Masque le header/footer Blocksy natif partout — on injecte le nôtre */
+header#header.ct-header,
+footer#footer.ct-footer{display:none !important;}
+body.ct-header-sticky,
+body.has-ct-header-spacing{padding-top:0 !important;}
+
+/*
+ * Sur la home, le contenu de la page (id=21) embarque son propre header.
+ * Notre chrome universel est maintenant injecté sur TOUTES les pages.
+ * On masque le header natif de la home pour éviter le doublon.
+ * (Le footer home est conservé — notre footer injecté reste désactivé sur front page.)
+ */
+body.home .site-header:not(#site-header){display:none !important;}
+
+.site-header .container,
+.site-footer .container{
+  max-width:var(--rigo-container);
+  margin:0 auto;
+  padding:0 clamp(16px,4vw,32px);
+}
+
+.visually-hidden{
+  position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+  overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+}
+
+/* ───────── HEADER ───────── */
+.site-header{
+  position:sticky; top:0; z-index:100;
+  background:rgba(251,248,241,.92);
+  backdrop-filter:saturate(140%) blur(14px);
+  -webkit-backdrop-filter:saturate(140%) blur(14px);
+  border-bottom:1px solid var(--rigo-border);
+  width:100%;
+}
+.site-header .header-inner{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:24px; padding:14px clamp(16px,4vw,32px);
+}
+@media (min-width:768px){
+  .site-header .header-inner{padding:16px clamp(16px,4vw,32px);}
+}
+
+.site-header .brand{
+  display:inline-flex; align-items:center; gap:10px;
+  padding:4px 0; text-decoration:none;
+  transition:transform .2s cubic-bezier(.2,.8,.2,1);
+  flex-shrink:0;
+}
+.site-header .brand:hover{transform:rotate(-2deg);}
+.site-header .brand-pato img{
+  width:40px; height:40px; object-fit:contain;
+  filter:drop-shadow(0 2px 4px rgba(42,29,15,.15));
+}
+.site-header .brand-word,
+.site-footer .brand-word{
+  font-family:var(--rigo-script);
+  font-weight:700;
+  font-size:26px;
+  letter-spacing:-.01em;
+  line-height:1;
+}
+.site-header .brand-word span{display:inline-block; transition:transform .25s cubic-bezier(.2,.8,.2,1);}
+.site-header .brand:hover .brand-word span:nth-child(odd){transform:translateY(-2px) rotate(-4deg);}
+.site-header .brand:hover .brand-word span:nth-child(even){transform:translateY(2px) rotate(3deg);}
+
+/* ───────── NAV desktop ───────── */
+.site-header .nav{
+  display:none;
+  align-items:center;
+  gap:4px;
+  font-weight:700;
+  font-size:14.5px;
+  font-family:var(--rigo-sans);
+}
+@media (min-width:1024px){.site-header .nav{display:flex;}}
+
+/* Liens simples et lien-racine du mega */
+.site-header .nav-link,
+.site-header .nav > a{
+  position:relative;
+  display:inline-flex; align-items:center; gap:3px;
+  color:var(--rigo-ink);
+  padding:6px 10px;
+  border-radius:var(--rigo-r-sm);
+  text-decoration:none;
+  transition:color .2s, background .2s;
+}
+.site-header .nav-link:hover,
+.site-header .nav > a:hover{
+  color:var(--rigo-green-dark);
+  background:rgba(92,142,46,.07);
+}
+/* Supprime le pseudo-element ::after hérité d'anciens styles */
+.site-header .nav-link::after,
+.site-header .nav > a::after{display:none;}
+
+/* ───────── HEADER ACTIONS ───────── */
+.site-header .header-actions{display:flex; align-items:center; gap:4px;}
+.header-action-btn{
+  position:relative;
+  display:inline-flex; align-items:center; justify-content:center;
+  width:40px; height:40px; border-radius:50%;
+  color:var(--rigo-ink); text-decoration:none;
+  transition:background .2s, color .2s;
+}
+.header-action-btn:hover{
+  background:rgba(92,142,46,.10);
+  color:var(--rigo-green-dark);
+}
+.site-header .cart-count{
+  position:absolute; top:2px; right:2px;
+  min-width:18px; height:18px; padding:0 5px;
+  background:var(--rigo-accent); color:#fff;
+  font-size:11px; font-weight:800;
+  border-radius:9px;
+  display:grid; place-items:center;
+  border:2px solid var(--rigo-cream);
+  line-height:1;
+}
+.site-header .cart-count[data-cart-count="0"]{display:none;}
+
+/* ===========================================================
+   12. MEGA-MENU
+   =========================================================== */
+
+/* ── Wrapper nav item avec mega ── */
+.nav-has-mega{position:relative;}
+
+/* Chevron */
+.nav-chevron{
+  opacity:.55;
+  transition:transform .22s ease, opacity .2s;
+  flex-shrink:0;
+}
+.nav-has-mega:hover .nav-chevron,
+.nav-link[aria-expanded="true"] .nav-chevron{
+  transform:rotate(180deg);
+  opacity:1;
+}
+
+/*
+ * Le mega-panel est HORS du <header> dans le DOM pour éviter le piège
+ * will-change:transform du sticky-nav (qui crée une stacking context et
+ * emprisonne les position:fixed enfants).
+ */
+.mega-panel{
+  position:fixed;
+  top:var(--rigo-hdr-h, 73px);
+  left:0; right:0;
+  background:#fff;
+  border-top:2.5px solid var(--rigo-green);
+  border-bottom:1px solid var(--rigo-border);
+  box-shadow:0 16px 48px rgba(42,29,15,.11);
+  z-index:600;
+  /* Caché par défaut */
+  opacity:0;
+  visibility:hidden;
+  transform:translateY(-6px);
+  pointer-events:none;
+  transition:opacity .22s ease, transform .22s ease, visibility 0s linear .22s;
+}
+.mega-panel.is-open{
+  opacity:1;
+  visibility:visible;
+  transform:translateY(0);
+  pointer-events:auto;
+  transition:opacity .22s ease, transform .22s ease, visibility 0s;
+}
+
+.mega-inner{
+  display:grid;
+  grid-template-columns:repeat(3,1fr) 240px;
+  gap:0 36px;
+  padding-top:28px;
+  padding-bottom:28px;
+}
+
+/* ── Colonnes ── */
+.mega-col-title{
+  font-family:var(--rigo-serif);
+  font-weight:700;
+  font-size:.9rem;
+  color:var(--rigo-ink);
+  margin:0 0 12px;
+  padding-bottom:10px;
+  border-bottom:1.5px solid var(--rigo-border);
+  letter-spacing:-.01em;
+}
+
+.mega-product-link{
+  display:block;
+  padding:8px 10px;
+  border-radius:var(--rigo-r-sm);
+  margin:2px -10px;
+  text-decoration:none;
+  transition:background .15s ease;
+}
+.mega-product-link:hover{background:var(--rigo-cream);}
+.mega-product-name{
+  display:block;
+  font-family:var(--rigo-sans);
+  font-weight:700;
+  font-size:13px;
+  color:var(--rigo-ink);
+  line-height:1.3;
+}
+.mega-product-sub{
+  display:block;
+  font-size:11.5px;
+  color:var(--rigo-muted);
+  margin-top:2px;
+}
+.mega-see-all{
+  display:block;
+  margin-top:10px;
+  padding:5px 10px;
+  font-size:12.5px;
+  font-weight:700;
+  color:var(--rigo-green-dark);
+  text-decoration:none;
+  transition:color .15s;
+}
+.mega-see-all:hover{color:var(--rigo-green); text-decoration:underline;}
+
+/* ── CTA column ── */
+.mega-col--cta{
+  background:var(--rigo-cream-warm);
+  border-radius:var(--rigo-r-md);
+  border:1px solid var(--rigo-border);
+  padding:20px 18px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+  gap:10px;
+}
+.mega-col--cta img{
+  width:56px; height:56px;
+  object-fit:contain;
+  filter:drop-shadow(0 2px 6px rgba(42,29,15,.15));
+}
+.mega-cta-label{
+  font-family:var(--rigo-serif);
+  font-weight:700;
+  font-size:.95rem;
+  color:var(--rigo-ink);
+  margin:0; line-height:1.3;
+}
+.mega-cta-desc{
+  font-size:12px;
+  color:var(--rigo-muted);
+  margin:0; line-height:1.5;
+}
+.mega-col--cta .btn-primary{
+  font-size:13px; padding:10px 16px;
+  width:100%; justify-content:center; text-align:center;
+}
+.mega-all-btn{
+  font-size:12px; font-weight:600;
+  color:var(--rigo-muted);
+  text-decoration:none;
+  margin-top:2px;
+  transition:color .15s;
+}
+.mega-all-btn:hover{color:var(--rigo-ink); text-decoration:underline;}
+
+/* ===========================================================
+   13. HAMBURGER & MOBILE MENU
+   =========================================================== */
+
+/* ── Hamburger ── */
+.hamburger{
+  display:flex; flex-direction:column; justify-content:center; gap:5px;
+  width:40px; height:40px; padding:9px 8px;
+  background:none; border:none; cursor:pointer;
+  border-radius:var(--rigo-r-sm);
+  transition:background .2s;
+}
+.hamburger:hover{background:rgba(42,29,15,.06);}
+@media (min-width:1024px){.hamburger{display:none;}}
+.hamburger span{
+  display:block; width:100%; height:2px;
+  background:var(--rigo-ink); border-radius:2px;
+  transition:transform .3s ease, opacity .25s ease;
+  transform-origin:center;
+}
+.hamburger[aria-expanded="true"] span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.hamburger[aria-expanded="true"] span:nth-child(2){opacity:0; transform:scaleX(0);}
+.hamburger[aria-expanded="true"] span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+
+/* ── Overlay ── */
+body.mobile-menu-open{overflow:hidden;}
+.mobile-menu{
+  position:fixed; inset:0; z-index:200;
+  background:rgba(42,29,15,.45);
+  backdrop-filter:blur(2px);
+  opacity:0; visibility:hidden;
+  transition:opacity .3s ease, visibility 0s linear .3s;
+}
+.mobile-menu.is-open{
+  opacity:1; visibility:visible;
+  transition:opacity .3s ease, visibility 0s;
+}
+
+/* ── Drawer droit ── */
+.mobile-menu-inner{
+  position:absolute; top:0; right:0; bottom:0;
+  width:min(360px,92vw);
+  background:#fff;
+  display:flex; flex-direction:column; overflow-y:auto;
+  transform:translateX(100%);
+  transition:transform .35s cubic-bezier(.2,.8,.2,1);
+  box-shadow:-8px 0 32px rgba(42,29,15,.12);
+}
+.mobile-menu.is-open .mobile-menu-inner{transform:translateX(0);}
+
+.mobile-menu-head{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 18px;
+  background:var(--rigo-cream); border-bottom:1px solid var(--rigo-border);
+  position:sticky; top:0; z-index:1;
+}
+.mobile-menu-head .brand-word{font-size:22px;}
+.mobile-close{
+  display:flex; align-items:center; justify-content:center;
+  width:36px; height:36px; background:none; border:none;
+  border-radius:50%; cursor:pointer; color:var(--rigo-ink);
+  transition:background .2s;
+}
+.mobile-close:hover{background:rgba(42,29,15,.08);}
+
+.mobile-nav{flex:1; padding:6px 0;}
+
+/* Boutique accordion (<details>) */
+.mobile-details{border-bottom:1px solid var(--rigo-border);}
+.mobile-summary{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 18px;
+  font-family:var(--rigo-sans); font-weight:700; font-size:15px;
+  color:var(--rigo-ink); cursor:pointer; list-style:none;
+  user-select:none; transition:background .15s;
+}
+.mobile-summary::-webkit-details-marker{display:none;}
+.mobile-summary::after{content:'+'; font-size:18px; font-weight:400; color:var(--rigo-muted);}
+.mobile-details[open] .mobile-summary::after{content:'−';}
+.mobile-summary:hover{background:var(--rigo-cream);}
+
+.mobile-submenu{padding:10px 18px 16px; background:var(--rigo-cream);}
+.mobile-sub-label{
+  font-size:10px; font-weight:800; text-transform:uppercase;
+  letter-spacing:.1em; color:var(--rigo-muted);
+  margin:14px 0 4px; padding-top:10px;
+  border-top:1px solid var(--rigo-border);
+}
+.mobile-sub-label:first-child{margin-top:0; border-top:none;}
+.mobile-sub-link{
+  display:block; padding:8px 0;
+  font-size:13.5px; font-family:var(--rigo-sans); font-weight:500;
+  color:var(--rigo-ink-soft); text-decoration:none;
+  border-bottom:1px solid rgba(231,226,213,.5);
+  transition:color .15s;
+}
+.mobile-sub-link:hover{color:var(--rigo-green-dark);}
+.mobile-see-all-btn{
+  display:block; margin-top:12px; padding:9px 14px;
+  font-size:13px; font-weight:700; color:var(--rigo-green-dark);
+  text-decoration:none; text-align:center;
+  background:rgba(92,142,46,.08); border-radius:var(--rigo-r-sm);
+  transition:background .15s;
+}
+.mobile-see-all-btn:hover{background:rgba(92,142,46,.16);}
+
+.mobile-link{
+  display:block; padding:14px 18px;
+  font-family:var(--rigo-sans); font-weight:600; font-size:15px;
+  color:var(--rigo-ink); text-decoration:none;
+  border-bottom:1px solid var(--rigo-border);
+  transition:background .15s, color .15s;
+}
+.mobile-link:hover{background:var(--rigo-cream); color:var(--rigo-green-dark);}
+
+.mobile-menu-foot{
+  padding:16px 18px;
+  background:var(--rigo-cream); border-top:1px solid var(--rigo-border);
+  position:sticky; bottom:0;
+}
+.mobile-cta{display:block; width:100%; text-align:center; justify-content:center;}
+
+/* ───────── FOOTER ───────── */
+.site-footer{
+  background:var(--rigo-ink);
+  color:rgba(255,255,255,.85);
+  padding:20px 0 32px;
+  position:relative;
+  margin-top:48px;
+  font-family:var(--rigo-sans);
+}
+.site-footer .footer-grass{
+  position:absolute;
+  top:-60px; left:0; right:0;
+  width:100%; height:80px;
+  display:block; pointer-events:none;
+  z-index:2;
+}
+.site-footer .footer-inner{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:32px;
+  padding-top:56px;
+  padding-bottom:48px;
+}
+@media (min-width:768px){
+  .site-footer .footer-inner{grid-template-columns:1fr 1fr; gap:40px;}
+}
+@media (min-width:1100px){
+  .site-footer .footer-inner{grid-template-columns:1.4fr 1fr 1fr 1.2fr 1fr; gap:40px;}
+}
+.site-footer .footer-logo{
+  display:inline-flex; align-items:center; gap:10px;
+  margin-bottom:14px;
+}
+.site-footer .footer-logo img{width:40px; height:40px;}
+.site-footer .footer-logo .brand-word{font-size:24px; color:#fff;}
+.site-footer .footer-brand p{
+  font-size:14.5px; line-height:1.6;
+  color:rgba(255,255,255,.7);
+  margin:0 0 18px; max-width:360px;
+}
+.site-footer .footer-address{font-size:13.5px; color:rgba(255,255,255,.55);}
+.site-footer .footer-col h4{
+  font-family:var(--rigo-script);
+  font-weight:700;
+  font-size:20px;
+  margin:0 0 16px;
+  color:#fff;
+  letter-spacing:-.01em;
+}
+.site-footer .footer-col a{
+  display:block;
+  padding:4px 0;
+  font-size:14px;
+  color:rgba(255,255,255,.7);
+  text-decoration:none;
+  transition:color .2s, transform .2s;
+}
+.site-footer .footer-col a:hover{
+  color:#FBCF33;
+  transform:translateX(3px);
+}
+.site-footer .footer-bottom{
+  display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center;
+  padding-top:24px;
+  border-top:1px solid rgba(255,255,255,.08);
+  gap:12px;
+  font-size:13px;
+  color:rgba(255,255,255,.55);
+}
+.site-footer .footer-made{
+  font-family:var(--rigo-script);
+  font-size:15px;
+  margin:0;
+}
+.site-footer .footer-bottom p{margin:0;}
+
+.site-footer, .site-header{overflow-wrap:anywhere; word-break:normal;}
+.site-footer img, .site-header img{max-width:100%; height:auto;}
+
+/* ===========================================================
+   10. RESPONSIVE — mobile
+   =========================================================== */
+@media (max-width:640px){
+  body{font-size:16px;}
+  h1, .h1{font-size:clamp(2rem,9vw,2.6rem);}
+  h2, .h2{font-size:clamp(1.55rem,6.4vw,2rem);}
+  section{padding-top:48px;padding-bottom:48px;}
+
+  body.woocommerce div.product .product_title{font-size:clamp(1.8rem,7vw,2.4rem);}
+  body.woocommerce div.product p.price{font-size:1.4rem;}
+  body.woocommerce div.product .woocommerce-tabs .panel{padding:20px;}
+  body.woocommerce div.product .related ul.products,
+  body.woocommerce div.product .upsells ul.products{
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+  }
+  body.woocommerce div.product form.cart{flex-direction:column;align-items:stretch;}
+  body.woocommerce div.product .quantity input.qty{width:100%;}
+}

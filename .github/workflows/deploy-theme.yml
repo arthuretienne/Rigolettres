@@ -1,0 +1,33 @@
+name: Deploy blocksy-child → Hostinger
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'blocksy-child/**'   # déclenché uniquement si le child theme change
+
+jobs:
+  deploy:
+    name: Rsync + purge cache
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Déployer via rsync SSH
+        uses: burnett01/rsync-deployments@7.0.1
+        with:
+          switches: -avz --delete --exclude='.git' --exclude='README.md' --exclude='_INDEX.md'
+          path: blocksy-child/
+          remote_path: /home/${{ secrets.SSH_USER }}/public_html/wp-content/themes/blocksy-child/
+          remote_host: ${{ secrets.SSH_HOST }}
+          remote_port: 65002
+          remote_user: ${{ secrets.SSH_USER }}
+          remote_key: ${{ secrets.SSH_KEY }}
+
+      - name: Purger le cache LiteSpeed
+        run: |
+          curl -s -o /dev/null -w "%{http_code}" -X POST \
+            "https://rigolettres.fr/wp-json/litespeed/v1/purge/all" \
+            -H "Authorization: Basic $(echo -n '${{ secrets.WP_USER }}:${{ secrets.WP_APP_PASS }}' | base64)"

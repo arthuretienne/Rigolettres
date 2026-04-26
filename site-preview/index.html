@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rigolettres — Apprendre à lire en s'amusant, avec Brigitte</title>
+<meta name="description" content="Jeux éducatifs et livres de grammaire conçus par Brigitte Étienne-Camillerapp, orthophoniste depuis 25 ans. Pour les enfants de 5 à 12 ans.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Caveat:wght@400;700&family=Nunito:wght@400;500;600;700;800;900&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- Grain overlay -->
+<div class="grain" aria-hidden="true"></div>
+
+<!-- Floating decorative elements -->
+<div class="floaties" aria-hidden="true">
+  <svg class="floatie cloud cloud-1" viewBox="0 0 120 60"><path d="M20 45c-10 0-18-7-18-17s8-17 18-17c2 0 5 0 7 2 3-8 11-13 20-13 12 0 22 9 22 21 0 1 0 3-1 5 1-1 3-1 5-1 8 0 14 6 14 14s-6 14-14 14H20z" fill="#E5E9EC" opacity=".9"/></svg>
+  <svg class="floatie cloud cloud-2" viewBox="0 0 120 60"><path d="M20 45c-10 0-18-7-18-17s8-17 18-17c2 0 5 0 7 2 3-8 11-13 20-13 12 0 22 9 22 21 0 1 0 3-1 5 1-1 3-1 5-1 8 0 14 6 14 14s-6 14-14 14H20z" fill="#D9DEE3"/></svg>
+  <svg class="floatie cloud cloud-3" viewBox="0 0 120 60"><path d="M20 45c-10 0-18-7-18-17s8-17 18-17c2 0 5 0 7 2 3-8 11-13 20-13 12 0 22 9 22 21 0 1 0 3-1 5 1-1 3-1 5-1 8 0 14 6 14 14s-6 14-14 14H20z" fill="#ECEEF1" opacity=".8"/></svg>
+</div>
+
+<!-- Top announcement -->
+<div class="announce">
+  <span class="announce-dot"></span>
+  Nouveau site — livraison offerte en France métropolitaine à partir de 60 €
+</div>
+
+<!-- Header -->
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="#" aria-label="Rigolettres, accueil">
+      <span class="brand-pato">
+        <img src="../assets/logo-pato-provisoire.png" alt="" aria-hidden="true">
+      </span>
+      <span class="brand-word" aria-hidden="true">
+        <span style="color:#E74C3C">R</span><span style="color:#F39C12">i</span><span style="color:#8BC84B">g</span><span style="color:#27B4E5">o</span><span style="color:#9B59B6">l</span><span style="color:#E74C3C">e</span><span style="color:#F39C12">t</span><span style="color:#8BC84B">t</span><span style="color:#27B4E5">r</span><span style="color:#E91E63">e</span><span style="color:#8BC84B">s</span>
+      </span>
+      <span class="visually-hidden">Rigolettres</span>
+    </a>
+    <nav class="nav">
+      <a href="#histoire">Notre histoire</a>
+      <a href="#gamme">Nos jeux</a>
+      <a href="#methode">La méthode</a>
+      <a href="#presse">On en parle</a>
+      <a href="#blog">Blog</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <div class="header-actions">
+      <a href="#" class="search" aria-label="Rechercher">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3-3"/></svg>
+      </a>
+      <a href="/cart/" class="cart" aria-label="Panier">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h3l2.6 13.3a2 2 0 0 0 2 1.7h8.4a2 2 0 0 0 2-1.6L22 8H6"/><circle cx="10" cy="21" r="1.2"/><circle cx="18" cy="21" r="1.2"/></svg>
+        <span class="cart-count" data-cart-count>0</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <p class="kicker" data-reveal="1">
+        <span class="kicker-dot"></span>
+        Méthode syllabique · 25 ans d'orthophonie
+      </p>
+      <h1 class="hero-title" data-reveal="2">
+        Apprendre à lire,
+        <br>
+        <span class="hero-title-accent">
+          en s'amusant.
+          <svg class="underline-squiggle" viewBox="0 0 400 20" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M5 12 Q 50 2, 100 10 T 200 10 T 300 10 T 395 10" fill="none" stroke="#8BC84B" stroke-width="5" stroke-linecap="round"/>
+          </svg>
+        </span>
+      </h1>
+      <p class="hero-sub" data-reveal="3">
+        Des <strong>jeux éducatifs</strong> et des <strong>livres de grammaire</strong> conçus par
+        <em>Brigitte Étienne-Camillerapp</em>, orthophoniste — pour les enfants qui
+        découvrent la lecture, et pour celles et ceux qui ont besoin d'un petit coup de pouce.
+      </p>
+      <div class="hero-ctas" data-reveal="4">
+        <a class="btn btn-primary" href="#gamme">
+          Découvrir les jeux
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 10h12m0 0-4-4m4 4-4 4"/></svg>
+        </a>
+        <a class="btn btn-ghost" href="#histoire">
+          L'histoire de Brigitte
+        </a>
+      </div>
+      <ul class="hero-trust" data-reveal="5">
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="#27B4E5" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 12 2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+          Conçu par une orthophoniste
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="#8BC84B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.5-9-10a5 5 0 0 1 9-3 5 5 0 0 1 9 3c-2 5.5-9 10-9 10z"/></svg>
+          Fabriqué en France
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="#D9A066" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg>
+          Parties de 15 min, en famille
+        </li>
+      </ul>
+    </div>
+
+    <div class="hero-stage" data-reveal="6" aria-hidden="true">
+      <!-- Sky background -->
+      <div class="sky">
+        <!-- Sun -->
+        <svg class="sun" viewBox="0 0 140 140">
+          <g>
+            <circle cx="70" cy="70" r="32" fill="#FFD966"/>
+            <g stroke="#FFD966" stroke-width="6" stroke-linecap="round">
+              <line x1="70" y1="12" x2="70" y2="28"/>
+              <line x1="70" y1="112" x2="70" y2="128"/>
+              <line x1="12" y1="70" x2="28" y2="70"/>
+              <line x1="112" y1="70" x2="128" y2="70"/>
+              <line x1="29" y1="29" x2="40" y2="40"/>
+              <line x1="100" y1="100" x2="111" y2="111"/>
+              <line x1="29" y1="111" x2="40" y2="100"/>
+              <line x1="100" y1="40" x2="111" y2="29"/>
+            </g>
+            <path d="M58 75 Q 70 88, 82 75" stroke="#D9A066" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+            <circle cx="60" cy="64" r="3" fill="#1F2937"/>
+            <circle cx="80" cy="64" r="3" fill="#1F2937"/>
+          </g>
+        </svg>
+        <!-- Small clouds -->
+        <svg class="sky-cloud sky-cloud-a" viewBox="0 0 120 60"><path d="M20 45c-10 0-18-7-18-17s8-17 18-17c2 0 5 0 7 2 3-8 11-13 20-13 12 0 22 9 22 21 0 1 0 3-1 5 1-1 3-1 5-1 8 0 14 6 14 14s-6 14-14 14H20z" fill="#FFFFFF"/></svg>
+        <svg class="sky-cloud sky-cloud-b" viewBox="0 0 120 60"><path d="M20 45c-10 0-18-7-18-17s8-17 18-17c2 0 5 0 7 2 3-8 11-13 20-13 12 0 22 9 22 21 0 1 0 3-1 5 1-1 3-1 5-1 8 0 14 6 14 14s-6 14-14 14H20z" fill="#D7EFF9"/></svg>
+        <!-- Star sparkles -->
+        <svg class="sparkle sparkle-1" viewBox="0 0 24 24" fill="#FFD966"><path d="M12 2 14 10 22 12 14 14 12 22 10 14 2 12 10 10z"/></svg>
+        <svg class="sparkle sparkle-2" viewBox="0 0 24 24" fill="#E74C3C"><path d="M12 2 14 10 22 12 14 14 12 22 10 14 2 12 10 10z"/></svg>
+        <svg class="sparkle sparkle-3" viewBox="0 0 24 24" fill="#27B4E5"><path d="M12 2 14 10 22 12 14 14 12 22 10 14 2 12 10 10z"/></svg>
+        <!-- Pato the dog -->
+        <img class="pato" src="../assets/logo-pato-provisoire.png" alt="Pato, la mascotte de Rigolettres, un petit chien blanc aux oreilles brunes avec un cœur rouge sur le torse" />
+        <!-- Hill -->
+        <svg class="hill" viewBox="0 0 600 120" preserveAspectRatio="none"><path d="M0 100 Q 150 30, 300 60 T 600 80 L 600 120 L 0 120 Z" fill="#8BC84B"/><path d="M0 105 Q 150 45, 300 70 T 600 85 L 600 120 L 0 120 Z" fill="#6FA832"/></svg>
+        <!-- Flowers -->
+        <svg class="flower flower-1" viewBox="0 0 40 40"><circle cx="20" cy="20" r="6" fill="#F39C12"/><circle cx="20" cy="8" r="6" fill="#FFD966"/><circle cx="32" cy="20" r="6" fill="#FFD966"/><circle cx="20" cy="32" r="6" fill="#FFD966"/><circle cx="8" cy="20" r="6" fill="#FFD966"/></svg>
+        <svg class="flower flower-2" viewBox="0 0 40 40"><circle cx="20" cy="20" r="6" fill="#E74C3C"/><circle cx="20" cy="8" r="6" fill="#FF6B9D"/><circle cx="32" cy="20" r="6" fill="#FF6B9D"/><circle cx="20" cy="32" r="6" fill="#FF6B9D"/><circle cx="8" cy="20" r="6" fill="#FF6B9D"/></svg>
+      </div>
+
+      <!-- Speech bubble -->
+      <div class="speech-bubble" role="presentation">
+        <span>Bienvenue !</span>
+        <svg viewBox="0 0 30 15" class="bubble-tail"><path d="M5 0 L 25 0 L 10 15 Z" fill="#fff"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll hint -->
+  <div class="scroll-hint" aria-hidden="true">
+    <span>Découvrez</span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="#1F2937" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
+  </div>
+</section>
+
+<!-- MARQUEE / Trust bar -->
+<section class="marquee-wrap" aria-label="Nos engagements">
+  <div class="marquee">
+    <div class="marquee-track">
+      <span>★ Recommandé par des orthophonistes</span>
+      <span class="dot">●</span>
+      <span>Fabriqué à Mamers, en France</span>
+      <span class="dot">●</span>
+      <span>Pour enfants de 5 à 12 ans</span>
+      <span class="dot">●</span>
+      <span>Parties en famille de 15 min</span>
+      <span class="dot">●</span>
+      <span>Méthode syllabique éprouvée</span>
+      <span class="dot">●</span>
+      <span>★ Recommandé par des orthophonistes</span>
+      <span class="dot">●</span>
+      <span>Fabriqué à Mamers, en France</span>
+      <span class="dot">●</span>
+      <span>Pour enfants de 5 à 12 ans</span>
+      <span class="dot">●</span>
+      <span>Parties en famille de 15 min</span>
+      <span class="dot">●</span>
+      <span>Méthode syllabique éprouvée</span>
+      <span class="dot">●</span>
+    </div>
+  </div>
+</section>
+
+<!-- BRIGITTE'S STORY -->
+<section id="histoire" class="story">
+  <div class="container story-grid">
+    <div class="story-visual">
+      <div class="polaroid polaroid-tilt-left">
+        <div class="polaroid-photo polaroid-placeholder">
+          <div class="portrait-stub">
+            <svg viewBox="0 0 120 120" fill="none">
+              <circle cx="60" cy="44" r="22" fill="#D9A066" opacity=".9"/>
+              <path d="M18 110c0-24 19-42 42-42s42 18 42 42" fill="#D9A066" opacity=".9"/>
+              <path d="M36 44c0-14 10-24 24-24s24 10 24 24c0 2-2 4-4 4H40c-2 0-4-2-4-4z" fill="#4B5563"/>
+            </svg>
+          </div>
+        </div>
+        <p class="polaroid-caption">Brigitte, Mamers — 1997</p>
+      </div>
+      <div class="polaroid polaroid-tilt-right polaroid-mini">
+        <div class="polaroid-photo">
+          <img src="../assets/photos-preview/IMG_7922.jpg" alt="Cartes de syllabes du jeu Rigolettres" loading="lazy">
+        </div>
+        <p class="polaroid-caption">Les premières cartes faites à la main.</p>
+      </div>
+      <!-- Decorative sticker -->
+      <div class="sticker sticker-heart">
+        <svg viewBox="0 0 48 44" fill="#E74C3C"><path d="M24 40 C 6 30, 0 16, 10 8 C 16 4, 22 8, 24 12 C 26 8, 32 4, 38 8 C 48 16, 42 30, 24 40Z"/></svg>
+      </div>
+      <p class="handwritten-note">
+        « Jouer d'abord. <br/>Apprendre ensuite. »
+      </p>
+    </div>
+
+    <div class="story-copy">
+      <p class="section-number">Chapitre 01</p>
+      <h2 class="section-title">
+        Derrière Rigolettres,
+        <span class="title-swash">une orthophoniste.</span>
+      </h2>
+      <p class="story-lead">
+        Pendant plus de <strong>25 ans</strong>, Brigitte Étienne-Camillerapp a accompagné
+        des centaines d'enfants en difficulté avec la lecture — dyslexiques,
+        dysorthographiques, ou simplement freinés par les méthodes classiques.
+      </p>
+      <p>
+        Face à ses petits patients, elle manquait d'outils. Alors elle s'est
+        mise à créer les siens. Découpés, coloriés, plastifiés sur la table de son
+        cabinet à Mamers. Des jeux de cartes, des dominos, des suites de syllabes
+        qui transformaient chaque séance en moment de jeu.
+      </p>
+      <p>
+        Les progrès étaient là. Et les familles, émerveillées, lui demandaient :
+        « Où peut-on acheter ces jeux ? »
+      </p>
+      <p class="story-closing">
+        Rigolettres, c'est sa réponse. <span class="highlight-yellow">Apprendre à lire en s'amusant</span>, c'est possible — et c'est à
+        la portée de chaque famille.
+      </p>
+      <div class="signature">
+        <span class="signature-name">Brigitte Étienne-Camillerapp</span>
+        <span class="signature-role">Orthophoniste · Mamers (72)</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCT GAMME -->
+<section id="gamme" class="gamme">
+  <div class="container">
+    <div class="section-intro">
+      <p class="section-number">Chapitre 02</p>
+      <h2 class="section-title">
+        Notre <span class="title-swash">petite collection.</span>
+      </h2>
+      <p class="section-lead">
+        Trois niveaux de jeux pensés pour accompagner l'enfant du CP au CM2, et deux livres
+        de grammaire pour consolider. Chaque boîte est conçue pour durer, jouer, recommencer.
+      </p>
+    </div>
+
+    <div class="products">
+      <!-- Product 1: Niveau 1 - Pato -->
+      <article class="product-card rotate-left" data-pid="28">
+        <div class="badge">Niveau&nbsp;1 · CP</div>
+        <a class="product-link" href="/product/rigolettres-1-pato-le-chien/" aria-label="Voir la fiche Rigolettres — Niveau 1, Pato le Chien">
+          <div class="product-media">
+            <img src="../assets/photos-preview/IMG_7912.jpg" alt="Boîte Rigolettres Niveau 1" loading="lazy">
+            <span class="product-mascot mascot-pato">
+              <img src="../assets/logo-pato-provisoire.png" alt="Pato">
+            </span>
+          </div>
+          <div class="product-body">
+            <p class="product-eyebrow">Les jeux de Pato</p>
+            <h3 class="product-title">Rigolettres — Niveau 1</h3>
+            <p class="product-desc">Rigolosignes · Domino des voyelles · Syllabes à 2 lettres. Pour poser les toutes premières briques de la lecture, par le jeu.</p>
+            <div class="product-meta">
+              <span>5–7 ans</span>
+              <span>·</span>
+              <span>3 jeux inclus</span>
+              <span>·</span>
+              <span>15 min</span>
+            </div>
+          </div>
+        </a>
+        <div class="product-foot">
+          <span class="product-price">20 <small>€</small></span>
+          <button class="btn btn-primary btn-sm" type="button" data-add-to-cart data-pid="28">Ajouter au panier</button>
+        </div>
+      </article>
+
+      <!-- Product 2: Niveau 2 - Luna -->
+      <article class="product-card rotate-right" data-pid="29">
+        <div class="badge badge-green">Niveau&nbsp;2 · CE1</div>
+        <a class="product-link" href="/product/rigolettres-2-sons-complexes/" aria-label="Voir la fiche Rigolettres — Niveau 2">
+          <div class="product-media">
+            <img src="../assets/photos-preview/IMG_7921.jpg" alt="Boîte Rigolettres Niveau 2" loading="lazy">
+            <span class="product-mascot mascot-luna">🐱</span>
+          </div>
+          <div class="product-body">
+            <p class="product-eyebrow">Les jeux de Luna</p>
+            <h3 class="product-title">Rigolettres — Niveau 2</h3>
+            <p class="product-desc">Sons complexes · Rigolosons · Domino des graphies. On corse les associations son-lettre et on gagne en vitesse.</p>
+            <div class="product-meta">
+              <span>6–9 ans</span>
+              <span>·</span>
+              <span>3 jeux inclus</span>
+              <span>·</span>
+              <span>20 min</span>
+            </div>
+          </div>
+        </a>
+        <div class="product-foot">
+          <span class="product-price">20 <small>€</small></span>
+          <button class="btn btn-primary btn-sm" type="button" data-add-to-cart data-pid="29">Ajouter au panier</button>
+        </div>
+      </article>
+
+      <!-- Product 3: Rigoloverbes -->
+      <article class="product-card rotate-left" data-pid="30">
+        <div class="badge badge-warm">Rigoloverbes · CM1+</div>
+        <a class="product-link" href="/product/rigoloverbes-passe-simple/" aria-label="Voir la fiche Rigoloverbes — Le Passé Simple">
+          <div class="product-media">
+            <img src="../assets/photos-preview/IMG_7929.jpg" alt="Boîte Rigoloverbes — Passé Simple" loading="lazy">
+            <span class="product-mascot mascot-theo">🎈</span>
+          </div>
+          <div class="product-body">
+            <p class="product-eyebrow">La gamme conjugaison</p>
+            <h3 class="product-title">Rigoloverbes — Passé Simple</h3>
+            <p class="product-desc">Le temps le plus piégeux, apprivoisé par le jeu. Les terminaisons du passé simple rentrent sans table de conjugaison.</p>
+            <div class="product-meta">
+              <span>9–12 ans</span>
+              <span>·</span>
+              <span>2 à 5 joueurs</span>
+              <span>·</span>
+              <span>25 min</span>
+            </div>
+          </div>
+        </a>
+        <div class="product-foot">
+          <span class="product-price">22 <small>€</small></span>
+          <button class="btn btn-primary btn-sm" type="button" data-add-to-cart data-pid="30">Ajouter au panier</button>
+        </div>
+      </article>
+
+      <!-- Product 4: Grammaire niveau 1 -->
+      <article class="product-card product-book rotate-right" data-pid="31">
+        <div class="badge badge-red">Livre</div>
+        <a class="product-link" href="/product/grammaire-tableaux-niveau-1/" aria-label="Voir la fiche Ma grammaire en tableaux — 1er niveau">
+          <div class="product-media product-media-book">
+            <img src="../assets/photos-preview/IMG_7934.jpg" alt="Livre Ma grammaire en tableaux 1er niveau" loading="lazy">
+          </div>
+          <div class="product-body">
+            <p class="product-eyebrow">Ma grammaire en tableaux</p>
+            <h3 class="product-title">1<sup>er</sup> niveau</h3>
+            <p class="product-desc">La grammaire française expliquée en tableaux visuels. Les bases : noms, verbes, adjectifs, pronoms. 25 ans d'expérience en poche.</p>
+            <div class="product-meta">
+              <span>CE1–CM1</span>
+              <span>·</span>
+              <span>Relié, éditions Le Charbonnier</span>
+            </div>
+          </div>
+        </a>
+        <div class="product-foot">
+          <span class="product-price">24 <small>€</small></span>
+          <button class="btn btn-primary btn-sm" type="button" data-add-to-cart data-pid="31">Ajouter au panier</button>
+        </div>
+      </article>
+
+      <!-- Product 5: Grammaire niveau 2 -->
+      <article class="product-card product-book rotate-left" data-pid="32">
+        <div class="badge badge-red">Livre</div>
+        <a class="product-link" href="/product/grammaire-tableaux-niveau-2/" aria-label="Voir la fiche Ma grammaire en tableaux — 2ème niveau">
+          <div class="product-media product-media-book">
+            <img src="../assets/photos-preview/IMG_7938.jpg" alt="Livre Ma grammaire en tableaux 2ème niveau" loading="lazy">
+          </div>
+          <div class="product-body">
+            <p class="product-eyebrow">Ma grammaire en tableaux</p>
+            <h3 class="product-title">2<sup>ème</sup> niveau</h3>
+            <p class="product-desc">On approfondit : accords, compléments, conjugaison. Un compagnon de révision pour toute la famille — y compris les grands.</p>
+            <div class="product-meta">
+              <span>CM1–6<sup>e</sup></span>
+              <span>·</span>
+              <span>Relié, éditions Le Charbonnier</span>
+            </div>
+          </div>
+        </a>
+        <div class="product-foot">
+          <span class="product-price">24 <small>€</small></span>
+          <button class="btn btn-primary btn-sm" type="button" data-add-to-cart data-pid="32">Ajouter au panier</button>
+        </div>
+      </article>
+
+      <!-- Bundle card -->
+      <article class="product-card bundle-card">
+        <div class="bundle-stars">
+          <svg viewBox="0 0 24 24" fill="#FFD966"><path d="M12 2 14 10 22 12 14 14 12 22 10 14 2 12 10 10z"/></svg>
+          <svg viewBox="0 0 24 24" fill="#E74C3C"><path d="M12 2 14 10 22 12 14 14 12 22 10 14 2 12 10 10z"/></svg>
+          <svg viewBox="0 0 24 24" fill="#27B4E5"><path d="M12 2 14 10 22 12 14 14 12 22 10 14 2 12 10 10z"/></svg>
+        </div>
+        <h3 class="bundle-title">Pas encore décidé ?</h3>
+        <p class="bundle-desc">
+          Parlez-nous de l'enfant — son âge, son niveau, ses blocages —
+          et nous vous aidons à choisir le jeu qui lui conviendra.
+        </p>
+        <a href="#contact" class="btn btn-ghost">Demander conseil →</a>
+        <p class="bundle-note">Réponse sous 24 h, directement par Brigitte ou Albéric.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- METHODE -->
+<section id="methode" class="methode">
+  <div class="container">
+    <div class="section-intro">
+      <p class="section-number">Chapitre 03</p>
+      <h2 class="section-title">
+        La méthode <span class="title-swash">Rigolettres.</span>
+      </h2>
+      <p class="section-lead">
+        Trois principes simples, éprouvés pendant 25 ans en cabinet, qui font toute la différence
+        entre un enfant qui déchiffre à contrecœur… et un enfant qui lit.
+      </p>
+    </div>
+
+    <div class="methode-grid">
+      <article class="pillar">
+        <div class="pillar-num">01</div>
+        <svg class="pillar-icon" viewBox="0 0 80 80" fill="none" stroke="#27B4E5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="40" cy="40" r="30"/>
+          <path d="M25 45 Q 40 55, 55 45"/>
+          <circle cx="30" cy="32" r="2.5" fill="#27B4E5"/>
+          <circle cx="50" cy="32" r="2.5" fill="#27B4E5"/>
+          <path d="M15 20 L 25 15"/>
+          <path d="M65 20 L 55 15"/>
+        </svg>
+        <h3>Syllabique, d'abord.</h3>
+        <p>On part des syllabes, pas des mots. L'enfant construit le code lettre/son lui-même, à son rythme, et la lecture devient une logique — pas une mémorisation.</p>
+      </article>
+
+      <article class="pillar">
+        <div class="pillar-num">02</div>
+        <svg class="pillar-icon" viewBox="0 0 80 80" fill="none" stroke="#8BC84B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="15" y="20" width="50" height="45" rx="4"/>
+          <path d="M25 30 H 55"/>
+          <path d="M25 40 H 45"/>
+          <path d="M25 50 H 50"/>
+          <circle cx="58" cy="55" r="8" fill="#8BC84B" opacity=".3"/>
+        </svg>
+        <h3>Par le jeu, toujours.</h3>
+        <p>Rigolosignes, dominos, courses contre la montre : chaque exercice est un petit jeu. L'enfant joue pour gagner — et apprend sans même s'en rendre compte.</p>
+      </article>
+
+      <article class="pillar">
+        <div class="pillar-num">03</div>
+        <svg class="pillar-icon" viewBox="0 0 80 80" fill="none" stroke="#D9A066" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M40 10 L 48 30 L 70 32 L 53 47 L 58 68 L 40 57 L 22 68 L 27 47 L 10 32 L 32 30 Z"/>
+        </svg>
+        <h3>À son rythme.</h3>
+        <p>Chaque boîte propose deux règles : simple pour débuter, avancée pour progresser. Le jeu grandit avec l'enfant, et la famille joue ensemble, tous niveaux confondus.</p>
+      </article>
+    </div>
+
+    <!-- Stats row -->
+    <div class="stats">
+      <div class="stat">
+        <span class="stat-num">25<small>ans</small></span>
+        <span class="stat-label">d'expérience en orthophonie</span>
+      </div>
+      <div class="stat-sep"></div>
+      <div class="stat">
+        <span class="stat-num">5<small>–12</small></span>
+        <span class="stat-label">ans — du CP au CM2</span>
+      </div>
+      <div class="stat-sep"></div>
+      <div class="stat">
+        <span class="stat-num">15<small>min</small></span>
+        <span class="stat-label">une partie, en famille</span>
+      </div>
+      <div class="stat-sep"></div>
+      <div class="stat">
+        <span class="stat-num">100<small>%</small></span>
+        <span class="stat-label">fabriqué en France</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CARDS PEEK (le jeu en détail) -->
+<section class="peek">
+  <div class="container peek-grid">
+    <div class="peek-copy">
+      <p class="section-number">Un jeu, c'est…</p>
+      <h2 class="section-title">Des <span class="title-swash">cartes colorées,</span> des sons, du rire.</h2>
+      <ul class="peek-list">
+        <li><strong>Des cartes syllabes</strong> pour composer, échanger, gagner.</li>
+        <li><strong>Des règles modulables</strong> — pour les tout-petits comme pour les grands.</li>
+        <li><strong>Une fiche parent</strong> détaillée, qui explique le « pourquoi pédagogique ».</li>
+        <li><strong>Un challenge 1 min</strong> pour mesurer les progrès (et célébrer).</li>
+      </ul>
+    </div>
+    <div class="peek-visual">
+      <img src="../assets/photos-preview/IMG_7924.jpg" alt="Cartes syllabes Rigolettres">
+    </div>
+  </div>
+</section>
+
+<!-- SOCIAL PROOF / PRESS -->
+<section id="presse" class="press">
+  <div class="container">
+    <div class="section-intro section-intro-center">
+      <p class="section-number">Ils en parlent</p>
+      <h2 class="section-title">La presse, les pros, <span class="title-swash">les familles.</span></h2>
+    </div>
+
+    <div class="testimonials">
+      <figure class="testimonial testimonial-1">
+        <svg class="quote" viewBox="0 0 40 30" fill="#D9A066"><path d="M0 30 V 20 Q 0 0, 20 0 V 10 Q 10 10, 10 20 H 20 V 30 Z M20 30 V 20 Q 20 0, 40 0 V 10 Q 30 10, 30 20 H 40 V 30 Z"/></svg>
+        <blockquote>
+          Enfin du matériel pensé par une collègue qui connaît le terrain.
+          Je l'utilise en cabinet chaque semaine, et les enfants <em>demandent</em>
+          à rejouer — c'est le meilleur compliment qu'on puisse faire à un outil pédagogique.
+        </blockquote>
+        <figcaption>
+          <span class="person-name">Claire M.</span>
+          <span class="person-role">Orthophoniste, Nantes</span>
+        </figcaption>
+      </figure>
+
+      <figure class="testimonial testimonial-2">
+        <svg class="quote" viewBox="0 0 40 30" fill="#27B4E5"><path d="M0 30 V 20 Q 0 0, 20 0 V 10 Q 10 10, 10 20 H 20 V 30 Z M20 30 V 20 Q 20 0, 40 0 V 10 Q 30 10, 30 20 H 40 V 30 Z"/></svg>
+        <blockquote>
+          Mon fils de 7 ans refusait de lire. En deux semaines avec le Niveau 1,
+          il a recommencé à <em>choisir</em> un livre le soir. Je ne pensais pas
+          qu'un simple jeu pouvait changer sa relation à la lecture.
+        </blockquote>
+        <figcaption>
+          <span class="person-name">Marie L.</span>
+          <span class="person-role">Maman d'un CE1, Le Mans</span>
+        </figcaption>
+      </figure>
+
+      <figure class="testimonial testimonial-3">
+        <svg class="quote" viewBox="0 0 40 30" fill="#8BC84B"><path d="M0 30 V 20 Q 0 0, 20 0 V 10 Q 10 10, 10 20 H 20 V 30 Z M20 30 V 20 Q 20 0, 40 0 V 10 Q 30 10, 30 20 H 40 V 30 Z"/></svg>
+        <blockquote>
+          J'ai intégré Rigolettres à mes ateliers de lecture en CP.
+          Les enfants apprennent sans voir le travail — et mes élèves en difficulté
+          rattrapent le groupe beaucoup plus vite.
+        </blockquote>
+        <figcaption>
+          <span class="person-name">Sophie B.</span>
+          <span class="person-role">Institutrice, CP · Mamers</span>
+        </figcaption>
+      </figure>
+    </div>
+
+    <div class="press-logos">
+      <span class="press-label">Vus dans</span>
+      <span class="press-item press-1">Ouest-France</span>
+      <span class="press-item press-2">Orthomalin</span>
+      <span class="press-item press-3">Le Maine Libre</span>
+      <span class="press-item press-4">DocPlayer · Orthophonie</span>
+    </div>
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<section class="newsletter">
+  <div class="container newsletter-wrap">
+    <svg class="newsletter-doodle" viewBox="0 0 200 80" fill="none" stroke="#FBF8F1" stroke-width="2.5" stroke-linecap="round">
+      <path d="M10 40 Q 40 10, 70 40 T 130 40 T 190 40"/>
+      <circle cx="10" cy="40" r="4" fill="#FBF8F1"/>
+      <circle cx="190" cy="40" r="4" fill="#FBF8F1"/>
+    </svg>
+    <div>
+      <p class="newsletter-eyebrow">La lettre de Brigitte</p>
+      <h2>Un conseil par mois, pour aider un enfant à lire.</h2>
+      <p class="newsletter-sub">
+        Pas de promo agressive, pas d'algorithme. Juste des astuces concrètes
+        venues du cabinet, et les nouveautés Rigolettres — quand il y en a.
+      </p>
+      <form class="newsletter-form" onsubmit="event.preventDefault(); this.querySelector('.success').classList.add('show');">
+        <input type="email" placeholder="votre.email@exemple.fr" required aria-label="Votre email">
+        <button class="btn btn-primary" type="submit">S'inscrire</button>
+        <p class="success">Merci ! Vous recevrez le prochain numéro bientôt.</p>
+      </form>
+      <p class="newsletter-tiny">Pas de spam. Désinscription en 1 clic.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer id="contact" class="site-footer">
+  <svg class="footer-grass" viewBox="0 0 1200 80" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0 30 Q 100 5, 200 25 T 400 25 T 600 20 T 800 30 T 1000 25 T 1200 30 L 1200 80 L 0 80 Z" fill="#8BC84B"/>
+    <path d="M0 40 Q 100 15, 200 35 T 400 35 T 600 30 T 800 40 T 1000 35 T 1200 40 L 1200 80 L 0 80 Z" fill="#6FA832"/>
+  </svg>
+  <div class="container footer-inner">
+    <div class="footer-brand">
+      <div class="footer-logo">
+        <img src="../assets/logo-pato-provisoire.png" alt="">
+        <span class="brand-word" aria-hidden="true">
+          <span style="color:#E74C3C">R</span><span style="color:#F39C12">i</span><span style="color:#8BC84B">g</span><span style="color:#27B4E5">o</span><span style="color:#9B59B6">l</span><span style="color:#E74C3C">e</span><span style="color:#F39C12">t</span><span style="color:#8BC84B">t</span><span style="color:#27B4E5">r</span><span style="color:#E91E63">e</span><span style="color:#8BC84B">s</span>
+        </span>
+      </div>
+      <p>
+        Des jeux et des livres pour apprendre à lire en s'amusant, conçus par une orthophoniste qui a passé sa vie à aider les enfants à déchiffrer.
+      </p>
+      <p class="footer-address">
+        <strong>Rigolettres</strong> · Mamers (Sarthe)<br>
+        contact@rigolettres.fr
+      </p>
+    </div>
+    <div class="footer-col">
+      <h4>Boutique</h4>
+      <a href="#gamme">Tous les jeux</a>
+      <a href="#gamme">Rigolettres Niveau 1</a>
+      <a href="#gamme">Rigolettres Niveau 2</a>
+      <a href="#gamme">Rigolettres Niveau 3</a>
+      <a href="#gamme">Livres de grammaire</a>
+    </div>
+    <div class="footer-col">
+      <h4>Découvrir</h4>
+      <a href="#histoire">L'histoire de Brigitte</a>
+      <a href="#methode">La méthode</a>
+      <a href="#presse">Dans la presse</a>
+      <a href="#blog">Blog</a>
+    </div>
+    <div class="footer-col">
+      <h4>Infos pratiques</h4>
+      <a href="#">Livraison</a>
+      <a href="#">Retours</a>
+      <a href="#">CGV</a>
+      <a href="#">Mentions légales</a>
+      <a href="#">Confidentialité</a>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <p>© 2026 Rigolettres — Marque déposée. Fabriqué à Mamers, en France. 🇫🇷</p>
+    <p class="footer-made">Fait avec <span style="color:#E74C3C">♥</span> pour Brigitte.</p>
+  </div>
+</footer>
+
+<script src="app.js" defer></script>
+</body>
+</html>
