@@ -648,6 +648,29 @@ body.has-ct-header-spacing{padding-top:0 !important;}
  */
 body.home .site-header:not(#site-header){display:none !important;}
 
+/* Masquer l'ancienne barre promo du contenu de page — remplacée par #rigo-promo-bar */
+.ct-announcement-bar,[data-id="announcement_bar"],.blocksy-announcement-bar{display:none !important;}
+
+/* ── Promo bar ── */
+#rigo-promo-bar{
+  background:#2a1d0f;
+  color:#fff;
+  font-size:13px;
+  text-align:center;
+  padding:8px 40px 8px 16px;
+  position:relative;
+  line-height:1.4;
+}
+.rigo-promo-close{
+  position:absolute;
+  right:12px; top:50%;
+  transform:translateY(-50%);
+  background:none; border:none;
+  color:#fff; font-size:18px; line-height:1;
+  cursor:pointer; opacity:.7; padding:4px;
+}
+.rigo-promo-close:hover{opacity:1;}
+
 .site-header .container,
 .site-footer .container{
   max-width:var(--rigo-container);

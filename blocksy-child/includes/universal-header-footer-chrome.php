@@ -105,6 +105,11 @@ add_action('wp_body_open', function () {
         ],
     ];
     ?>
+    <div class="rigo-promo-bar" id="rigo-promo-bar">
+      <span>✨ Nouveau site — livraison offerte en France métropolitaine à partir de 60 €</span>
+      <button class="rigo-promo-close" aria-label="Fermer" onclick="this.closest('#rigo-promo-bar').style.display='none';document.documentElement.style.setProperty('--rigo-hdr-h',document.getElementById('site-header').getBoundingClientRect().bottom+'px')">×</button>
+    </div>
+
     <header class="site-header site-header--injected" id="site-header">
       <div class="container header-inner">
 
@@ -304,7 +309,7 @@ add_action('wp_body_open', function () {
       function setMegaTop(){
         var hdr = document.getElementById('site-header');
         if (!hdr) return;
-        document.documentElement.style.setProperty('--rigo-hdr-h', hdr.getBoundingClientRect().height + 'px');
+        document.documentElement.style.setProperty('--rigo-hdr-h', hdr.getBoundingClientRect().bottom + 'px');
       }
       setMegaTop();
       window.addEventListener('resize', setMegaTop);
