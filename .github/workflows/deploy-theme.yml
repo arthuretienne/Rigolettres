@@ -29,7 +29,7 @@ jobs:
 
       - name: Déployer via rsync
         run: |
-          rsync -avz --delete \
+          rsync -avz --checksum --delete \
             --exclude='.git' \
             --exclude='README.md' \
             -e "ssh -i ~/.ssh/deploy_key -p 65002 -o StrictHostKeyChecking=no" \
