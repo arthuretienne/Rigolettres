@@ -476,6 +476,12 @@ body.woocommerce div.product form.cart .quantity{
   border-radius:var(--rigo-r-sm);
   overflow:hidden;
 }
+/* DOM order Blocksy = ct-increase, ct-decrease, label, input.
+   On force l'ordre visuel : [- 1 +] via flex `order`. */
+body.woocommerce div.product form.cart .quantity .ct-decrease{ order:1 !important; }
+body.woocommerce div.product form.cart .quantity input.qty{ order:2 !important; }
+body.woocommerce div.product form.cart .quantity .ct-increase{ order:3 !important; }
+body.woocommerce div.product form.cart .quantity .screen-reader-text{ order:0 !important; }
 body.woocommerce div.product form.cart .quantity .ct-decrease,
 body.woocommerce div.product form.cart .quantity .ct-increase{
   position:static !important;
