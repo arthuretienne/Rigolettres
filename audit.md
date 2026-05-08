@@ -37,6 +37,12 @@
 
 ## 📓 Journal de session
 
+### 2026-05-08 (suite 7) — DEV mode + 2 fixes UI (mega-menu home + qty PDP)
+- [x] **Snippet 66 [DEV MODE]** : bypass LiteSpeed cache via `do_action('litespeed_control_set_nocache')` + headers `Cache-Control: no-store`. Persistant. **À désactiver avant le go-live** (wp-admin → Code Snippets → désactiver snippet 66). Permet d'itérer sans purge manuelle.
+- [x] **Bug mega-menu home** : sur la home, le `.mega-inner` avait `padding-top:0` au lieu de `28px` comme sur la PDP. Cause : `<style>` inline du contenu Gutenberg de la page 21 contient `.container { padding-top:0 }` qui matche aussi `.mega-inner.container` à spécificité égale (0,1,0). Fix : préfixer la règle child theme par `.mega-panel .mega-inner` → spécificité 0,2,0 → cascade gagnée. Vérif visuelle browser : home et PDP ISO maintenant.
+- [x] **Bug qty widget PDP** : Blocksy injecte `<span class="ct-increase">` et `<span class="ct-decrease">` en `position:absolute` PAR-DESSUS l'input → chevauchent le chiffre + héritent du hover bleu Blocksy. Fix : refonte complète du widget en `inline-flex`, boutons et input alignés `[− 1 +]`, fond `var(--rigo-cream)`, hover `var(--rigo-cream-dark)` (plus de bleu), bordures `var(--rigo-border)`, radius arrondi. **Subtilité** : DOM order Blocksy = `[ct-increase, ct-decrease, label, input]` → forcé via flex `order: 1/2/3` pour rendu visuel `[− input +]`. Vérif visuelle browser : repos OK, hover − OK (cream-dark), hover + OK (cream-dark), chiffre toujours lisible au centre.
+- [ ] **À traiter ensuite** : cohérence "Brigitte Étienne · depuis 1978" sur la home (sous-titre contient encore "Brigitte Étienne-Camillerapp" + "25 ans d'orthophonie"). Étape 1 reportée par Arthur le temps de fixer ces 2 bugs visuels.
+
 ### 2026-05-08 (suite 6) — Hotfix "Hero invisible (SyntaxError JS apostrophe non échappée)"
 **Symptôme** : Arthur signale "la hero section a sauté, y'a plus rien d'affiché". Vérification au browser : DOM hero présent dans le HTML mais tous les éléments restent à `opacity:0` (les `[data-reveal]` ne reçoivent jamais `.is-visible`).
 **Cause racine** : Console JS du browser → `Uncaught SyntaxError: Unexpected identifier 'ajouter'` à la ligne du `<script>` inline du contenu Gutenberg de la page 21. L'apostrophe non échappée dans `message: 'Impossible d'ajouter ce produit. Réessayez.'` ferme la chaîne JS prématurément → **tout** le bloc script plante au parse → le IIFE qui pose `.is-visible` sur les éléments hero ne tourne jamais → hero entièrement invisible.
