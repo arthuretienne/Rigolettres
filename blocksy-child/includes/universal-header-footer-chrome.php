@@ -285,15 +285,18 @@ add_action('wp_body_open', function () {
         function megaShow(){ megaTrig.setAttribute('aria-expanded','true');  megaPanel.classList.add('is-open'); }
         function megaHide(){ megaTrig.setAttribute('aria-expanded','false'); megaPanel.classList.remove('is-open'); }
 
-        navItem.addEventListener('mouseenter', megaShow);
-        navItem.addEventListener('mouseleave', function(e){
-          // Ne pas fermer si on entre dans le panel
-          if (!megaPanel.contains(e.relatedTarget)) megaHide();
-        });
-        megaPanel.addEventListener('mouseleave', function(e){
-          if (!navItem.contains(e.relatedTarget)) megaHide();
-        });
-        megaTrig.addEventListener('focus', megaShow);
+        // Délai de fermeture (ms) pour laisser le temps de bouger
+        // entre le trigger et le panel (et inversement) sans perdre le hover.
+        var megaCloseTimer = null;
+        function megaShowNow(){ if (megaCloseTimer) { clearTimeout(megaCloseTimer); megaCloseTimer = null; } megaShow(); }
+        function megaHideSoon(){ if (megaCloseTimer) clearTimeout(megaCloseTimer); megaCloseTimer = setTimeout(megaHide, 220); }
+
+        navItem.addEventListener('mouseenter', megaShowNow);
+        megaPanel.addEventListener('mouseenter', megaShowNow);
+        navItem.addEventListener('mouseleave', megaHideSoon);
+        megaPanel.addEventListener('mouseleave', megaHideSoon);
+
+        megaTrig.addEventListener('focus', megaShowNow);
         navItem.addEventListener('focusout', function(e){
           if (!navItem.contains(e.relatedTarget) && !megaPanel.contains(e.relatedTarget)) megaHide();
         });
