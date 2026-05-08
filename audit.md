@@ -37,6 +37,35 @@
 
 ## 📓 Journal de session
 
+### 2026-05-08 (suite 5) — Session "Photo Brigitte sur la home + bugs PDP"
+**Contexte** : Arthur signale 3 bugs visuels (double bandeau promo, ATC PDP qui ouvre le panier au lieu d'ajouter, qty input camouflé par hover bleu WC) + transmet la photo finale de Brigitte (jardin, foulard rouge) à intégrer sur la home.
+- [x] **Bug double bandeau promo** : `.announce` dupliqué (un dans le chrome custom + un dans le contenu de la page 21). Masqué via CSS `.entry-content .announce { display:none }` dans `blocksy-child/style.css`.
+- [x] **Bug ATC PDP** : le drawer side-cart capturait tous les clicks `.add_to_cart_button`, même celui de la PDP (qui doit POSTer le form). Fix dans `side-cart-drawer.php` : ajouter `:not(form.cart .single_add_to_cart_button)` au sélecteur du click handler.
+- [x] **Bug qty input PDP** : les boutons +/- WC natifs avaient un hover bleu Blocksy par défaut + le chiffre central était caché derrière. Fix CSS `style.css` : `.qty::-webkit-inner-spin-button { display:none }` + `.quantity .plus, .quantity .minus { background: var(--rigo-cream); border:1px solid var(--rigo-border); &:hover { background:var(--rigo-cream-dark) } }`.
+- [x] **Photo de Brigitte uploadée** : pipeline `local Mac → repo GitHub raw → wp_remote_get serveur WP → wp_upload_bits → WP Media`. Image optimisée (sips qualité 70, 1027×1400, 332 Ko). Attach id=95, URL : https://rigolettres.fr/wp-content/uploads/2026/05/photo-brigitte.jpg
+- [x] **Page home (id=21) patchée** : remplace le bloc `<div class="polaroid-photo polaroid-placeholder">…SVG silhouette…</div>` par `<img src="…/photo-brigitte.jpg" alt="Brigitte Étienne, orthophoniste à Mamers depuis 1978" loading="lazy">`. Caption mise à jour : "Brigitte, dans son jardin".
+- [x] **Cache LiteSpeed purgé** via `do_action('litespeed_purge_all')`.
+- [x] **DOM live confirmé** : la photo apparait, image accessible en 200 OK (293Ko après compression LiteSpeed).
+- [x] **Snippets one-shot d'upload + patch + purge** : auto-désactivés/supprimés par Code Snippets après leur throw final (mécanisme natif "PHP fatal → désactiver snippet").
+- [ ] **Cleanup CSS optionnel** : les classes `.polaroid-placeholder`, `.portrait-stub` ne sont plus utilisées dans le DOM (HTML a été remplacé) mais leur CSS reste dans le bloc style de la home → à nettoyer plus tard si on touche à la page (non bloquant).
+
+### 2026-05-08 (suite 4) — Session "Complianz configuré (bannière cookies RGPD opérationnelle)"
+**Contexte** : Complianz v7.4.6 installé/actif depuis longtemps mais wizard jamais lancé (`cmplz_options = {use_cdb_api: yes}`, le reste vide). On le configure via MCP plutôt que via le wizard interactif wp-admin, puisque la page de privacy est désormais publiée et liée comme `wp_page_for_privacy_policy`.
+- [x] **Snippet 65 (one-shot, désactivé)** : configure Complianz pour profil "ecommerce FR RGPD" :
+  - `purpose=ecommerce`, `regions=eu`, `consenttype=optin` (consentement explicite RGPD)
+  - `cookie_warning_required_eu=yes`, `cookie_warning_required_uk=yes`, `cookie_warning_required_us=no`
+  - `uses_thirdparty_services=yes`, `uses_ad_cookies=no`, `uses_social_media_cookies=no`
+  - `compile_statistics=no` (GTM auto-détecté → catégorie statistics, requiert consent)
+  - `privacy_policy_type=custom` + URL = `/politique-confidentialite/` (page 87)
+  - `cookie_policy_url` aussi pointe vers `/politique-confidentialite/`
+  - `use_categories=no` (bannière simple Accepter / Refuser / Voir les préférences, sans cocher catégories)
+  - `cookie_expiry_functional=365j`, `cookie_expiry_statistics=90j`, `cookie_expiry_marketing=90j`
+  - `thirdparty_services_on_site` = google-fonts, google-tag-manager, woocommerce, stripe, paypal, microsoft-clarity, brevo
+  - `wizard_completed_once=true` + `cmplz_review_status` set
+- [x] **Bannière live confirmée** : DOM front contient `cmplz-cookiebanner`, position `cmplz-bottom-right`, boutons FR `Accepter` / `Refuser` / `Voir les préférences` / `Enregistrer les préférences` / `Gérer le consentement`.
+- [x] **Endpoint REST `/wp-json/complianz/v1/banner` répond** : `{consenttype: "optin", region: "eu", version: "7.4.6"}` ✓ RGPD-conforme.
+- [ ] **Action Arthur (visuel)** : ouvrir https://rigolettres.fr/ en navigation privée → vérifier que la bannière s'affiche bien en bas à droite + tester Accepter/Refuser/Voir les préférences. Si le rendu ne plaît pas (couleurs, position, texte), ajustables via wp-admin → Complianz → Apparence (ou via patch du `cmplz_options`).
+
 ### 2026-05-08 (suite 3) — Session "Pages légales publiées + footer câblé"
 **Contexte** : Brevo OK (test SMTP réussi), Arthur a fait whitelist IP + sender + DNS DKIM/Brevo. On enchaîne sur (a) cleanup snippets, (b) publish des 4 pages légales, (c) câblage liens footer.
 - [x] **4 pages légales passées de draft → publish** (toutes en 200 OK live) :
@@ -332,7 +361,7 @@
 - [ ] **Defer JS non-critique** (WC blocks chargés partout inutilement)
 
 ### 0.8 Accessibilité & RGPD 🟠 P1
-- [ ] **Bannière cookies Complianz** pas configurée (plugin installé mais pas activé)
+- [x] **Bannière cookies Complianz** configurée 2026-05-08 (profil ecommerce FR RGPD, opt-in, banner bas-droite, boutons FR Accepter/Refuser/Préférences, page de privacy = /politique-confidentialite/).
 - [ ] **Alt text sur 100 % images** — 2/11 manquent (détecté audit initial)
 - [ ] **Skip-to-content link** absent
 - [ ] **Focus states clavier** visibles partout (manquent sur CTA custom)
