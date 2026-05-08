@@ -462,29 +462,88 @@ body.woocommerce div.product form.cart{
   gap:12px;
   margin:24px 0 16px;
 }
-body.woocommerce div.product .quantity input.qty{
-  width:80px;
-  padding:14px 8px;
+/* ── Quantity widget PDP — refonte complète ─────────────────────────────
+   Blocksy injecte `.ct-decrease` / `.ct-increase` en `position:absolute`
+   par-dessus l'input → ils chevauchent le chiffre et héritent du hover
+   bleu Blocksy par défaut. On repasse en flex pour aligner [-][input][+]
+   proprement, sans chevauchement, dans la DA Rigolettres. */
+body.woocommerce div.product form.cart .quantity{
+  display:inline-flex !important;
+  align-items:stretch;
+  position:static !important;
+  width:auto !important;
+  padding:0 !important;
+  border-radius:var(--rigo-r-sm);
+  overflow:hidden;
+}
+body.woocommerce div.product form.cart .quantity .ct-decrease,
+body.woocommerce div.product form.cart .quantity .ct-increase{
+  position:static !important;
+  display:inline-flex !important;
+  align-items:center;
+  justify-content:center;
+  width:42px !important;
+  height:auto !important;
+  min-height:46px;
+  background:var(--rigo-cream, #FAF6EC) !important;
+  color:var(--rigo-ink, #2A1D0F) !important;
+  border:1.5px solid var(--rigo-border) !important;
+  cursor:pointer;
+  user-select:none;
+  font-size:18px;
+  font-weight:600;
+  line-height:1;
+  transition:background .15s ease, color .15s ease;
+  margin:0 !important;
+}
+body.woocommerce div.product form.cart .quantity .ct-decrease{
+  border-radius:var(--rigo-r-sm) 0 0 var(--rigo-r-sm);
+  border-right-width:0 !important;
+}
+body.woocommerce div.product form.cart .quantity .ct-increase{
+  border-radius:0 var(--rigo-r-sm) var(--rigo-r-sm) 0;
+  border-left-width:0 !important;
+}
+body.woocommerce div.product form.cart .quantity .ct-decrease::before{
+  content:"−";
+}
+body.woocommerce div.product form.cart .quantity .ct-increase::before{
+  content:"+";
+}
+body.woocommerce div.product form.cart .quantity .ct-decrease:hover,
+body.woocommerce div.product form.cart .quantity .ct-increase:hover,
+body.woocommerce div.product form.cart .quantity .ct-decrease:focus-visible,
+body.woocommerce div.product form.cart .quantity .ct-increase:focus-visible{
+  background:var(--rigo-cream-dark, #ECE3CB) !important;
+  color:var(--rigo-blue, #27B4E5) !important;
+  outline:none;
+}
+body.woocommerce div.product form.cart .quantity input.qty{
+  position:static !important;
+  width:64px !important;
+  padding:12px 6px !important;
   text-align:center;
   font-weight:700;
   font-size:16px;
-  border:1.5px solid var(--rigo-border);
-  border-radius:var(--rigo-r-sm);
+  border:1.5px solid var(--rigo-border) !important;
+  border-radius:0 !important;
   background:#fff;
   /* Cache les spin buttons natifs (chevrons hover bleu Chrome/Safari/Firefox)
      qui camouflent le chiffre et cassent la DA */
   -moz-appearance:textfield;
   appearance:textfield;
 }
-body.woocommerce div.product .quantity input.qty::-webkit-outer-spin-button,
-body.woocommerce div.product .quantity input.qty::-webkit-inner-spin-button{
+body.woocommerce div.product form.cart .quantity input.qty::-webkit-outer-spin-button,
+body.woocommerce div.product form.cart .quantity input.qty::-webkit-inner-spin-button{
   -webkit-appearance:none;
   margin:0;
 }
-body.woocommerce div.product .quantity input.qty:focus{
+body.woocommerce div.product form.cart .quantity input.qty:focus{
   outline:none;
-  border-color:var(--rigo-blue,#27B4E5);
-  box-shadow:0 0 0 3px color-mix(in srgb, var(--rigo-blue,#27B4E5) 18%, transparent);
+  border-color:var(--rigo-blue,#27B4E5) !important;
+  box-shadow:inset 0 0 0 1.5px var(--rigo-blue,#27B4E5);
+  position:relative;
+  z-index:1;
 }
 body.woocommerce div.product form.cart .single_add_to_cart_button{
   flex:1;
@@ -843,7 +902,12 @@ body.home .site-header:not(#site-header){display:none !important;}
   transition:opacity .22s ease, transform .22s ease, visibility 0s;
 }
 
-.mega-inner{
+/* ⚠️ Spécificité forcée via `.mega-panel .mega-inner` : sur la home, le
+   `<style>` inline du contenu Gutenberg (page 21) contient `.container {
+   padding-top: 0 }` qui écrase `.mega-inner { padding-top: 28px }` à
+   spécificité égale (`.mega-inner.container`). Préfixer par `.mega-panel`
+   donne 0,2,0 > 0,1,0 et gagne la cascade. */
+.mega-panel .mega-inner{
   display:grid;
   grid-template-columns:repeat(3,1fr) 240px;
   gap:0 36px;
