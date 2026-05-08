@@ -235,8 +235,14 @@ add_action('wp_footer', function () {
       }
 
       // Open on header cart icon click
+      // ⚠️ Ne JAMAIS matcher `form.cart` (utilisé par WooCommerce sur la fiche
+      // produit autour du bouton "Ajouter au panier"). On restreint donc `.cart`
+      // au pattern `a.cart` (lien) et on exclut tout élément à l'intérieur d'un
+      // `form.cart`. Sinon le clic sur "Ajouter au panier" ouvre le drawer
+      // sans déclencher le submit AJAX → produit jamais ajouté.
       document.addEventListener('click', function(e) {
-        var cartLink = e.target.closest('a[href*="/cart/"], a[href*="/panier/"], .cart, [aria-label*="panier" i], [aria-label*="Panier"]');
+        if (e.target.closest('form.cart')) { return; }
+        var cartLink = e.target.closest('a[href*="/cart/"], a[href*="/panier/"], a.cart, [aria-label*="panier" i], [aria-label*="Panier"]');
         if (cartLink && !cartLink.closest('#rigo-cart-drawer')) {
           e.preventDefault();
           openDrawer();

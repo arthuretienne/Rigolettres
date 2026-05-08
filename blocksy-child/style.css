@@ -471,6 +471,20 @@ body.woocommerce div.product .quantity input.qty{
   border:1.5px solid var(--rigo-border);
   border-radius:var(--rigo-r-sm);
   background:#fff;
+  /* Cache les spin buttons natifs (chevrons hover bleu Chrome/Safari/Firefox)
+     qui camouflent le chiffre et cassent la DA */
+  -moz-appearance:textfield;
+  appearance:textfield;
+}
+body.woocommerce div.product .quantity input.qty::-webkit-outer-spin-button,
+body.woocommerce div.product .quantity input.qty::-webkit-inner-spin-button{
+  -webkit-appearance:none;
+  margin:0;
+}
+body.woocommerce div.product .quantity input.qty:focus{
+  outline:none;
+  border-color:var(--rigo-blue,#27B4E5);
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--rigo-blue,#27B4E5) 18%, transparent);
 }
 body.woocommerce div.product form.cart .single_add_to_cart_button{
   flex:1;
@@ -650,6 +664,8 @@ body.home .site-header:not(#site-header){display:none !important;}
 
 /* Masquer l'ancienne barre promo du contenu de page — remplacée par #rigo-promo-bar */
 .ct-announcement-bar,[data-id="announcement_bar"],.blocksy-announcement-bar{display:none !important;}
+/* Masquer aussi le doublon `.announce` provenant du contenu Gutenberg de la home (page id=21) */
+.announce{display:none !important;}
 
 /* ── Promo bar ── */
 #rigo-promo-bar{
