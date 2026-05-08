@@ -159,11 +159,38 @@ blocksy-child/
 - **CSS** → dans `style.css` (sections numérotées, tokens `--rigo-*` en variables)
 - **Code Snippets** → réservé aux one-shots ponctuels (patch DB, flush, purge) — jamais pour du code permanent
 
-### Déploiement child theme
+### Déploiement child theme — automatique via GitHub → Hostinger
 
-1. Modifier les fichiers localement dans `blocksy-child/`
-2. Uploader via **Hostinger hPanel → File Manager → `public_html/wp-content/themes/blocksy-child/`**
-3. **LiteSpeed → Toolbox → Purge All**
+**Workflow CI** : [.github/workflows/deploy-theme.yml](.github/workflows/deploy-theme.yml) — déclenché à **chaque push sur `main` qui touche `blocksy-child/**`**.
+
+Le job fait :
+1. SSH dans Hostinger via clé déployée (secret `SSH_KEY`, port 65002, user `secrets.SSH_USER`, host `secrets.SSH_HOST`)
+2. `mkdir -p` du dossier distant si absent
+3. `rsync -avz --checksum --delete` du dossier `blocksy-child/` (exclu : `.git`, `README.md`) vers `~/domains/rigolettres.fr/public_html/wp-content/themes/blocksy-child/`
+4. **Purge automatique LiteSpeed** via `POST /wp-json/litespeed/v1/purge/all` (auth basic `secrets.WP_USER` + `secrets.WP_APP_PASS`)
+
+**Procédure côté Claude pour déployer une modif child theme** :
+
+```bash
+# 1. Modifier les fichiers dans blocksy-child/
+# 2. Commit sur la branche de travail
+git add blocksy-child/...
+git commit -m "feat(...): description"
+
+# 3. Merger sur main (qui déclenche le workflow)
+git checkout main
+git merge <branche-de-travail>   # fast-forward si possible
+git push origin main             # ← déclenche deploy-theme.yml + purge LiteSpeed
+git checkout <branche-de-travail>  # retour sur la branche de travail
+```
+
+⚠️ **Aucun upload manuel Hostinger File Manager nécessaire** — le push sur main suffit.
+⚠️ **Pas besoin de Purge All manuelle** — le workflow s'en occupe.
+⏱️ Délai d'effet : ~30-60 secondes après le push (rsync + purge).
+
+**Vérification post-deploy** : visiter https://rigolettres.fr/?nocache=$(date) ou tester l'URL impactée. Le workflow renvoie le code HTTP de la requête de purge dans les Actions GitHub.
+
+**Fichiers hors `blocksy-child/`** (audit.md, CLAUDE.md, questions-en-suspens.md, etc.) ne sont **pas** déployés — ils restent dans le repo pour la doc projet, sans effet sur le site live.
 
 ## Règles de travail pour Claude
 

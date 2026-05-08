@@ -383,11 +383,11 @@ add_action('wp_footer', function () {
         </div>
         <div class="footer-col">
           <h4>Infos pratiques</h4>
-          <a href="<?php echo esc_url(rigo_home_url('livraison')); ?>">Livraison &amp; retours</a>
+          <a href="<?php echo esc_url(home_url('/livraison-retours/')); ?>">Livraison &amp; retours</a>
           <a href="<?php echo esc_url(home_url('/mon-compte/')); ?>">Mon compte</a>
-          <a href="<?php echo esc_url(home_url('/conditions-generales-de-vente/')); ?>">CGV</a>
+          <a href="<?php echo esc_url(home_url('/cgv/')); ?>">CGV</a>
           <a href="<?php echo esc_url(home_url('/mentions-legales/')); ?>">Mentions légales</a>
-          <a href="<?php echo esc_url(get_privacy_policy_url() ?: home_url('/politique-de-confidentialite/')); ?>">Confidentialité</a>
+          <a href="<?php echo esc_url(get_privacy_policy_url() ?: home_url('/politique-confidentialite/')); ?>">Confidentialité</a>
         </div>
       </div>
       <div class="container footer-bottom">

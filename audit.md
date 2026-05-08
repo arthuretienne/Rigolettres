@@ -3,7 +3,7 @@
 > **Fichier source** pour suivre la progression du site vers le niveau "e-commerce premium 50 k€".
 > Toute session Claude **doit lire ce fichier au démarrage** et **le mettre à jour** dès qu'une feature est livrée (cocher les cases, ajouter une ligne au journal).
 
-**Dernière mise à jour :** 2026-04-26 (sprint 9 — mega-menu + multi-pages + child theme règle absolue dans CLAUDE.md)
+**Dernière mise à jour :** 2026-05-08 (passe d'audit live + 1ère vague réponses Brigitte : SIRET / ADELI / adresses / tél / email / photo portrait débloqués)
 **Score actuel estimé :** ~63 % du niveau "agence 50 k€" _(+3 pts grâce au catalogue passé de 5 à 14 SKU, à la cohérence "Brigitte Étienne · depuis 1978" propagée partout, et à la page À propos qui passe de 793 à ~1500 mots)_
 **Volet DA séparé :** voir [auditv2.md](auditv2.md) pour le plan refonte typo / photos / fiche produit premium / motion / chrome WC.
 **Benchmarks référence :** Respire, Les Raffineurs, Michel & Augustin, Maison du Pastel, Typology, Mangez et Relaxez (DTC FR fort taux de conversion) + Shopify Premier (Allbirds, Rothy's, Oura).
@@ -36,6 +36,77 @@
 ---
 
 ## 📓 Journal de session
+
+### 2026-05-08 (suite 3) — Session "Pages légales publiées + footer câblé"
+**Contexte** : Brevo OK (test SMTP réussi), Arthur a fait whitelist IP + sender + DNS DKIM/Brevo. On enchaîne sur (a) cleanup snippets, (b) publish des 4 pages légales, (c) câblage liens footer.
+- [x] **4 pages légales passées de draft → publish** (toutes en 200 OK live) :
+  - https://rigolettres.fr/mentions-legales/ (id=85)
+  - https://rigolettres.fr/cgv/ (id=86)
+  - https://rigolettres.fr/politique-confidentialite/ (id=87)
+  - https://rigolettres.fr/livraison-retours/ (id=88)
+- [x] **wp_page_for_privacy_policy = 87** : configuré via snippet 64 (one-shot, désactivé). `get_privacy_policy_url()` renvoie maintenant l'URL de la page 87. Bonus : Complianz utilisera cette page pour générer son lien "Politique de confidentialité" dans la bannière cookies.
+- [x] **Footer câblé** : `blocksy-child/includes/universal-header-footer-chrome.php` édité (lignes 386-390) : `rigo_home_url('livraison')` (ancre #livraison) → `home_url('/livraison-retours/')`, `/conditions-generales-de-vente/` → `/cgv/`, `/politique-de-confidentialite/` → `/politique-confidentialite/` (slug réel des pages).
+- [!] **Action Arthur (déploiement child theme)** : uploader `blocksy-child/includes/universal-header-footer-chrome.php` via **Hostinger hPanel → File Manager → public_html/wp-content/themes/blocksy-child/includes/** + **LiteSpeed → Toolbox → Purge All**. Sans cet upload, les liens footer pointent encore sur l'ancienne URL `/conditions-generales-de-vente/` (404).
+- [-] **Suppression snippets one-shot 60/62/63** : tentée via DELETE /code-snippets/v1/snippets/{id} → bloquée côté plugin (`rest_cannot_delete`). Snippets toujours désactivés mais pas supprimés. Action Arthur si propreté DB voulue : wp-admin → Code Snippets → cocher 60/62/63/64 → "Supprimer en masse".
+
+### 2026-05-08 (suite 2) — Session "WP Mail SMTP → Brevo configuré (bloqué whitelist IP)"
+**Contexte** : Arthur a créé compte Brevo + alias forward `contact@rigolettres.fr` (Hostinger) qui fonctionne, transmis la clé API Brevo. WP Mail SMTP v4.8.0 déjà installé/actif sur le site.
+- [x] **Snippet 60 (one-shot, désactivé après run)** : configure `wp_options['wp_mail_smtp']` avec mailer=`sendinblue`, api_key Brevo, from_email=`contact@rigolettres.fr`, from_name=`Rigolettres`, from_email_force=true, from_name_force=true. Aligne aussi `woocommerce_email_from_name` et `woocommerce_email_from_address`. Code_error=null → exécution OK.
+- [x] **Snippet 62 (diag, désactivé)** : test wp_mail() avec capture du hook `wp_mail_failed` → erreur Brevo précise capturée.
+- [x] **Snippet 63 (reset flags, désactivé)** : reset des `rigol_smtp_*_done` pour pouvoir retester après l'action Brevo d'Arthur.
+- [!] **DIAG** : Brevo refuse l'appel API depuis l'IP du serveur Hostinger : `unauthorized: We have detected you are using an unrecognised IP address 2a02:4780:27:1440:0:382b:b67b:1`. Lien fourni par Brevo pour gérer le whitelist : https://app.brevo.com/security/authorised_ips
+- [x] **Whitelist IP Brevo** + **validation sender contact@rigolettres.fr** : faits par Arthur 2026-05-08.
+- [x] **Test SMTP bout-à-bout RÉUSSI** : snippet 62 relancé après whitelist → `SUCCESS! mail sent. mailer=sendinblue` → email parti vers arthur.etienne@optimize-matter.com via Brevo.
+- [x] **DKIM Brevo** ajoutés dans DNS Hostinger : `brevo1._domainkey` + `brevo2._domainkey` ✓
+- [x] **DKIM Hostinger Mail** ajoutés (3 records) : OK pour les mails sortants depuis @rigolettres.fr via mail Hostinger ✓
+- [x] **Brevo verification TXT** `brevo-code:793ea97c7e5e32fad4299ed2ac06ab2a` ✓
+- [!] **DNS À CORRIGER côté Arthur** :
+  - **SPF actuel** = `v=spf1 include:_spf.mail.hostinger.com ~all` n'inclut pas Brevo → mails Brevo en SPF=fail. À éditer (1 seul record SPF max) : `v=spf1 include:_spf.mail.hostinger.com include:spf.brevo.com ~all`.
+  - **DMARC en double** : 2 records `_dmarc` posés. Supprimer `"v=DMARC1; p=none"` et garder `"v=DMARC1; p=none; rua=mailto:rua@dmarc.brevo.com"`.
+- [ ] **Action Claude (à venir)** : supprimer définitivement les snippets one-shot 60/62/63 du site (déjà inactifs mais à clean).
+- [ ] **Action Claude (à venir)** : templates HTML brandés des emails WC (confirmation commande, expédition, facture).
+
+### 2026-05-08 (suite) — Session "Données produits Brigitte + 4 pages légales en draft"
+**Contexte** : Brigitte transmet via photo manuscrite les poids exacts + stocks réels des 5 produits "en propre" (R1/R2/R3/G1/G2). Les 5 Rigoloverbes et 4 packs n'y sont pas (à demander dans la suite). Une "boîte mixte" supplémentaire (13 R1 + 7 R2 + 5 R3) à ajouter au stock principal.
+- [x] **Stock + poids + dimensions des 5 produits patchés via REST WC** :
+  - **R1 (id=28)** : 230g · 15×9×3 cm · stock 83 (70 + 13 boîte mixte)
+  - **R2 (id=29)** : 282g · 15×9×3 cm · stock 77 (70 + 7)
+  - **R3 (id=75)** : 280g · 15×9×3 cm · stock 74 (69 + 5)
+  - **Grammaire 1 (id=31)** : 427g · 29.7×21×1 cm · stock 15
+  - **Grammaire 2 (id=32)** : 604g · 29.7×21×1.4 cm · stock 36
+  - ⚠️ **Épaisseurs estimées** (boîtes 3cm, livres 1cm) — Brigitte n'a pas donné l'épaisseur. À mesurer avec une règle pour précision Boxtal optimale.
+- [x] **4 pages légales créées en draft** (avec SIRET/ADELI/adresses Brigitte) :
+  - **Mentions légales** (id=85, slug `mentions-legales`) : éditeur + hébergeur Hostinger + propriété intellectuelle + médiation conso
+  - **CGV** (id=86, slug `cgv`) : 13 articles — objet, vendeur, produits, commande, prix (TVA non applicable art. 293 B), paiement, livraison, rétractation 14j étendu 30j, garanties légales, médiation, droit applicable
+  - **Politique de confidentialité** (id=87, slug `politique-confidentialite`) : RGPD complète, 9 sections — responsable, données, finalités, base légale, conservation, cookies, destinataires, droits, CNIL
+  - **Livraison & Retours** (id=88, slug `livraison-retours`) : préparation 48h, Mondial Relay 4,90 €/Colissimo 6,90 €, offert dès 60 €, retour 30j, adresse retour St Rémy
+- [!] **Action Arthur** : relire les 4 pages → publier dès validation Brigitte → câbler les liens du footer ("Infos pratiques") sur ces nouvelles URL au lieu de `#`.
+- [!] **Action Brigitte** : transmettre RIB pro (KYC Stripe + PayPal + Boxtal) + poids/stock des 5 Rigoloverbes + 4 packs + ISBN livres + mesurer épaisseur boîtes/livres.
+- [ ] **Action restante Claude** : brancher WP Mail SMTP + Brevo (en attente clé API Brevo gratuit < 300 mails/jour) + créer alias forward `contact@rigolettres.fr` (Hostinger hPanel, à faire par Arthur car nécessite login admin Hostinger non MCP).
+
+### 2026-05-08 — Session "Passe d'audit live + 1ère vague réponses Brigitte"
+**Contexte** : reprise après 12 jours, Arthur demande un point publication. J'ai croisé l'audit avec l'état réel du site live. Brigitte a transmis dans la foulée la 1ère batterie d'infos juridiques + photos perso → débloque mentions légales, CGV, Stripe.
+- [x] **Audit live** : vérifié 18 URLs publiques. Pages pilier SEO live ✓ (8 pages). Page `/a-propos/` ✓ avec "Brigitte Étienne" + "depuis 1978". Catalogue 14 SKU ✓. Meta title/description/OG home ✓.
+- [!] **CONSTAT BLOQUANTS LIVE** :
+  - `/mentions-legales/`, `/cgv/`, `/politique-confidentialite/`, `/livraison/`, `/retours-et-remboursements/` → **toutes 404**
+  - `/contact/` et `/blog/` → **404 alors qu'ils sont dans le menu header**
+  - `<meta robots>` = `noindex, nofollow` toujours en place sur la home
+  - Aucun bandeau cookies Complianz visible dans le DOM
+  - Liens footer "Infos pratiques" pointent en `#`
+  - Aucune fiche produit /produit/{slug}/ accessible (testé pato → 404, le permalien n'est pas /produit/)
+- [x] **Infos juridiques reçues de Brigitte** (sauvegardées dans memory `project_brigitte_legal.md`) :
+  - **SIRET** : 31425303000055 (SIRET orthophoniste — pas de Rigolettres dédié, vente en accessoire de l'activité libérale)
+  - **ADELI** : 72 9 100 180
+  - **Forme** : profession libérale BNC ; **non assujettie TVA** (mention obligatoire factures « TVA non applicable, art. 293 B du CGI »)
+  - **Cabinet pro** : Maison Médicale Maine Saosnois, Place Caillaux, 72600 Mamers
+  - **Siège / domicile** : 14 chemin de la Cour du Bois, 72600 St Rémy des Monts
+  - **Tél** : 06 80 40 96 18
+  - **Email** : b.etienne.camillerapp@wanadoo.fr
+  - **Photo portrait** : 3 clichés HEIC reçus (jardin, lumière naturelle) — à copier dans `ressources/Site rigolettres/Photos Rigolettres/Brigitte/` puis convertir WebP/JPG.
+- [x] **questions-en-suspens.md mis à jour** : section 1 (entreprise) entièrement cochée, section 7 (contact) cochée, récap final reformulé.
+- [ ] **Action Arthur** : copier les 3 photos HEIC depuis Messages/Attachments vers `ressources/Site rigolettres/Photos Rigolettres/Brigitte/` (sandbox m'empêche d'y accéder directement).
+- [ ] **Action Arthur** : décider email boutique (garder wanadoo OU créer `contact@rigolettres.fr` redirigé — recommandé).
+- [ ] **Reste bloquant** : prix/poids/dim/stock définitifs · compte Boxtal · création comptes Stripe + PayPal · logo vectoriel HD (demande Auffret-Plessix).
 
 ### 2026-04-26 — Session "Sprint 9 — Mega-menu + multi-pages + child theme"
 **Contexte** : l'audit v2 demande un mega-menu "Boutique" 4 colonnes + navigation vers de vraies pages (pas des ancres home). CLAUDE.md mis à jour pour imposer le child theme comme source de vérité du code (plus de Code Snippets permanents).
@@ -191,12 +262,12 @@
 > **Réalité cash** : on est à ~55 %, pas 75 %. Un site 50 k€ **vend**, **convertit**, **convainc**, **est trackable**. Aujourd'hui il fait un peu mieux que ça mais il manque les briques business. Voici les vrais blockers, classés par ordre de criticité.
 
 ### 0.1 Business mort-né (sans ça on ne vend pas) 🔴 P0
-- [ ] **Paiement actif** — Stripe + PayPal inactifs (bloqué SIRET). Sans ça zéro transaction possible. _(bloqueur n°1 absolu)_
-- [ ] **Livraison configurée** — Boxtal Connect installé mais aucun tarif saisi. Checkout ne peut pas calculer les frais de port.
-- [ ] **Pages légales publiées** — CGV, mentions légales, politique de confidentialité, rétractation : **toutes en draft ou inexistantes**. Illégal de vendre sans.
+- [-] **Paiement actif** — Stripe + PayPal inactifs (en attente RIB Brigitte ; SIRET ✓ depuis 2026-05-08). _(bloqueur n°1 absolu)_
+- [ ] **Livraison configurée** — Boxtal Connect installé mais aucun tarif saisi. Checkout ne peut pas calculer les frais de port. Compte Boxtal à créer.
+- [x] **Pages légales publiées** 2026-05-08 (mentions 85, CGV 86, confidentialité 87, livraison-retours 88) avec SIRET/ADELI/adresses Brigitte. URLs live, liens footer câblés (en attente upload child theme).
 - [ ] **Facture PDF automatique** — plugin `WooCommerce PDF Invoices & Packing Slips` pas installé. Obligatoire fiscalement.
-- [ ] **Email transactionnels HTML custom** — emails WooCommerce par défaut (basique, non brandé). Arrive dans spam souvent.
-- [ ] **SIRET + ADELI + téléphone Brigitte + adresse** — info manquante (cf. `questions-en-suspens.md`). Bloque les mentions légales + Stripe + facturation.
+- [~] **Email transactionnels HTML custom** — WP Mail SMTP → Brevo opérationnel 2026-05-08 (test bout-à-bout réussi). Reste : (1) corriger SPF + DMARC côté DNS Hostinger pour éviter spam, (2) brander templates HTML WC.
+- [x] **SIRET + ADELI + téléphone Brigitte + adresses** — reçus 2026-05-08 (cf. memory `project_brigitte_legal.md`).
 
 ### 0.2 Crédibilité e-commerce 50k€ 🔴 P0
 - [ ] **Reviews produit vérifiés** — zéro avis affiché. Judge.me à installer (gratuit, 10 min). Sans reviews → - 30 % conversion.
