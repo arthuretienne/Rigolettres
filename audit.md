@@ -37,6 +37,17 @@
 
 ## 📓 Journal de session
 
+### 2026-05-08 (suite 6) — Hotfix "Hero invisible (SyntaxError JS apostrophe non échappée)"
+**Symptôme** : Arthur signale "la hero section a sauté, y'a plus rien d'affiché". Vérification au browser : DOM hero présent dans le HTML mais tous les éléments restent à `opacity:0` (les `[data-reveal]` ne reçoivent jamais `.is-visible`).
+**Cause racine** : Console JS du browser → `Uncaught SyntaxError: Unexpected identifier 'ajouter'` à la ligne du `<script>` inline du contenu Gutenberg de la page 21. L'apostrophe non échappée dans `message: 'Impossible d'ajouter ce produit. Réessayez.'` ferme la chaîne JS prématurément → **tout** le bloc script plante au parse → le IIFE qui pose `.is-visible` sur les éléments hero ne tourne jamais → hero entièrement invisible.
+- [x] **Diagnostic via MCP Chrome** : `read_console_messages` a remonté l'erreur exacte avec ligne/colonne. Sans ça aurait été indétectable côté serveur (le HTML est valide, c'est l'exécution browser qui plante).
+- [x] **Fix v1 (échappement `\'`) écrasé par wp_update_post** — les filtres de save ont nettoyé le backslash.
+- [x] **Fix v2 réussi** : on garde la chaîne FR avec son apostrophe, on entoure de **double quotes JS** (`message: "Impossible d'ajouter ce produit. Réessayez.",`). Plus robuste, lisible, et intouchable par les filtres WP.
+  - Vérif post-patch : `still_buggy=no, has_fix=yes` ; HTML servi confirme le fix ; aucune erreur console au reload.
+- [x] **Cache LiteSpeed purgé** via `do_action('litespeed_purge_all')` + `do_action('litespeed_purge_post', 21)`.
+- [x] **Vérif visuelle browser** : hero affichée — kicker, titre Apprendre à lire en s'amusant, sous-titre, CTAs, trust badges, hero-stage avec Pato/soleil/nuages/colline/bulle Bienvenue.
+- [ ] **Bonus à faire** : le sous-titre de la home contient encore "Brigitte Étienne-Camillerapp" et "25 ans d'orthophonie" — non cohérent avec la correction sprint 8 qui a remplacé partout par "Brigitte Étienne · depuis 1978". À patcher dans le post_content de la page 21.
+
 ### 2026-05-08 (suite 5) — Session "Photo Brigitte sur la home + bugs PDP"
 **Contexte** : Arthur signale 3 bugs visuels (double bandeau promo, ATC PDP qui ouvre le panier au lieu d'ajouter, qty input camouflé par hover bleu WC) + transmet la photo finale de Brigitte (jardin, foulard rouge) à intégrer sur la home.
 - [x] **Bug double bandeau promo** : `.announce` dupliqué (un dans le chrome custom + un dans le contenu de la page 21). Masqué via CSS `.entry-content .announce { display:none }` dans `blocksy-child/style.css`.
