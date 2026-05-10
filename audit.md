@@ -3,7 +3,7 @@
 > **Fichier source** pour suivre la progression du site vers le niveau "e-commerce premium 50 k€".
 > Toute session Claude **doit lire ce fichier au démarrage** et **le mettre à jour** dès qu'une feature est livrée (cocher les cases, ajouter une ligne au journal).
 
-**Dernière mise à jour :** 2026-05-08 (suite 8 bis — 10/16 items du backlog Arthur livrés en un sprint : sticky renforcé, favicon Pato, contraste footer, newsletter input, 60 € insécable, marges desktop, bordure CTA bleus, page contact, one-shot tirets cadratins, bloc presse masqué par défaut)
+**Dernière mise à jour :** 2026-05-10 (sprint 9 — backlog Arthur 16/16 traités. Plugins facture PDF + Customer Reviews installés/configurés, emails WC paramétrés aux couleurs Rigolettres, refonte CSS complète page /shop avec hero + filtres pills + grid renovée, audit photos produit chiffré.)
 **Score actuel estimé :** ~63 % du niveau "agence 50 k€" _(+3 pts grâce au catalogue passé de 5 à 14 SKU, à la cohérence "Brigitte Étienne · depuis 1978" propagée partout, et à la page À propos qui passe de 793 à ~1500 mots)_
 **Volet DA séparé :** voir [auditv2.md](auditv2.md) pour le plan refonte typo / photos / fiche produit premium / motion / chrome WC.
 **Benchmarks référence :** Respire, Les Raffineurs, Michel & Augustin, Maison du Pastel, Typology, Mangez et Relaxez (DTC FR fort taux de conversion) + Shopify Premier (Allbirds, Rothy's, Oura).
@@ -36,6 +36,67 @@
 ---
 
 ## 📓 Journal de session
+
+### 2026-05-10 (sprint 9) — ✅ BACKLOG Arthur 16/16 traités, sprint 9 closes the loop
+
+> Continuation directe du sprint 8 (10/16 livrés) : on enchaîne les 5 gros items + audit photos. **Tout le backlog Arthur du 2026-05-08 est traité.** Reste 1 sujet exécutif (shooting photo SKU sans visuel) qui est hors-code.
+
+**✅ Livré sprint 9** (mêmes commit + push CI auto-deploy)
+
+*Plugins / WordPress*
+- [x] 🟠 **Item 8 — Plugin facture PDF**
+  Installé + activé : *PDF Invoices & Packing Slips for WooCommerce* (WP Overnight, v5.11.0, leader open-source). Configuration via [_oneshot-config-plugins-sprint9.php](blocksy-child/includes/_oneshot-config-plugins-sprint9.php) :
+  - Numérotation `RIGO-{YYYY}-0001` (séquentielle, reset annuel)
+  - Auto-attach aux emails `customer_processing_order` + `customer_completed_order` + `customer_invoice`
+  - Adresse en-tête : Brigitte Étienne · Rigolettres · 14 chemin de la Cour du Bois 72600 Saint-Rémy-des-Monts (siège) + Cabinet Maison Médicale Mamers
+  - Pied de page : SIRET 314 253 030 00055, ADELI 72 9 100 180, "TVA non applicable, art. 293 B du CGI", médiateur conso
+  - Bouton "Télécharger la facture" disponible dans Mon compte
+  - Bons de livraison aussi activés (utiles pour Brigitte côté expédition)
+  **Reste à faire (wp-admin)** : uploader un logo HD pour l'en-tête PDF (actuellement texte seul) → WC → PDF Invoices → Customize → Shop logo.
+- [x] 🟠 **Item 9 — Plugin reviews** (alternative Judge.me)
+  ⚠️ **Judge.me a abandonné WooCommerce en août 2025** (plugin fermé sur wp.org, comptes en suppression — voir [reviews wp.org](https://wordpress.org/plugins/judgeme-product-reviews-woocommerce/)). Bascule sur **Customer Reviews for WooCommerce** par CusRev (v5.108.0, free tier illimité). Config via le même one-shot :
+  - Relance email auto J+7 après statut "completed"
+  - From : `Rigolettres <contact@rigolettres.fr>`, sujet "Comment se passe la lecture avec votre jeu Rigolettres ?"
+  - Q&A activé, photos d'avis activées, consentement RGPD activé
+  - Texte du formulaire : "Votre avis aide d'autres parents et orthophonistes à choisir le bon jeu."
+  - Coupon de remerciement : désactivé (Brigitte décidera plus tard)
+  **Reste à faire** : créer un compte CusRev (optionnel, free) pour synchroniser les avis avec leur catalogue inter-sites.
+
+*Emails WooCommerce*
+- [x] 🟠 **Item 7 — Templates emails WC aux couleurs Rigolettres**
+  Configuration via le même one-shot. Pas d'override de templates (lourd, casse les updates) — on agit uniquement sur les options WC :
+  - `email_base_color` = `#5C8E2E` (vert, header band)
+  - `email_background_color` = `#FBF8F1` (cream, fond extérieur)
+  - `email_body_background_color` = `#FFFFFF` (paper)
+  - `email_text_color` = `#2A1D0F` (ink)
+  - `email_header_image` = PNG Pato `/wp-content/uploads/2026/04/logo-pato-provisoire.png`
+  - `email_footer_text` = signature complète (Rigolettres + Brigitte · orthophoniste à Mamers depuis 1978 + lien site + email contact + SIRET + mention TVA)
+  **Reste à faire (wp-admin)** : tester avec une commande réelle (passer un test de paiement Stripe en mode test, vérifier le rendu de l'email). Si besoin custom plus avancé (typo Fraunces dans le H1, mascottes Pato dans le banner), créer un override `blocksy-child/woocommerce/emails/email-header.php` au sprint suivant.
+
+*Refonte page /shop*
+- [x] 🔴 **Items 5 + 16 — Page /shop redesignée**
+  Approche : **pas d'override de templates WC** (lourd, casse les updates). On combine :
+  1. PHP léger dans [shop-archive-redesign.php](blocksy-child/includes/shop-archive-redesign.php) qui hook `woocommerce_before_main_content` pour injecter un **hero éditorial** (eyebrow script + H1 serif + sous-titre Brigitte + filtres catégorie en pills + trust micro-row livraison/48h/orthophoniste) ; ajoute un **eyebrow "niveau scolaire"** sur chaque card via `woocommerce_before_shop_loop_item_title` ; remplace le texte "Ajouter au panier" par "Ajouter" (plus court, plus parlant en card) ; masque le tri WC default + le compteur "X résultats".
+  2. Section CSS `15. SHOP — refonte` dans [style.css](blocksy-child/style.css) (~250 lignes) qui :
+     - Hero avec gradient cream-warm → cream + 2 radial gradients d'accent (vert + sky)
+     - Filtres pills pivotants au hover (translate Y -1px + bordure verte)
+     - Grid `repeat(auto-fill, minmax(260px, 1fr))` avec gap 24px
+     - Cards : ratio 1:1 image, hover qui lift de 4px + ombre L + bordure verte, image `object-fit:contain` avec padding 18px (pour ne pas crop les packagings rectangulaires des jeux)
+     - Placeholder Pato semi-transparent en background des cards sans photo (élégant fallback en attendant le shooting)
+     - Titre serif Fraunces, prix sans-serif gras, CTA bleu pill full-width avec ombre bleue
+     - Mobile : grid 2 colonnes, padding réduit, fonts ajustés
+  **Reste à faire** : tester en live après deploy, observer les overrides Blocksy persistants éventuels (selectors plus spécifiques à ajouter), ajouter un dropdown de tri custom (par prix / par âge / nouveautés) si besoin.
+
+*Photos produit*
+- [x] 🔴 **Item 6 — Audit photos produit**
+  Audit fait via REST API WC : **1/10 produits a une image** (ID 32 "Grammaire Niveau 2" — `IMG_7938.jpg`). Les 9 autres SKU vérifiés (75, 76, 77, 78, 79, 80, 81, 82, 83) sont **sans photo** (`images: []`). Restent à vérifier 28, 29, 30, 31 (anciens SKU historiques) — `_fields` n'a pas filtré la réponse REST, à inspecter manuellement via wp-admin.
+  **Mitigation immédiate** : la refonte CSS shop (item 5/16) injecte un placeholder Pato élégant sur les cards sans photo (background opacity 18%, taille 80px, centré) pour éviter les vides moches. Pas de "no image" générique WC.
+  **Reste à faire (hors code)** :
+  1. Brigitte/Arthur planifient un **shooting dédié** des 13+ packagings (fond crème uni, lumière naturelle, 4-5 angles : couverture + dos + intérieur + détail mascotte + pile/empilement). Cf. CLAUDE.md "la plupart devront être refaites".
+  2. Les fichiers HEIC actuels dans `ressources/Site rigolettres/Photos Rigolettres/` peuvent dépanner si convertis (sips → WebP/JPG, max 1600px, < 300 Ko).
+  3. Une fois les visuels propres dispo, batch upload via REST `/wp/v2/media` puis associer en `featured_image` + `gallery` via `/wc/v3/products/{id}` PATCH.
+
+---
 
 ### 2026-05-08 (suite 8 bis) — ✅ BACKLOG Arthur 10/16 livrés en un sprint
 
