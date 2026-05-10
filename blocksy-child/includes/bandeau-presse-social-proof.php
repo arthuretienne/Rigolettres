@@ -26,6 +26,17 @@ if (!defined('ABSPATH')) exit;
 // ── 1. Bandeau presse (home + fiches produit) ─────────────────────────────
 add_action('wp_footer', function () {
     if (!is_front_page() && !is_product()) return;
+
+    /*
+     * Sprint 8 (2026-05-08) — Arthur a flagué ce bloc comme "à modifier / à
+     * enlever". Tant qu'on n'a pas tranché entre "vraies parutions presse
+     * cliquables avec logos hauts" vs "suppression complète", on rend le bloc
+     * désactivable via filter sans toucher au reste du fichier.
+     *
+     * Pour le réactiver : add_filter('rigo_press_bar_visible', '__return_true');
+     * Par défaut : MASQUÉ (décision sprint 8).
+     */
+    if (!apply_filters('rigo_press_bar_visible', false)) return;
     ?>
     <div class="rigo-press-bar" role="complementary" aria-label="Rigolettres dans la presse">
         <span class="rigo-press-label">Ils en parlent</span>

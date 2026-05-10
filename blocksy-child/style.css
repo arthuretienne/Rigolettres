@@ -1212,6 +1212,477 @@ body.mobile-menu-open{overflow:hidden;}
 .site-footer img, .site-header img{max-width:100%; height:auto;}
 
 /* ===========================================================
+   14. SPRINT 8 — backlog visuel Arthur (2026-05-08 suite 8)
+   Fixes regroupés : sticky robuste, contraste footer, newsletter input,
+   wrap "60 €", marges desktop pages contenu, bordure CTA bleus.
+   =========================================================== */
+
+/* --- 14.1 Sticky header robuste ---
+   `position:sticky` casse si un ancêtre a `overflow:hidden|auto|scroll`.
+   En complément du sticky existant (section 11), on fournit un fallback
+   `position:fixed` activé via la classe `html.rigo-header-fixed` que le
+   JS sticky peut poser si le sticky ne tient pas. La règle ci-dessous
+   est inerte par défaut — actif uniquement quand la classe est ajoutée. */
+html.rigo-header-fixed .site-header,
+html.rigo-header-fixed #site-header{
+  position:fixed !important;
+  top:0; left:0; right:0;
+  z-index:500;
+}
+html.rigo-header-fixed body{
+  padding-top:var(--rigo-hdr-h, 73px);
+}
+
+/* Ceinture/bretelles : forcer le sticky du header injecté contre tout
+   override Blocksy/Customizer arrivant après. */
+header#site-header.site-header,
+header.site-header--injected{
+  position:sticky !important;
+  top:0 !important;
+  z-index:500 !important;
+}
+
+/* --- 14.2 Footer — contraste WCAG AA ---
+   Avant : rgba(255,255,255,.55) sur fond ink (≈ ratio 4.0 < 4.5 AA).
+   Après : .82 sur les liens et footer-bottom (~6.5 ratio). */
+.site-footer .footer-col a{
+  color:rgba(255,255,255,.82) !important;
+}
+.site-footer .footer-bottom,
+.site-footer .footer-bottom p{
+  color:rgba(255,255,255,.82) !important;
+}
+.site-footer .footer-address{
+  color:rgba(255,255,255,.78) !important;
+}
+.site-footer .footer-brand p{
+  color:rgba(255,255,255,.88) !important;
+}
+
+/* --- 14.3 Newsletter popup — input visible quand on tape ---
+   Le placeholder est gris, mais sans `color` explicite sur l'input, le
+   texte saisi héritait d'une règle parent qui le rendait blanc sur fond
+   crème (illisible). Force ink + background paper. */
+#rigo-popup .rigo-popup-form input[type=email],
+.rigo-popup-form input[type=email],
+#rigo-popup-form input[type=email]{
+  color:var(--rigo-ink) !important;
+  background:#fff !important;
+  -webkit-text-fill-color:var(--rigo-ink) !important;
+  caret-color:var(--rigo-ink);
+}
+#rigo-popup .rigo-popup-form input[type=email]::placeholder{
+  color:var(--rigo-muted) !important;
+  opacity:1;
+}
+
+/* Couvre aussi les éventuels champs newsletter intégrés au footer
+   (si un module newsletter footer est ajouté plus tard). */
+.site-footer input[type=email],
+.site-footer input[type=text]{
+  color:var(--rigo-ink) !important;
+  background:#fff !important;
+  -webkit-text-fill-color:var(--rigo-ink) !important;
+}
+
+/* --- 14.4 "60 €" / "60€" insécables ---
+   Empêche le wrap entre le chiffre et le symbole € sur les libellés
+   livraison gratuite. On force un white-space:nowrap sur les labels
+   typés, en complément du `&nbsp;` injecté côté PHP. */
+.rigo-promo-bar,
+.rigo-promo-bar span,
+.rigo-trust-item strong,
+.rigo-drawer-shipping-note,
+.rigo-ship-free-eligible,
+.rigo-ship-threshold,
+.rigo-shipbar-msg{
+  white-space:normal;
+}
+.rigo-promo-bar .nowrap,
+.rigo-trust-item .nowrap,
+.rigo-shipbar-msg .nowrap{
+  white-space:nowrap;
+}
+
+/* --- 14.5 Marges/padding desktop pages contenu ---
+   Les pages article/contenu (À propos, Méthode, légales…) étaient
+   resserrées contre les bords sur desktop. On élargit le padding latéral
+   et on plafonne la largeur de lecture à ~760px pour le confort de
+   lecture (typo Fraunces/Nunito en mesure 60-72 caractères). */
+.entry-content,
+.page-content,
+.ct-container .entry-content,
+body.page:not(.home):not(.woocommerce-page) .entry-content,
+body.single-post .entry-content{
+  max-width:760px;
+  margin-left:auto;
+  margin-right:auto;
+  padding-left:clamp(20px, 4vw, 40px);
+  padding-right:clamp(20px, 4vw, 40px);
+}
+@media (min-width:1100px){
+  body.page:not(.home):not(.woocommerce-page) .entry-content,
+  body.single-post .entry-content{
+    padding-left:48px;
+    padding-right:48px;
+  }
+}
+/* Ne s'applique pas au shop ni à la fiche produit (qui ont leur layout
+   2 colonnes natif WooCommerce). */
+body.woocommerce-page .entry-content,
+body.archive .entry-content,
+body.single-product .entry-content{
+  max-width:none;
+}
+
+/* --- 14.6 CTA bleus — pas de bordure verte ---
+   Override des règles Blocksy / focus / hover qui peuvent ajouter un
+   `border-color:var(--rigo-green)` sur les boutons bleus secondaires
+   (cas vu sur formulaires WPForms et boutons WP block style "secondary"). */
+.btn-secondary,
+.btn-secondary:hover,
+.btn-secondary:focus,
+.btn-secondary:focus-visible,
+.rigo-cta--secondary,
+.rigo-cta--secondary:hover,
+.rigo-cta--secondary:focus,
+.wp-block-button.is-style-secondary .wp-block-button__link,
+.wpforms-form button[type=submit],
+.wpforms-form input[type=submit]{
+  border-color:var(--rigo-sky) !important;
+  box-shadow:0 6px 18px rgba(30,159,203,.25) !important;
+}
+.btn-secondary:focus-visible,
+.rigo-cta--secondary:focus-visible{
+  outline:3px solid rgba(30,159,203,.35);
+  outline-offset:2px;
+  /* Pas de halo vert au focus sur un CTA bleu */
+  box-shadow:0 6px 18px rgba(30,159,203,.30) !important;
+}
+
+/* Couvre aussi la couleur de halo focus globale qui posait un anneau
+   vert autour des boutons bleus (cf. section 9 input:focus). On force
+   un halo bleu uniquement sur les CTAs bleus, sans toucher au focus
+   des inputs (qui restent vert pour signaler la saisie active). */
+button.btn-secondary:focus,
+a.btn-secondary:focus,
+button.rigo-cta--secondary:focus,
+a.rigo-cta--secondary:focus{
+  outline:none;
+  box-shadow:0 0 0 3px rgba(30,159,203,.30) !important;
+}
+
+/* ===========================================================
+   15. SHOP — refonte page /shop (sprint 9, 2026-05-10)
+   Hero éditorial + filtres pills + grid 3 col + cards rénovées.
+   Cf. includes/shop-archive-redesign.php pour le HTML PHP.
+   =========================================================== */
+
+/* --- 15.1 Hero shop --- */
+.rigo-shop-hero{
+  background:linear-gradient(180deg, var(--rigo-cream-warm) 0%, var(--rigo-cream) 100%);
+  border-bottom:1px solid var(--rigo-border);
+  padding:clamp(40px, 6vw, 72px) 0 clamp(28px, 4vw, 40px);
+  text-align:center;
+  position:relative;
+}
+.rigo-shop-hero::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background-image:
+    radial-gradient(circle at 12% 30%, rgba(139,200,75,.10) 0, transparent 35%),
+    radial-gradient(circle at 88% 70%, rgba(39,180,229,.10) 0, transparent 35%);
+  pointer-events:none;
+}
+.rigo-shop-hero-inner{
+  position:relative;
+  max-width:880px !important;
+  margin:0 auto;
+}
+.rigo-shop-hero-eyebrow{
+  font-family:var(--rigo-script);
+  font-weight:700;
+  font-size:1.15rem;
+  color:var(--rigo-green-dark);
+  margin:0 0 8px;
+}
+.rigo-shop-hero-title{
+  font-family:var(--rigo-serif);
+  font-size:clamp(2.4rem, 5vw, 3.6rem);
+  font-weight:700;
+  letter-spacing:-0.025em;
+  color:var(--rigo-ink);
+  margin:0 0 14px;
+  line-height:1.1;
+}
+.rigo-shop-hero-sub{
+  font-size:clamp(15px, 1.6vw, 17px);
+  line-height:1.55;
+  color:var(--rigo-ink-soft);
+  max-width:640px;
+  margin:0 auto 24px;
+}
+
+/* --- 15.2 Filtres catégorie en pills --- */
+.rigo-shop-filters{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  justify-content:center;
+  margin:0 0 22px;
+}
+.rigo-shop-filter{
+  display:inline-block;
+  padding:9px 18px;
+  font-family:var(--rigo-sans);
+  font-weight:700;
+  font-size:14px;
+  color:var(--rigo-ink-soft);
+  background:#fff;
+  border:1.5px solid var(--rigo-border);
+  border-radius:var(--rigo-r-pill);
+  text-decoration:none;
+  transition:all 180ms ease;
+  letter-spacing:-0.005em;
+}
+.rigo-shop-filter:hover{
+  color:var(--rigo-green-dark);
+  border-color:var(--rigo-green);
+  background:rgba(92,142,46,.06);
+  transform:translateY(-1px);
+}
+.rigo-shop-filter.is-active{
+  background:var(--rigo-ink);
+  color:#fff;
+  border-color:var(--rigo-ink);
+}
+
+/* --- 15.3 Trust micro-row sous les filtres --- */
+.rigo-shop-hero-trust{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:8px 24px;
+  font-size:13.5px;
+  color:var(--rigo-muted);
+}
+.rigo-shop-hero-trust strong{color:var(--rigo-ink); font-weight:700;}
+
+/* --- 15.4 Grid produits (override Blocksy) --- */
+body.woocommerce.archive ul.products,
+body.post-type-archive-product ul.products,
+body.tax-product_cat ul.products{
+  display:grid !important;
+  grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)) !important;
+  gap:24px !important;
+  list-style:none !important;
+  padding:32px 0 !important;
+  margin:0 !important;
+}
+body.woocommerce.archive ul.products::before,
+body.woocommerce.archive ul.products::after{display:none !important;}
+body.woocommerce.archive ul.products li.product{
+  width:auto !important;
+  margin:0 !important;
+  float:none !important;
+  display:flex !important;
+  flex-direction:column !important;
+}
+
+/* --- 15.5 Card produit redesignée --- */
+body.woocommerce.archive ul.products li.product{
+  background:#fff;
+  border:1px solid var(--rigo-border);
+  border-radius:var(--rigo-r-md);
+  padding:0 !important;
+  overflow:hidden;
+  transition:transform 220ms cubic-bezier(.2,.8,.2,1), box-shadow 220ms ease, border-color 200ms ease;
+  box-shadow:var(--rigo-sh-1);
+}
+body.woocommerce.archive ul.products li.product:hover{
+  transform:translateY(-4px);
+  box-shadow:var(--rigo-sh-3);
+  border-color:var(--rigo-green);
+}
+
+/* Image carrée fond cream — même taille pour toutes les cards même
+   sans photo (placeholder). object-fit:contain pour ne pas crop les
+   packagings rectangulaires des jeux. */
+body.woocommerce.archive ul.products li.product .woocommerce-loop-product__link,
+body.woocommerce.archive ul.products li.product > a:first-of-type{
+  display:block;
+  position:relative;
+  background:var(--rigo-cream);
+  aspect-ratio:1 / 1;
+  overflow:hidden;
+  border-bottom:1px solid var(--rigo-border);
+}
+body.woocommerce.archive ul.products li.product img{
+  width:100% !important;
+  height:100% !important;
+  object-fit:contain !important;
+  padding:18px;
+  margin:0 !important;
+  display:block;
+  transition:transform 350ms cubic-bezier(.2,.8,.2,1);
+  background:transparent;
+}
+body.woocommerce.archive ul.products li.product:hover img{
+  transform:scale(1.04);
+}
+/* Placeholder (pas d'image) : garder la zone carrée + indicatif visuel */
+body.woocommerce.archive ul.products li.product .woocommerce-LoopProduct-link::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:var(--rigo-cream) url("https://rigolettres.fr/wp-content/uploads/2026/04/logo-pato-provisoire.png") center/80px no-repeat;
+  opacity:.18;
+  z-index:0;
+}
+body.woocommerce.archive ul.products li.product img + *{position:relative; z-index:1;}
+body.woocommerce.archive ul.products li.product .woocommerce-LoopProduct-link img{position:relative; z-index:1;}
+
+/* Body de la card (titre + niveau + prix + ATC) */
+body.woocommerce.archive ul.products li.product .rigo-card-body,
+body.woocommerce.archive ul.products li.product > a + *,
+body.woocommerce.archive ul.products li.product{
+  /* fallback container — on cible aussi quand .rigo-card-body n'est pas wrappé */
+}
+body.woocommerce.archive ul.products li.product .rigo-card-body{
+  padding:18px 18px 0;
+  display:flex;
+  flex-direction:column;
+  flex:1;
+}
+
+.rigo-card-eyebrow{
+  display:inline-block;
+  font-size:11px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--rigo-green-dark);
+  background:rgba(92,142,46,.10);
+  padding:4px 10px;
+  border-radius:var(--rigo-r-pill);
+  margin-bottom:8px;
+  width:fit-content;
+}
+
+body.woocommerce.archive ul.products li.product .woocommerce-loop-product__title{
+  font-family:var(--rigo-serif) !important;
+  font-size:1.05rem !important;
+  font-weight:700;
+  color:var(--rigo-ink);
+  line-height:1.3;
+  margin:0 0 10px !important;
+  padding:0 !important;
+  letter-spacing:-0.005em;
+}
+
+body.woocommerce.archive ul.products li.product .price{
+  font-family:var(--rigo-sans) !important;
+  font-size:1.25rem !important;
+  font-weight:800;
+  color:var(--rigo-ink);
+  margin:auto 0 14px !important;
+}
+body.woocommerce.archive ul.products li.product .price del{
+  color:var(--rigo-muted);
+  font-size:.85em;
+  font-weight:600;
+  margin-right:6px;
+}
+body.woocommerce.archive ul.products li.product .price ins{
+  background:transparent;
+  color:var(--rigo-accent);
+  text-decoration:none;
+}
+
+/* CTA "Ajouter" full-width pill bleu */
+body.woocommerce.archive ul.products li.product .button,
+body.woocommerce.archive ul.products li.product a.add_to_cart_button{
+  display:flex !important;
+  width:calc(100% - 36px) !important;
+  margin:0 18px 18px !important;
+  justify-content:center;
+  align-items:center;
+  background:var(--rigo-sky) !important;
+  color:#fff !important;
+  border:1.5px solid var(--rigo-sky) !important;
+  border-radius:var(--rigo-r-pill) !important;
+  padding:12px 18px !important;
+  font-weight:700 !important;
+  font-size:14px !important;
+  box-shadow:0 4px 12px rgba(30,159,203,.20);
+  transition:all 200ms ease;
+}
+body.woocommerce.archive ul.products li.product .button:hover,
+body.woocommerce.archive ul.products li.product a.add_to_cart_button:hover{
+  background:var(--rigo-sky-dark) !important;
+  border-color:var(--rigo-sky-dark) !important;
+  transform:translateY(-1px);
+  box-shadow:0 8px 18px rgba(30,159,203,.28) !important;
+}
+/* Loader pendant l'ajout AJAX */
+body.woocommerce.archive ul.products li.product .button.loading{
+  opacity:.65; cursor:wait;
+}
+body.woocommerce.archive ul.products li.product .button.added::after{
+  content:" ✓"; font-weight:800;
+}
+
+/* Container principal du shop : ajouter de l'air */
+body.post-type-archive-product .container,
+body.tax-product_cat .container{
+  padding-bottom:64px;
+}
+
+/* Masque le titre par défaut WC (.woocommerce-products-header) puisque
+   notre hero le remplace. */
+body.woocommerce.archive .woocommerce-products-header{
+  display:none !important;
+}
+/* Masque aussi le tri WC par défaut (peut être réintégré plus tard avec
+   un dropdown stylé custom) et le compteur "X résultats". */
+body.woocommerce.archive .woocommerce-result-count,
+body.woocommerce.archive .woocommerce-ordering{
+  display:none !important;
+}
+
+/* --- 15.6 Mobile shop --- */
+@media (max-width:640px){
+  body.woocommerce.archive ul.products,
+  body.post-type-archive-product ul.products,
+  body.tax-product_cat ul.products{
+    grid-template-columns:repeat(2, 1fr) !important;
+    gap:14px !important;
+    padding:20px 0 !important;
+  }
+  body.woocommerce.archive ul.products li.product .rigo-card-body{
+    padding:12px 12px 0;
+  }
+  body.woocommerce.archive ul.products li.product .woocommerce-loop-product__title{
+    font-size:.95rem !important;
+  }
+  body.woocommerce.archive ul.products li.product .price{
+    font-size:1.05rem !important;
+    margin-bottom:10px !important;
+  }
+  body.woocommerce.archive ul.products li.product .button,
+  body.woocommerce.archive ul.products li.product a.add_to_cart_button{
+    width:calc(100% - 24px) !important;
+    margin:0 12px 12px !important;
+    padding:10px 12px !important;
+    font-size:13px !important;
+  }
+  .rigo-shop-filters{gap:6px;}
+  .rigo-shop-filter{padding:7px 14px; font-size:13px;}
+  .rigo-shop-hero-trust{gap:4px 14px; font-size:12.5px;}
+}
+
+/* ===========================================================
    10. RESPONSIVE — mobile
    =========================================================== */
 @media (max-width:640px){
