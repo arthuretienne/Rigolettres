@@ -1373,6 +1373,115 @@ a.rigo-cta--secondary:focus{
 }
 
 /* ===========================================================
+   16. PAGES UTILITAIRES — contact, légales, livraison
+   (sprint 9 fix, 2026-05-10)
+   =========================================================== */
+
+/* --- 16.1 Grid contact (2 colonnes desktop, 1 col mobile) --- */
+.rigo-contact-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:20px;
+  margin:24px 0 36px;
+}
+@media (min-width:720px){
+  .rigo-contact-grid{
+    grid-template-columns:1fr 1fr;
+    gap:24px;
+  }
+}
+.rigo-contact-card{
+  background:#fff;
+  border:1px solid var(--rigo-border);
+  border-radius:var(--rigo-r-md);
+  padding:24px 26px;
+  box-shadow:var(--rigo-sh-1);
+  transition:box-shadow 200ms ease, transform 200ms ease;
+}
+.rigo-contact-card:hover{
+  box-shadow:var(--rigo-sh-2);
+  transform:translateY(-2px);
+}
+.rigo-contact-card h2{
+  font-family:var(--rigo-serif);
+  font-size:1.25rem !important;
+  margin:0 0 12px !important;
+  letter-spacing:-0.01em;
+}
+.rigo-contact-card p{
+  margin:0 0 .9em;
+  font-size:15.5px;
+  line-height:1.6;
+}
+.rigo-contact-card p:last-child{margin-bottom:0;}
+.rigo-contact-link a{
+  font-family:var(--rigo-sans);
+  font-weight:700;
+  font-size:1.05rem;
+  color:var(--rigo-green-dark);
+  text-decoration:none;
+  border-bottom:2px solid var(--rigo-green);
+  padding-bottom:1px;
+  transition:color .15s, border-color .15s;
+  word-break:break-word;
+}
+.rigo-contact-link a:hover{
+  color:var(--rigo-green);
+  border-bottom-color:var(--rigo-green-dark);
+}
+
+/* --- 16.2 Masquer le FAB quiz "Aide au choix" sur les pages utilitaires
+   (il chevauchait le texte adresse de la page contact). Reste actif sur
+   la home, fiche produit, shop, blog. --- */
+body.page-id-99 .rigo-quiz-fab,        /* contact */
+body.page-id-85 .rigo-quiz-fab,        /* mentions légales */
+body.page-id-86 .rigo-quiz-fab,        /* cgv */
+body.page-id-87 .rigo-quiz-fab,        /* politique confidentialité */
+body.page-id-88 .rigo-quiz-fab{        /* livraison-retours */
+  display:none !important;
+}
+
+/* --- 16.3 Hint pour Brigitte si elle ajoute des pages utilitaires :
+   appliquer la classe `body.page-template-utility` pour bénéficier du
+   layout centré sans avoir à hardcoder les page-id ci-dessus. --- */
+body.page-template-utility .rigo-quiz-fab{
+  display:none !important;
+}
+
+/* --- 16.4 Forcer le centrage du content sur les pages utilitaires
+   (Blocksy peut appliquer un `.ct-container-full` qui ne centre pas
+   correctement avec un sidebar imaginaire). --- */
+body.page-id-99 main.site-main,
+body.page-id-85 main.site-main,
+body.page-id-86 main.site-main,
+body.page-id-87 main.site-main,
+body.page-id-88 main.site-main{
+  max-width:none !important;
+  width:100% !important;
+}
+body.page-id-99 main.site-main > *,
+body.page-id-85 main.site-main > *,
+body.page-id-86 main.site-main > *,
+body.page-id-87 main.site-main > *,
+body.page-id-88 main.site-main > *{
+  max-width:var(--rigo-container, 1200px);
+  margin-left:auto;
+  margin-right:auto;
+}
+
+/* --- 16.5 Page title Blocksy auto : on lui redonne du look même quand
+   il n'est pas masqué. Et on le centre. --- */
+body.page-id-99 .page-title,
+body.page-id-99 h1.entry-title,
+body.page-id-99 .ct-page-title-default{
+  text-align:left;
+  max-width:760px;
+  margin-left:auto;
+  margin-right:auto;
+  padding:clamp(28px,4vw,48px) clamp(20px,4vw,40px) 8px;
+}
+
+/* ===========================================================
    15. SHOP — refonte page /shop (sprint 9, 2026-05-10)
    Hero éditorial + filtres pills + grid 3 col + cards rénovées.
    Cf. includes/shop-archive-redesign.php pour le HTML PHP.
