@@ -3,7 +3,7 @@
 > **Fichier source** pour suivre la progression du site vers le niveau "e-commerce premium 50 k€".
 > Toute session Claude **doit lire ce fichier au démarrage** et **le mettre à jour** dès qu'une feature est livrée (cocher les cases, ajouter une ligne au journal).
 
-**Dernière mise à jour :** 2026-05-08 (passe d'audit live + 1ère vague réponses Brigitte : SIRET / ADELI / adresses / tél / email / photo portrait débloqués)
+**Dernière mise à jour :** 2026-05-08 (suite 8 bis — 10/16 items du backlog Arthur livrés en un sprint : sticky renforcé, favicon Pato, contraste footer, newsletter input, 60 € insécable, marges desktop, bordure CTA bleus, page contact, one-shot tirets cadratins, bloc presse masqué par défaut)
 **Score actuel estimé :** ~63 % du niveau "agence 50 k€" _(+3 pts grâce au catalogue passé de 5 à 14 SKU, à la cohérence "Brigitte Étienne · depuis 1978" propagée partout, et à la page À propos qui passe de 793 à ~1500 mots)_
 **Volet DA séparé :** voir [auditv2.md](auditv2.md) pour le plan refonte typo / photos / fiche produit premium / motion / chrome WC.
 **Benchmarks référence :** Respire, Les Raffineurs, Michel & Augustin, Maison du Pastel, Typology, Mangez et Relaxez (DTC FR fort taux de conversion) + Shopify Premier (Allbirds, Rothy's, Oura).
@@ -36,6 +36,56 @@
 ---
 
 ## 📓 Journal de session
+
+### 2026-05-08 (suite 8 bis) — ✅ BACKLOG Arthur 10/16 livrés en un sprint
+
+> Liste brute remontée par Arthur après passe de navigation manuelle sur le live. **10 items réglés dans le child theme + 1 page WP créée + 1 one-shot DB préparé.** Reste 5 gros items qui demandent travail dédié (shop redesign, photos, emails, plugins, /shop refactor) — plan détaillé en bas de cette entrée.
+
+**✅ Livré ce sprint** (commit + push CI auto-déploient)
+
+*Chrome / header / footer*
+- [x] 🔴 **Item 1 — Header sticky renforcé**
+  Le sticky existait déjà via [sticky-nav-scroll-hide-show.php](blocksy-child/includes/sticky-nav-scroll-hide-show.php) + section 11 du `style.css`, mais pouvait être cassé par un ancêtre `overflow:hidden`. **Fix** : ajout d'une nouvelle section CSS `14.1` dans [style.css](blocksy-child/style.css) avec `header#site-header.site-header { position:sticky !important; top:0 !important; z-index:500 !important }` + classe optionnelle `html.rigo-header-fixed` qui passe en `position:fixed` comme fallback. À monitorer côté browser après déploiement.
+- [x] 🔴 **Item 2 — Favicon Pato**
+  Avant : SVG inline emoji 🐕 dans [pwa-manifest-favicon.php](blocksy-child/includes/pwa-manifest-favicon.php). **Fix** : 4 `<link rel="icon|shortcut icon|apple-touch-icon">` qui pointent sur le PNG Pato déjà uploadé dans `/wp-content/uploads/2026/04/logo-pato-provisoire.png`, avec sizes 32/180/192. Si Brigitte/Arthur uploade un fichier dédié via Apparence → Identité du site, le code utilise automatiquement `get_option('site_icon')` à la place. **Action future** : récupérer le logo Pato vectoriel HD chez l'imprimeur Auffret-Plessix → générer un .ico + 16/32/96/180/192/512 propres → upload via WP → l'auto-détection fait le reste.
+- [x] 🔴 **Item 3 — Footer contraste WCAG AA**
+  Avant : `rgba(255,255,255,.55)` sur fond ink → ratio ~4.0 (sous AA). **Fix** : section CSS `14.2` remonte les opacités à `.82` pour les liens et footer-bottom (~6.5 ratio), `.78` pour footer-address, `.88` pour footer-brand p. Tous les overrides sont en `!important` car la cascade `.site-footer .footer-col a` arrivait après dans la section 11.
+- [x] 🔴 **Item 4 — Newsletter input visible quand on tape**
+  Bug : le `.rigo-popup-form input[type=email]` du popup exit-intent ([exit-intent-newsletter-popup.php](blocksy-child/includes/exit-intent-newsletter-popup.php)) héritait d'une couleur blanche ailleurs → texte saisi invisible. **Fix** : section CSS `14.3` force `color: var(--rigo-ink) !important` + `background: #fff !important` + `-webkit-text-fill-color` (Safari/Chrome autofill) sur le sélecteur du popup ET tout `.site-footer input[type=email]` au cas où on ajoute un champ newsletter dans le footer plus tard.
+
+*Détails UI*
+- [x] 🟠 **Item 11 — "60 €" insécable**
+  Fix double : (a) côté HTML PHP — remplacer chaque `60 €` visible par `<span class="nowrap">60&nbsp;€</span>` dans [universal-header-footer-chrome.php](blocksy-child/includes/universal-header-footer-chrome.php) (promo bar), [footer-trust-strip.php](blocksy-child/includes/footer-trust-strip.php), [side-cart-drawer.php](blocksy-child/includes/side-cart-drawer.php). (b) côté CSS — section `14.4` ajoute `.nowrap { white-space:nowrap }` + reset `white-space:normal` sur les wrappers parent pour éviter qu'un nowrap hérité bloque le wrap des phrases longues. Le snippet [trust-badges-free-shipping-bar.php](blocksy-child/includes/trust-badges-free-shipping-bar.php) avait déjà `&nbsp;` natif.
+- [x] 🟠 **Item 12 — Marges desktop pages contenu**
+  Fix : section CSS `14.5` cible `.entry-content` sur les pages NON-WC (`body.page:not(.home):not(.woocommerce-page)`) avec `max-width: 760px` + `padding: clamp(20px, 4vw, 40px)` (48px à partir de 1100px). Le shop, les archives produit et la fiche produit gardent leur layout 2-colonnes natif via override `body.woocommerce-page .entry-content { max-width: none }`.
+- [x] 🟠 **Item 15 — Bordures vertes CTA bleus**
+  Fix : section CSS `14.6` force `border-color: var(--rigo-sky) !important` sur `.btn-secondary`, `.rigo-cta--secondary`, `.wp-block-button.is-style-secondary`, et tous les `.wpforms-form button[type=submit]`. Le focus halo est aussi forcé en bleu (au lieu du vert global de la section 9 input:focus). Les inputs gardent leur halo vert au focus (sémantique : "saisie active").
+
+*Communication / contenu*
+- [x] 🔴 **Item 13 — One-shot replace tirets cadratins**
+  ⚠️ Demande BD live → fait via [_oneshot-replace-cadratins.php](blocksy-child/includes/_oneshot-replace-cadratins.php). Comportement : au prochain `wp_loaded` après déploiement, remplace **uniquement** ` — ` (espace + em-dash + espace) par `, ` dans `post_content`/`post_excerpt`/`post_title` des pages, posts, products publiés/draft/private. Les em-dash sans espace ou en bord (rares, ambigus : tirets de dialogue, plages 2011—2025) **ne sont pas touchés**. Stats stockées dans `option:rigo_cadratins_replaced_v1_stats` après run. Flag DB `rigo_cadratins_replaced_v1=done` empêche tout re-run. **Action sprint+1** : (a) consulter les stats (`wp option get rigo_cadratins_replaced_v1_stats`), (b) supprimer le fichier `_oneshot-*.php` au prochain commit. **À ne pas faire** : passe v2 sur les em-dash bords tant qu'on n'a pas inspecté manuellement le contenu live.
+- [x] 🟡 **Item 10 — Bloc "ils en parlent" masqué par défaut**
+  Fix : [bandeau-presse-social-proof.php](blocksy-child/includes/bandeau-presse-social-proof.php) wrap le rendu dans `apply_filters('rigo_press_bar_visible', false)`. **Par défaut MASQUÉ** ce sprint. Pour le réactiver : `add_filter('rigo_press_bar_visible', '__return_true');` dans n'importe quel include. **Décision à prendre prochaine session** : (a) le supprimer définitivement, OU (b) le refaire avec vraies parutions presse cliquables + logos hauts (Le Mans maville, Orthomalin, Docplayer). Ressources presse : `ressources/` du repo.
+
+*Pages manquantes*
+- [x] 🔴 **Item 14 — Page /contact créée**
+  Page id=99, slug=contact, status=publish. URL : https://rigolettres.fr/contact/. Contenu Gutenberg natif : H1 + intro + 2 colonnes (email + adresse postale Mamers) + CTA pros (lien `/pour-orthophonistes/`) + liste FAQ shortcuts. Liens header (nav) + footer (col Découvrir) repointés vers `/contact/` au lieu de l'ancien anchor `home_url('/#contact')`. **Action future** : ajouter un formulaire WPForms intégré (déjà installé sur le site) — pour cette session, on garde un email cliquable simple, plus simple à modérer pour Brigitte/Albéric.
+
+---
+
+**⏳ Reste à faire** (gros chantiers — sessions dédiées)
+
+- [ ] 🔴 **Items 5 + 16 — Refonte page /shop**
+  Refonte complète du layout, grid produits, filtres, hiérarchie visuelle. Sortie cible : niveau Respire / Typology / Maison du Pastel.
+  *Plan d'attaque* : (1) audit live actuel (screenshot + DOM Blocksy default) ; (2) wireframe : hero catégorie + filtres latéraux (âge / niveau / type : jeu | livre | pack) + grid 3 colonnes avec image carrée + nom + niveau + prix + ATC ; (3) override via `blocksy-child/woocommerce/archive-product.php` ou via filters Blocksy ; (4) section dédiée dans `style.css` (`15. SHOP — refonte layout`). Voir aussi [auditv2.md](auditv2.md) qui peut déjà avoir un plan.
+- [ ] 🔴 **Item 6 — Photos produit manquantes / HP à updater**
+  Plan : (1) inventaire — pour chaque SKU (id 28/29/30/31/32/75/76/77/78/79/80/81/83 et autres ?), lister photos actuelles via MCP `/wp/v2/products/{id}` + comparer avec les fichiers dispo dans `ressources/Site rigolettres/Photos Rigolettres/` ; (2) pour les SKU sans visuel correct, prioriser un shooting dédié (cf. CLAUDE.md "la plupart devront être refaites") ; (3) re-pousser les visuels home (cards produits dans la section "Nos jeux préférés") avec les bons attachments WP.
+- [ ] 🟠 **Item 7 — Templates email WooCommerce**
+  Plan : (a) configurer WC → Réglages → E-mails → couleurs (header `var(--rigo-green-dark)`, base `var(--rigo-cream)`, body `var(--rigo-ink-soft)`, footer `var(--rigo-ink)` text/fond inversé) ; (b) override via `blocksy-child/woocommerce/emails/email-header.php` + `email-footer.php` pour ajouter logo Pato + wordmark + signature "Brigitte, Mamers" ; (c) tester avec un compte test de commande. Templates concernés : `customer-processing-order.php`, `customer-completed-order.php`, `customer-on-hold-order.php`, `customer-refunded-order.php`, `customer-new-account.php`.
+- [ ] 🟠 **Item 8 — Plugin facture PDF**
+  Recommandation : *WooCommerce PDF Invoices & Packing Slips* (gratuit, leader, open-source). Installation via wp-admin → Extensions → Ajouter, ou via REST `/wp/v2/plugins`. Configuration : (a) Activer génération auto pour les statuts "processing" + "completed" ; (b) attacher au mail "completed" ; (c) header/footer avec mentions Brigitte (SIRET 31425303000055, ADELI 72 9 100 180, "TVA non applicable, art. 293 B du CGI", adresse 14 chemin de la Cour du Bois 72600 Saint-Rémy-des-Monts) ; (d) numérotation FR conforme (RIGO-{YYYY}-{0001} séquentielle).
+- [ ] 🟠 **Item 9 — Reviews Judge.me**
+  Recommandation : *Judge.me Product Reviews* (free tier OK : avis illimités, relance email auto post-livraison, photo reviews, schema.org JSON-LD). Installation via wp-admin Extensions ou REST. Configuration : (a) connecter au compte Judge.me (signup gratuit) ; (b) activer relance auto J+10 après "completed" ; (c) widget étoiles dans la fiche produit (déjà sous le titre) + tab "Avis" ; (d) JSON-LD AggregateRating injecté par le plugin (vérifier qu'il ne double pas avec [json-ld-schema-org.php](blocksy-child/includes/json-ld-schema-org.php) — sinon désactiver le bloc Review du child theme).
 
 ### 2026-05-08 (suite 7) — DEV mode + 2 fixes UI (mega-menu home + qty PDP)
 - [x] **Snippet 66 [DEV MODE]** : bypass LiteSpeed cache via `do_action('litespeed_control_set_nocache')` + headers `Cache-Control: no-store`. Persistant. **À désactiver avant le go-live** (wp-admin → Code Snippets → désactiver snippet 66). Permet d'itérer sans purge manuelle.

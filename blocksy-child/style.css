@@ -1212,6 +1212,167 @@ body.mobile-menu-open{overflow:hidden;}
 .site-footer img, .site-header img{max-width:100%; height:auto;}
 
 /* ===========================================================
+   14. SPRINT 8 — backlog visuel Arthur (2026-05-08 suite 8)
+   Fixes regroupés : sticky robuste, contraste footer, newsletter input,
+   wrap "60 €", marges desktop pages contenu, bordure CTA bleus.
+   =========================================================== */
+
+/* --- 14.1 Sticky header robuste ---
+   `position:sticky` casse si un ancêtre a `overflow:hidden|auto|scroll`.
+   En complément du sticky existant (section 11), on fournit un fallback
+   `position:fixed` activé via la classe `html.rigo-header-fixed` que le
+   JS sticky peut poser si le sticky ne tient pas. La règle ci-dessous
+   est inerte par défaut — actif uniquement quand la classe est ajoutée. */
+html.rigo-header-fixed .site-header,
+html.rigo-header-fixed #site-header{
+  position:fixed !important;
+  top:0; left:0; right:0;
+  z-index:500;
+}
+html.rigo-header-fixed body{
+  padding-top:var(--rigo-hdr-h, 73px);
+}
+
+/* Ceinture/bretelles : forcer le sticky du header injecté contre tout
+   override Blocksy/Customizer arrivant après. */
+header#site-header.site-header,
+header.site-header--injected{
+  position:sticky !important;
+  top:0 !important;
+  z-index:500 !important;
+}
+
+/* --- 14.2 Footer — contraste WCAG AA ---
+   Avant : rgba(255,255,255,.55) sur fond ink (≈ ratio 4.0 < 4.5 AA).
+   Après : .82 sur les liens et footer-bottom (~6.5 ratio). */
+.site-footer .footer-col a{
+  color:rgba(255,255,255,.82) !important;
+}
+.site-footer .footer-bottom,
+.site-footer .footer-bottom p{
+  color:rgba(255,255,255,.82) !important;
+}
+.site-footer .footer-address{
+  color:rgba(255,255,255,.78) !important;
+}
+.site-footer .footer-brand p{
+  color:rgba(255,255,255,.88) !important;
+}
+
+/* --- 14.3 Newsletter popup — input visible quand on tape ---
+   Le placeholder est gris, mais sans `color` explicite sur l'input, le
+   texte saisi héritait d'une règle parent qui le rendait blanc sur fond
+   crème (illisible). Force ink + background paper. */
+#rigo-popup .rigo-popup-form input[type=email],
+.rigo-popup-form input[type=email],
+#rigo-popup-form input[type=email]{
+  color:var(--rigo-ink) !important;
+  background:#fff !important;
+  -webkit-text-fill-color:var(--rigo-ink) !important;
+  caret-color:var(--rigo-ink);
+}
+#rigo-popup .rigo-popup-form input[type=email]::placeholder{
+  color:var(--rigo-muted) !important;
+  opacity:1;
+}
+
+/* Couvre aussi les éventuels champs newsletter intégrés au footer
+   (si un module newsletter footer est ajouté plus tard). */
+.site-footer input[type=email],
+.site-footer input[type=text]{
+  color:var(--rigo-ink) !important;
+  background:#fff !important;
+  -webkit-text-fill-color:var(--rigo-ink) !important;
+}
+
+/* --- 14.4 "60 €" / "60€" insécables ---
+   Empêche le wrap entre le chiffre et le symbole € sur les libellés
+   livraison gratuite. On force un white-space:nowrap sur les labels
+   typés, en complément du `&nbsp;` injecté côté PHP. */
+.rigo-promo-bar,
+.rigo-promo-bar span,
+.rigo-trust-item strong,
+.rigo-drawer-shipping-note,
+.rigo-ship-free-eligible,
+.rigo-ship-threshold,
+.rigo-shipbar-msg{
+  white-space:normal;
+}
+.rigo-promo-bar .nowrap,
+.rigo-trust-item .nowrap,
+.rigo-shipbar-msg .nowrap{
+  white-space:nowrap;
+}
+
+/* --- 14.5 Marges/padding desktop pages contenu ---
+   Les pages article/contenu (À propos, Méthode, légales…) étaient
+   resserrées contre les bords sur desktop. On élargit le padding latéral
+   et on plafonne la largeur de lecture à ~760px pour le confort de
+   lecture (typo Fraunces/Nunito en mesure 60-72 caractères). */
+.entry-content,
+.page-content,
+.ct-container .entry-content,
+body.page:not(.home):not(.woocommerce-page) .entry-content,
+body.single-post .entry-content{
+  max-width:760px;
+  margin-left:auto;
+  margin-right:auto;
+  padding-left:clamp(20px, 4vw, 40px);
+  padding-right:clamp(20px, 4vw, 40px);
+}
+@media (min-width:1100px){
+  body.page:not(.home):not(.woocommerce-page) .entry-content,
+  body.single-post .entry-content{
+    padding-left:48px;
+    padding-right:48px;
+  }
+}
+/* Ne s'applique pas au shop ni à la fiche produit (qui ont leur layout
+   2 colonnes natif WooCommerce). */
+body.woocommerce-page .entry-content,
+body.archive .entry-content,
+body.single-product .entry-content{
+  max-width:none;
+}
+
+/* --- 14.6 CTA bleus — pas de bordure verte ---
+   Override des règles Blocksy / focus / hover qui peuvent ajouter un
+   `border-color:var(--rigo-green)` sur les boutons bleus secondaires
+   (cas vu sur formulaires WPForms et boutons WP block style "secondary"). */
+.btn-secondary,
+.btn-secondary:hover,
+.btn-secondary:focus,
+.btn-secondary:focus-visible,
+.rigo-cta--secondary,
+.rigo-cta--secondary:hover,
+.rigo-cta--secondary:focus,
+.wp-block-button.is-style-secondary .wp-block-button__link,
+.wpforms-form button[type=submit],
+.wpforms-form input[type=submit]{
+  border-color:var(--rigo-sky) !important;
+  box-shadow:0 6px 18px rgba(30,159,203,.25) !important;
+}
+.btn-secondary:focus-visible,
+.rigo-cta--secondary:focus-visible{
+  outline:3px solid rgba(30,159,203,.35);
+  outline-offset:2px;
+  /* Pas de halo vert au focus sur un CTA bleu */
+  box-shadow:0 6px 18px rgba(30,159,203,.30) !important;
+}
+
+/* Couvre aussi la couleur de halo focus globale qui posait un anneau
+   vert autour des boutons bleus (cf. section 9 input:focus). On force
+   un halo bleu uniquement sur les CTAs bleus, sans toucher au focus
+   des inputs (qui restent vert pour signaler la saisie active). */
+button.btn-secondary:focus,
+a.btn-secondary:focus,
+button.rigo-cta--secondary:focus,
+a.rigo-cta--secondary:focus{
+  outline:none;
+  box-shadow:0 0 0 3px rgba(30,159,203,.30) !important;
+}
+
+/* ===========================================================
    10. RESPONSIVE — mobile
    =========================================================== */
 @media (max-width:640px){

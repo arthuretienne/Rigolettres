@@ -106,7 +106,7 @@ add_action('wp_body_open', function () {
     ];
     ?>
     <div class="rigo-promo-bar" id="rigo-promo-bar">
-      <span>✨ Nouveau site — livraison offerte en France métropolitaine à partir de 60 €</span>
+      <span>✨ Nouveau site, livraison offerte en France métropolitaine à partir de <span class="nowrap">60&nbsp;€</span></span>
       <button class="rigo-promo-close" aria-label="Fermer" onclick="this.closest('#rigo-promo-bar').style.display='none';document.documentElement.style.setProperty('--rigo-hdr-h',document.getElementById('site-header').getBoundingClientRect().bottom+'px')">×</button>
     </div>
 
@@ -138,7 +138,7 @@ add_action('wp_body_open', function () {
           <a href="<?php echo esc_url(home_url('/methode-syllabique/')); ?>" class="nav-link">La méthode</a>
           <a href="<?php echo esc_url(home_url('/a-propos/')); ?>" class="nav-link">Brigitte</a>
           <a href="<?php echo esc_url($blog_url); ?>" class="nav-link">Blog</a>
-          <a href="<?php echo esc_url(rigo_home_url('contact')); ?>" class="nav-link">Contact</a>
+          <a href="<?php echo esc_url(home_url('/contact/')); ?>" class="nav-link">Contact</a>
 
         </nav><!-- .nav -->
 
@@ -372,7 +372,7 @@ add_action('wp_footer', function () {
           <a href="<?php echo esc_url(home_url('/a-propos/')); ?>">À propos</a>
           <a href="<?php echo esc_url(home_url('/temoignages/')); ?>">Témoignages</a>
           <a href="<?php echo esc_url(rigo_home_url('presse')); ?>">Dans la presse</a>
-          <a href="<?php echo esc_url(rigo_home_url('contact')); ?>">Contact</a>
+          <a href="<?php echo esc_url(home_url('/contact/')); ?>">Contact</a>
         </div>
         <div class="footer-col">
           <h4>Guides &amp; conseils</h4>

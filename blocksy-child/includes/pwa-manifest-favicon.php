@@ -54,17 +54,19 @@ add_action('template_redirect', function () {
 
 // ── 2. <head> : manifest + favicon + theme-color ──────────────────────────
 add_action('wp_head', function () {
+    // Logo Pato uploadé en avril 2026 (cf. /wp-content/uploads/2026/04/)
+    $pato_png = home_url('/wp-content/uploads/2026/04/logo-pato-provisoire.png');
+
     $favicon_url = RIGO_FAVICON_MEDIA_ID
         ? wp_get_attachment_image_url(RIGO_FAVICON_MEDIA_ID, 'thumbnail')
-        : get_site_url() . '/wp-content/uploads/logo-pato-provisoire.png';
+        : $pato_png;
 
-    // SVG favicon inline (fallback instantané, aucun fichier externe requis)
-    $svg_favicon = 'data:image/svg+xml,' . rawurlencode(
-        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">'
-        . '<circle cx="50" cy="50" r="48" fill="#FBF8F1" stroke="#E7E2D5" stroke-width="2"/>'
-        . '<text y=".9em" font-size="80" text-anchor="middle" x="50" dominant-baseline="middle" dy="0.1em">🐕</text>'
-        . '</svg>'
-    );
+    // Favicon par défaut WP (Apparence → Personnaliser → Identité du site)
+    // Si l'admin l'a défini via `site_icon`, on respecte. Sinon, fallback Pato.
+    $site_icon_id = (int) get_option('site_icon');
+    $favicon_32   = $site_icon_id ? wp_get_attachment_image_url($site_icon_id, [32, 32])  : $pato_png;
+    $favicon_192  = $site_icon_id ? wp_get_attachment_image_url($site_icon_id, [192, 192]) : $pato_png;
+    $apple_icon   = $site_icon_id ? wp_get_attachment_image_url($site_icon_id, [180, 180]) : $pato_png;
     ?>
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#27B4E5">
@@ -72,8 +74,10 @@ add_action('wp_head', function () {
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Rigolettres">
-    <link rel="icon" type="image/svg+xml" href="<?php echo esc_attr($svg_favicon); ?>">
-    <link rel="apple-touch-icon" href="<?php echo esc_url($favicon_url); ?>">
+    <link rel="icon" type="image/png" sizes="32x32" href="<?php echo esc_url($favicon_32); ?>">
+    <link rel="icon" type="image/png" sizes="192x192" href="<?php echo esc_url($favicon_192); ?>">
+    <link rel="shortcut icon" type="image/png" href="<?php echo esc_url($favicon_32); ?>">
+    <link rel="apple-touch-icon" sizes="180x180" href="<?php echo esc_url($apple_icon); ?>">
     <?php
 }, 3);
 
