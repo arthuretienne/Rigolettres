@@ -649,7 +649,7 @@ body.has-ct-header-spacing{padding-top:0 !important;}
 body.home .site-header:not(#site-header){display:none !important;}
 
 /* Masquer l'ancienne barre promo du contenu de page — remplacée par #rigo-promo-bar */
-.ct-announcement-bar,[data-id="announcement_bar"],.blocksy-announcement-bar{display:none !important;}
+.ct-announcement-bar,[data-id="announcement_bar"],.blocksy-announcement-bar,.announce{display:none !important;}
 
 /* ── Promo bar ── */
 #rigo-promo-bar{
@@ -807,44 +807,48 @@ body.home .site-header:not(#site-header){display:none !important;}
   position:fixed;
   top:var(--rigo-hdr-h, 73px);
   left:0; right:0;
-  background:#fff;
-  border-top:2.5px solid var(--rigo-green);
+  background:var(--rigo-cream);
+  border-top:1px solid var(--rigo-border);
   border-bottom:1px solid var(--rigo-border);
-  box-shadow:0 16px 48px rgba(42,29,15,.11);
+  box-shadow:0 12px 40px rgba(42,29,15,.14), 0 2px 8px rgba(42,29,15,.06);
   z-index:600;
   /* Caché par défaut */
   opacity:0;
   visibility:hidden;
-  transform:translateY(-6px);
+  transform:translateY(-4px);
   pointer-events:none;
-  transition:opacity .22s ease, transform .22s ease, visibility 0s linear .22s;
+  transition:opacity .18s ease, transform .18s ease, visibility 0s linear .18s;
 }
 .mega-panel.is-open{
   opacity:1;
   visibility:visible;
   transform:translateY(0);
   pointer-events:auto;
-  transition:opacity .22s ease, transform .22s ease, visibility 0s;
+  transition:opacity .18s ease, transform .18s ease, visibility 0s;
 }
 
-.mega-inner{
+.mega-panel .mega-inner{
   display:grid;
-  grid-template-columns:repeat(3,1fr) 240px;
-  gap:0 36px;
-  padding-top:28px;
-  padding-bottom:28px;
+  grid-template-columns:repeat(3,1fr) 260px;
+  gap:0 40px;
+  padding-top:36px;
+  padding-bottom:36px;
 }
 
 /* ── Colonnes ── */
+.mega-col{
+  padding-top:2px;
+}
 .mega-col-title{
-  font-family:var(--rigo-serif);
+  font-family:var(--rigo-sans);
   font-weight:700;
-  font-size:.9rem;
-  color:var(--rigo-ink);
-  margin:0 0 12px;
-  padding-bottom:10px;
-  border-bottom:1.5px solid var(--rigo-border);
-  letter-spacing:-.01em;
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+  color:var(--rigo-muted);
+  margin:0 0 10px;
+  padding-bottom:8px;
+  border-bottom:1px solid var(--rigo-border);
 }
 
 .mega-product-link{
@@ -888,6 +892,9 @@ body.home .site-header:not(#site-header){display:none !important;}
   border-radius:var(--rigo-r-md);
   border:1px solid var(--rigo-border);
   padding:20px 18px;
+  margin-top:2px;
+  margin-bottom:2px;
+  margin-right:6px;
   display:flex;
   flex-direction:column;
   align-items:center;

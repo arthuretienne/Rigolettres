@@ -282,14 +282,25 @@ add_action('wp_body_open', function () {
       var megaTrig  = navItem && navItem.querySelector('.nav-link');
 
       if (navItem && megaPanel && megaTrig) {
-        function megaShow(){ megaTrig.setAttribute('aria-expanded','true');  megaPanel.classList.add('is-open'); }
-        function megaHide(){ megaTrig.setAttribute('aria-expanded','false'); megaPanel.classList.remove('is-open'); }
+        var hideTimer = null;
+        function megaShow(){
+          if (hideTimer){ clearTimeout(hideTimer); hideTimer = null; }
+          megaTrig.setAttribute('aria-expanded','true');
+          megaPanel.classList.add('is-open');
+        }
+        function megaHide(){
+          hideTimer = setTimeout(function(){
+            megaTrig.setAttribute('aria-expanded','false');
+            megaPanel.classList.remove('is-open');
+            hideTimer = null;
+          }, 120);
+        }
 
         navItem.addEventListener('mouseenter', megaShow);
         navItem.addEventListener('mouseleave', function(e){
-          // Ne pas fermer si on entre dans le panel
           if (!megaPanel.contains(e.relatedTarget)) megaHide();
         });
+        megaPanel.addEventListener('mouseenter', megaShow);
         megaPanel.addEventListener('mouseleave', function(e){
           if (!navItem.contains(e.relatedTarget)) megaHide();
         });

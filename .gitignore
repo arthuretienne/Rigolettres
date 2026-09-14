@@ -3,3 +3,16 @@
 *.log
 node_modules/
 ressources/Site rigolettres/Photos Rigolettres/*.HEIC
+
+
+# === Durcissement départ (14/09/2026) ===
+.DS_Store
+.env
+.env.*
+!.env.example
+client_secret*.json
+*credentials*.json
+*service-account*.json
+apikey*
+*.pem
+*.p12
