@@ -1214,7 +1214,7 @@ body.mobile-menu-open{overflow:hidden;}
 /* ===========================================================
    14. SPRINT 8 — backlog visuel Arthur (2026-05-08 suite 8)
    Fixes regroupés : sticky robuste, contraste footer, newsletter input,
-   wrap "60 €", marges desktop pages contenu, bordure CTA bleus.
+   wrap du seuil de livraison offerte, marges desktop pages contenu, bordure CTA bleus.
    =========================================================== */
 
 /* --- 14.1 Sticky header robuste ---
@@ -1285,7 +1285,7 @@ header.site-header--injected{
   -webkit-text-fill-color:var(--rigo-ink) !important;
 }
 
-/* --- 14.4 "60 €" / "60€" insécables ---
+/* --- 14.4 Seuil de livraison offerte insécable ("80 €") ---
    Empêche le wrap entre le chiffre et le symbole € sur les libellés
    livraison gratuite. On force un white-space:nowrap sur les labels
    typés, en complément du `&nbsp;` injecté côté PHP. */

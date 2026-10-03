@@ -1,7 +1,7 @@
 <?php
 /**
  * Migré depuis Code Snippet #19 : [Rigolettres] Trust badges + Free shipping bar
- * Description : Trust badges sous ATC fiche produit + barre progression livraison gratuite 60€. Sprint 1.
+ * Description : Trust badges sous ATC fiche produit + barre progression livraison gratuite (seuil rigo_free_shipping_threshold()). Sprint 1.
  */
 
 if (!defined('ABSPATH')) exit;
@@ -59,7 +59,7 @@ add_action('woocommerce_after_add_to_cart_button', function () {
 // ── 2. Free shipping progress bar ─────────────────────────────────────────
 add_action('wp_footer', function () {
     if (!is_cart() && !is_checkout() && !is_product()) return;
-    $threshold = 60;
+    $threshold = rigo_free_shipping_threshold();
     ?>
     <div id="rigo-ship-bar-wrap" style="display:none">
       <div id="rigo-ship-bar-msg"></div>

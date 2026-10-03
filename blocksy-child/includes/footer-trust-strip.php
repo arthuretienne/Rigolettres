@@ -78,7 +78,7 @@ add_action('wp_footer', function () {
                     </svg>
                 </div>
                 <div class="rigo-trust-text">
-                    <strong>Livraison offerte dès <span class="nowrap">60&nbsp;€</span></strong>
+                    <strong>Livraison offerte dès <?php echo rigo_free_shipping_label(); ?></strong>
                     <span>Colissimo &amp; Mondial Relay</span>
                 </div>
             </div>

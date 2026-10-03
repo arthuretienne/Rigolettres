@@ -106,7 +106,7 @@ add_action('wp_body_open', function () {
     ];
     ?>
     <div class="rigo-promo-bar" id="rigo-promo-bar">
-      <span>✨ Nouveau site, livraison offerte en France métropolitaine à partir de <span class="nowrap">60&nbsp;€</span></span>
+      <span>✨ Nouveau site, livraison offerte en France métropolitaine à partir de <?php echo rigo_free_shipping_label(); ?></span>
       <button class="rigo-promo-close" aria-label="Fermer" onclick="this.closest('#rigo-promo-bar').style.display='none';document.documentElement.style.setProperty('--rigo-hdr-h',document.getElementById('site-header').getBoundingClientRect().bottom+'px')">×</button>
     </div>
 

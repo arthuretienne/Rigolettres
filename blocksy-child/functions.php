@@ -27,6 +27,27 @@ add_action('wp_head', function () {
 }, 1);
 
 /**
+ * Seuil de livraison offerte (France métropolitaine), en euros.
+ *
+ * Source de vérité unique : la valeur est répétée dans le bandeau promo, le
+ * footer, la hero boutique, le drawer panier, la fiche produit, la barre de
+ * progression et les meta SEO. Elle doit rester alignée sur le minimum de la
+ * méthode « Livraison gratuite » de la zone WooCommerce (Réglages → Expédition).
+ *
+ * Surcharge : add_filter('rigo_free_shipping_threshold', function () { return 60; });
+ */
+function rigo_free_shipping_threshold() {
+    return (float) apply_filters('rigo_free_shipping_threshold', 80);
+}
+
+/**
+ * Le seuil formaté pour l'affichage, insécable : « 80 € ».
+ */
+function rigo_free_shipping_label() {
+    return '<span class="nowrap">' . esc_html((string) (int) rigo_free_shipping_threshold()) . '&nbsp;€</span>';
+}
+
+/**
  * Charge automatiquement tous les modules dans includes/.
  * Chaque fichier = un ancien snippet Code Snippets, migré 1:1.
  * Pour désactiver un module : commenter la ligne ou renommer le fichier en .php.off.

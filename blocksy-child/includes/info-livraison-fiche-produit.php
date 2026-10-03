@@ -1,7 +1,7 @@
 <?php
 /**
  * Migré depuis Code Snippet #23 : [Rigolettres] Info livraison fiche produit
- * Description : Bloc livraison offerte dès 60€ + détails Colissimo/Mondial Relay sous le bouton ATC. Montant dynamique.
+ * Description : Bloc livraison offerte dès le seuil rigo_free_shipping_threshold() + détails Colissimo/Mondial Relay sous le bouton ATC. Montant dynamique.
  */
 
 if (!defined('ABSPATH')) exit;
@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) exit;
  * [Rigolettres] Info livraison sur fiche produit
  *
  * Affiche un bloc d'infos livraison sous les trust badges :
- *  - Livraison offerte à partir de 60 €
+ *  - Livraison offerte à partir du seuil (rigo_free_shipping_threshold(), 80 € aujourd'hui)
  *  - Expédié sous 48h (lundi–vendredi)
  *  - Colissimo / Mondial Relay (via Boxtal Connect)
  *  - Livraison en France métropolitaine
@@ -23,14 +23,15 @@ add_action('woocommerce_after_add_to_cart_button', function () {
     global $product;
     if (!$product) return;
     $price = (float) $product->get_price();
-    $free_remaining = max(0, 60 - $price);
+    $threshold = rigo_free_shipping_threshold();
+    $free_remaining = max(0, $threshold - $price);
     $open_div = '<' . 'di' . 'v';
     $close_div = '</' . 'di' . 'v>';
 
     echo $open_div . ' class="rigo-shipping-info">';
 
     // Livraison offerte dynamique
-    if ($price >= 60) {
+    if ($price >= $threshold) {
         echo $open_div . ' class="rigo-ship-free-eligible">✅ <strong>Livraison offerte</strong> sur cette commande !' . $close_div;
     } else {
         $remaining = wc_price($free_remaining);

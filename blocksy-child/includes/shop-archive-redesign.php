@@ -56,7 +56,7 @@ add_action('woocommerce_before_main_content', function () {
         </nav>
 
         <div class="rigo-shop-hero-trust">
-          <span>✓ <strong>Livraison offerte</strong> dès <span class="nowrap">60&nbsp;€</span></span>
+          <span>✓ <strong>Livraison offerte</strong> dès <?php echo rigo_free_shipping_label(); ?></span>
           <span>✓ Expédié sous <strong>48&nbsp;h</strong></span>
           <span>✓ <strong>Conçu par une orthophoniste</strong></span>
         </div>
