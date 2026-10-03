@@ -37,6 +37,34 @@
 
 ## 📓 Journal de session
 
+### 2026-10-03 (suite 2) — Zone de livraison créée, seuil franco unifié à 80 €
+
+**✅ Livré**
+- [x] 🔴 **Zone « France Métropolitaine »** créée (zone 1), régions `continent:EU` + `country:FR`, avec `boxtal_connect` et `free_shipping` activées. `needs_shipping` est repassé à **`true`**.
+- [x] 🔴 **Page CGV reliée** à WooCommerce → la case d'acceptation apparaît au checkout.
+- [x] 🔴 **Klarna et Amazon Pay désactivés** sur Stripe. Passerelles actives : `stripe`, `stripe_link`.
+- [x] 🔴 **Brigitte passée en `shop_manager`** (était `administrator`).
+- [x] 🔴 **Seuil de livraison offerte unifié à 80 €** — décision Arthur 2026-10-03. Le minimum de la méthode `free_shipping` était à 80 € alors que tout le site annonçait 60 €. Introduit `rigo_free_shipping_threshold()` / `rigo_free_shipping_label()` dans [functions.php](blocksy-child/functions.php) comme source de vérité unique filtrable, et branché les 7 emplacements : bandeau promo, footer trust strip, hero boutique, drawer panier, bloc fiche produit, barre de progression, meta SEO. Plus aucune valeur en dur. Déployé et vérifié en live (0 occurrence de `60&nbsp;€` restante sur la home).
+
+**🔴 LE blocage restant : la méthode Boxtal ne renvoie aucun tarif**
+`GET /wc/v3/shipping/zones/1/methods` → `boxtal_connect` a `rates: ""`, **aucune grille tarifaire configurée**. Conséquence mesurée sur le live :
+- panier à 186 € → `Livraison gratuite = 0` proposée ✓ (la zone et la région fonctionnent)
+- panier à 56 € → **`rates: []`**, aucun mode de livraison proposé → **commande impossible**
+
+Or 13 des 14 produits sont sous 80 €. **Tant que ce n'est pas réglé, le site ne peut pas encaisser une commande normale.** C'est l'étape « 2. Réglages d'expédition → Accéder au tutoriel » de l'écran WooCommerce → Boxtal Connect : les grilles (point relais Mondial Relay, Colissimo domicile) se définissent côté boxtal.com, avec l'adresse d'expédition de Brigitte.
+- [ ] 🔴 Configurer les grilles tarifaires de la méthode « Forfait Boxtal ».
+- [ ] 🟠 Renseigner `bw_parcel_point_networks` sur la méthode `free_shipping` : vide aujourd'hui, donc **aucune carte de points relais ne s'affichera quand la livraison est offerte**.
+- [ ] 🟡 La zone 1 contient `continent:EU` en plus de `country:FR`. Sans effet aujourd'hui (vente restreinte à FR), mais à nettoyer avant toute ouverture à la Belgique ou la Suisse, sinon elles hériteront des tarifs France.
+
+**⏳ Reste à faire**
+- [ ] 🔴 **Tâche cron serveur** (hPanel Hostinger → Avancé → Tâches Cron) sur `wp-cron.php` toutes les 5-15 min + `define('DISABLE_WP_CRON', true)` dans `wp-config.php`. `wp_cron=true` et `remote_post/get` OK, mais WP-Cron se déclenche au trafic et le site n'en a pas → Action Scheduler accumule des actions en retard, donc **aucune synchronisation automatique** (remontée statut Boxtal, emails, relance avis J+7).
+- [ ] 🟠 **Pages CGV (86) et Livraison & Retours (88)** annoncent encore « supérieure à 60 € ». À passer à 80 € — contenu en base, hors child theme.
+- [ ] 🟠 **PayPal** toujours `needs_setup: true`.
+- [ ] 🟠 **Snippet 66 « [DEV MODE] Bypass LiteSpeed cache »** toujours actif.
+- [ ] 🟡 Alertes de stock encore sur `aetiennea@gmail.com`.
+- [ ] 🟡 **9 produits sur 14 sans photo** ; stock à la valeur par défaut `10` sur 8 références (76 à 83).
+- [ ] 🟡 Médiateur de la consommation non nommé ; Colissimo annoncé 6,90 € pour un coût réel ~9,13 € TTC.
+
 ### 2026-10-03 (suite) — Stripe actif + réglages WC corrigés + Boxtal appairé
 
 **✅ Livré par Arthur dans wp-admin** (vérifié via REST)
