@@ -37,6 +37,28 @@
 
 ## 📓 Journal de session
 
+### 2026-10-03 (suite) — Stripe actif + réglages WC corrigés + Boxtal appairé
+
+**✅ Livré par Arthur dans wp-admin** (vérifié via REST)
+- [x] 🔴 Adresse boutique renseignée (14 chemin de la Cour du Bois, Saint-Rémy-des-Monts, 72600).
+- [x] 🔴 Unités passées en **kg / cm** (étaient en lbs/in) — les poids produits deviennent corrects sans retouche.
+- [x] 🔴 Vente restreinte à la **France** (`allowed_countries=specific:["FR"]`, `ship_to_countries=specific:["FR"]`).
+- [x] 🔴 **Stripe connecté et actif en mode LIVE** (`needs_setup:false`, clé `pk_live_…`). L'API Store renvoie désormais `payment_methods: ["stripe","stripe_klarna"]` — le checkout peut encaisser.
+- [x] 🔴 **Boxtal Connect appairé** : la méthode `boxtal_connect` apparaît dans `/wc/v3/shipping_methods` (elle en était absente ce matin). Écran de config accessible via WooCommerce → Boxtal Connect.
+
+**🔑 Cause racine identifiée pour `needs_shipping: false`**
+Ce n'est pas un bug ni un produit virtuel. `WC_Cart::needs_shipping()` retourne `false` dès que `wc_get_shipping_method_count(true) === 0`, c'est-à-dire **tant qu'aucune méthode de livraison n'est activée dans aucune zone**. WooCommerce désactive alors toute la mécanique d'expédition (pas d'adresse de livraison demandée, pas de frais de port). Créer la zone France avec au moins une méthode rebascule `needs_shipping` à `true`. **À revérifier après création de la zone.**
+
+**⏳ Reste bloquant pour le premier achat de bout en bout**
+- [ ] 🔴 **Zone de livraison France** à créer (toujours 0 zone ; seule la zone 0 « Emplacements non couverts » existe, sans méthode).
+- [ ] 🔴 **Mapping statuts Boxtal** : « Statut expédié » → `Terminée`, « Statut livré » → laisser vide.
+- [ ] 🔴 **Action Scheduler : actions en retard** signalées dans l'admin. `wp_cron=true` et `remote_post/get` OK, donc ce n'est pas un blocage réseau : WP-Cron se déclenche au trafic et le site n'en a pas. Sans vraie tâche cron serveur, **rien ne se synchronise tout seul** (sync Boxtal, emails, relance avis J+7). → tâche cron Hostinger sur `wp-cron.php` toutes les 5-15 min + `define('DISABLE_WP_CRON', true)` dans `wp-config.php`.
+- [ ] 🔴 **Klarna et Amazon Pay activés par erreur** sur Stripe (`stripe_klarna`, `stripe_amazon_pay` dans les passerelles actives). Hors sujet pour un jeu à 28 € et ça encombre le checkout. Garder carte + Link, désactiver le reste.
+- [ ] 🔴 **Stripe en mode LIVE** : toute commande de test débitera une vraie carte.
+- [ ] 🔴 **Page CGV toujours non reliée** à WooCommerce (`page_set: false`) → pas de case d'acceptation au checkout.
+- [ ] 🟠 **PayPal** toujours `needs_setup: true`, non activé.
+- [ ] 🟡 Alertes de stock encore adressées à `aetiennea@gmail.com`.
+
 ### 2026-10-03 — 🔴 AUDIT FONCTIONNEL GO-LIVE : le site NE PEUT PAS VENDRE
 
 > Passe de vérification bout-à-bout sur le live (REST WC authentifié + parcours réel panier → checkout dans un navigateur). Verdict : **tout le tunnel de vente est inopérant**. 6 commandes en base, toutes en statut `checkout-draft` → **aucune commande n'a jamais abouti depuis la création du site**.
