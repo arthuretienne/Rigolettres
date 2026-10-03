@@ -3,7 +3,7 @@
 > **Fichier source** pour suivre la progression du site vers le niveau "e-commerce premium 50 k€".
 > Toute session Claude **doit lire ce fichier au démarrage** et **le mettre à jour** dès qu'une feature est livrée (cocher les cases, ajouter une ligne au journal).
 
-**Dernière mise à jour :** 2026-10-03 (audit fonctionnel go-live — voir journal : paiement, livraison et réglages WC sont inopérants, le site ne peut pas encaisser une commande).
+**Dernière mise à jour :** 2026-10-03 (✅ le tunnel de vente fonctionne : paiement Stripe actif, livraison Boxtal opérationnelle avec carte de points relais, franco à 80 €).
 **Score actuel estimé :** ~63 % du niveau "agence 50 k€" _(+3 pts grâce au catalogue passé de 5 à 14 SKU, à la cohérence "Brigitte Étienne · depuis 1978" propagée partout, et à la page À propos qui passe de 793 à ~1500 mots)_
 **Volet DA séparé :** voir [auditv2.md](auditv2.md) pour le plan refonte typo / photos / fiche produit premium / motion / chrome WC.
 **Benchmarks référence :** Respire, Les Raffineurs, Michel & Augustin, Maison du Pastel, Typology, Mangez et Relaxez (DTC FR fort taux de conversion) + Shopify Premier (Allbirds, Rothy's, Oura).
@@ -36,6 +36,34 @@
 ---
 
 ## 📓 Journal de session
+
+### 2026-10-03 (suite 4) — ✅ LE TUNNEL DE VENTE FONCTIONNE
+
+> Test bout-à-bout sur le live via l'API Store + rendu du checkout. **Le site peut encaisser une commande.** C'était le blocage n°1 depuis la création du projet.
+
+**✅ Scénarios validés** (adresse de test 29200 Brest)
+
+| Panier | Poids | Options proposées |
+|---|---|---|
+| 1 Pato — 28 € | 228 g | Point relais Mondial Relay **4,90 €** · Colissimo domicile **8,90 €** → total 32,90 € |
+| Grammaire N°1 + N°2 — 43 € | 1,031 kg | Point relais **6,90 €** · Colissimo domicile **11,90 €** |
+| 3× Pato — 84 € | 684 g | **Livraison gratuite 0 €** |
+| Pack 5 Rigoloverbes — 130 € | 1,157 kg | **Livraison gratuite 0 €** |
+
+**✅ Autres vérifications**
+- **Carte des points relais opérationnelle** : le checkout propose « Point relais le plus proche : INTERMARCHE EXPRESS BREST, 50 rue Émile Zola 29200 » + « Choisir un autre point relais ». DOM `bw-parcel-point` présent.
+- **Validation de commande express** (Apple Pay / Google Pay) affichée en haut du checkout.
+- **Stripe chargé** : 8 iframes Stripe Elements, bouton « Commander » actif.
+- Sélecteur de pays réduit à **France** uniquement.
+- Note : les `rates` de `boxtal_connect` apparaissent vides via `/wc/v3/shipping/zones/1/methods` alors qu'elles sont bien enregistrées — l'API REST n'expose pas ce réglage. Ne pas s'y fier pour diagnostiquer.
+
+**🔴 2 correctifs identifiés par le test**
+
+- [ ] 🔴 **Le bloc CGV est en acceptation passive.** Le checkout affiche « En continuant vos achats, vous acceptez nos Conditions générales… » sans case à cocher (`hasCheckbox: false`). Relier la page CGV dans les réglages WC ne suffit pas : il faut éditer la page **Commander** → sélectionner le bloc « Conditions générales » → activer **« Exiger une case à cocher »**. En vente à distance, l'acceptation doit être un acte positif.
+- [ ] 🟠 **Au-dessus de 80 €, la livraison gratuite masque les autres options** et son champ `bw_parcel_point_networks` est vide → **aucune carte de points relais** n'est proposée. Brigitte devra donc expédier à domicile (coût 8,18 € TTC) au lieu du relais (3,65 € TTC). Mettre **« Mondial Relay/Happy-Post — Réseau relais »** sur la méthode « Livraison gratuite » : **~4,50 € économisés par commande au-dessus de 80 €**.
+- [ ] 🟡 Le tarif relais 1→3 kg a été saisi à 6,90 € sans simulation Boxtal à ce poids. Enjeu faible (uniquement les commandes de 2-3 livres de grammaire), à affiner plus tard.
+
+**Coûts réels confirmés** (simulateur Boxtal, 1 jeu de 228 g, prix **HT** — Brigitte ne récupérant pas la TVA, ajouter 20 %) : Mondial Points Relais 3,04 € HT = **3,65 € TTC** · Colissimo Domicile sans signature 6,82 € HT = **8,18 € TTC** · Chrono 2Shop 2,99 € HT · Colissimo Point Retrait 4,78 € HT · Mondial Domicile 5,10 € HT. **Assurance écartée** (+0,85 € HT, soit +28 % sur un envoi de 3 €).
 
 ### 2026-10-03 (suite 3) — Poids réels mesurés et corrigés
 
