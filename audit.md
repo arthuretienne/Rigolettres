@@ -37,6 +37,33 @@
 
 ## 📓 Journal de session
 
+### 2026-10-03 (suite 3) — Poids réels mesurés et corrigés
+
+**✅ Livré** — Brigitte a pesé les 8 jeux, poids poussés en base via `POST /wc/v3/products/batch` :
+
+| ID | Produit | Avant | Après |
+|---|---|---|---|
+| 28 | Rigolettres N°1 Pato | 230 g | **228 g** |
+| 29 | Rigolettres N°2 | 282 g | 282 g |
+| 75 | Rigolettres N°3 | 280 g | **276 g** |
+| 76 | Rigoloverbes Présent | 250 g* | **244 g** |
+| 77 | Rigoloverbes Imparfait | 250 g* | **222 g** |
+| 78 | Rigoloverbes Futur | 250 g* | **212 g** |
+| 79 | Rigoloverbes Passé Composé | 250 g* | **224 g** |
+| 30 | Rigoloverbes Passé Simple | 520 g | **255 g** |
+| 80 | Pack R1+R2 | 550 g | **510 g** (calculé) |
+| 81 | Pack R1+R2+R3 | 800 g | **786 g** (calculé) |
+| 82 | Pack 3 Rigoloverbes | 750 g | **678 g** (calculé) |
+| 83 | Pack 5 Rigoloverbes | 1250 g | **1157 g** (calculé) |
+
+\* valeurs placeholder jamais mesurées. Le 520 g du Passé Simple était une erreur de saisie : toute la gamme Rigoloverbes tient entre 212 et 255 g.
+
+Les 4 packs sont la somme de leurs composants — **l'emballage extérieur n'est pas compté**, prévoir 50-150 g de marge dans les tranches tarifaires.
+
+- [ ] 🟡 **Les 2 livres de grammaire n'ont pas été re-pesés** (427 g et 604 g, 1ère vague Brigitte). Ce sont les articles les plus lourds du catalogue, à confirmer.
+
+**Conséquence sur les tranches** : plus aucun article ne dépasse 1,16 kg, et une commande d'1 à 3 jeux reste sous 1 kg. Les tranches peuvent être simplifiées (0-1 kg / 1-3 kg / 3-30 kg) plutôt que découpées à 500 g.
+
 ### 2026-10-03 (suite 2) — Zone de livraison créée, seuil franco unifié à 80 €
 
 **✅ Livré**
