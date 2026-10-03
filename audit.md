@@ -3,7 +3,7 @@
 > **Fichier source** pour suivre la progression du site vers le niveau "e-commerce premium 50 k€".
 > Toute session Claude **doit lire ce fichier au démarrage** et **le mettre à jour** dès qu'une feature est livrée (cocher les cases, ajouter une ligne au journal).
 
-**Dernière mise à jour :** 2026-05-10 (sprint 9 — backlog Arthur 16/16 traités. Plugins facture PDF + Customer Reviews installés/configurés, emails WC paramétrés aux couleurs Rigolettres, refonte CSS complète page /shop avec hero + filtres pills + grid renovée, audit photos produit chiffré.)
+**Dernière mise à jour :** 2026-10-03 (audit fonctionnel go-live — voir journal : paiement, livraison et réglages WC sont inopérants, le site ne peut pas encaisser une commande).
 **Score actuel estimé :** ~63 % du niveau "agence 50 k€" _(+3 pts grâce au catalogue passé de 5 à 14 SKU, à la cohérence "Brigitte Étienne · depuis 1978" propagée partout, et à la page À propos qui passe de 793 à ~1500 mots)_
 **Volet DA séparé :** voir [auditv2.md](auditv2.md) pour le plan refonte typo / photos / fiche produit premium / motion / chrome WC.
 **Benchmarks référence :** Respire, Les Raffineurs, Michel & Augustin, Maison du Pastel, Typology, Mangez et Relaxez (DTC FR fort taux de conversion) + Shopify Premier (Allbirds, Rothy's, Oura).
@@ -36,6 +36,56 @@
 ---
 
 ## 📓 Journal de session
+
+### 2026-10-03 — 🔴 AUDIT FONCTIONNEL GO-LIVE : le site NE PEUT PAS VENDRE
+
+> Passe de vérification bout-à-bout sur le live (REST WC authentifié + parcours réel panier → checkout dans un navigateur). Verdict : **tout le tunnel de vente est inopérant**. 6 commandes en base, toutes en statut `checkout-draft` → **aucune commande n'a jamais abouti depuis la création du site**.
+
+**🔴 Blocage 1 — Aucun moyen de paiement**
+`GET /wc/v3/payment_gateways` → 35 passerelles, **0 activée**. `stripe` et `ppcp-gateway` sont en `needs_setup:true` (plugins installés, jamais connectés à un compte marchand). Le checkout affiche littéralement : « Aucun moyen de paiement disponible. »
+- [ ] 🔴 Créer le compte **Stripe** (KYC : SIRET 314 253 030 00055 ✓, ADELI ✓, **RIB Brigitte manquant**) puis coller les clés API.
+- [ ] 🔴 Onboarding **PayPal Business** (plugin WooCommerce PayPal Payments v4.0.2 déjà actif).
+- [ ] 🟠 Filet de sécurité J1 : activer `bacs` (virement) avec l'IBAN de Brigitte, pour pouvoir encaisser même si Stripe traîne en validation.
+
+**🔴 Blocage 2 — Aucune livraison**
+`GET /wc/v3/shipping/zones` → **une seule zone**, la zone 0 « Emplacements non couverts », et `zones/0/methods` → **`[]`**. Aucun tarif nulle part. Pire : l'API Store renvoie `needs_shipping: false` sur un panier contenant un produit physique non-virtuel → **le checkout ne demande même pas d'adresse de livraison et ne facture aucun frais de port**. À revérifier une fois une zone créée.
+- [ ] 🔴 Créer le compte **Boxtal** + lier l'API dans Boxtal Connect (plugin v2.0.0 actif mais non configuré).
+- [ ] 🔴 Créer la zone **France métropolitaine** avec Mondial Relay 4,90 € / Colissimo 6,90 € + **Livraison gratuite dès 60 €** (promesse déjà affichée partout sur le site et écrite dans les CGV — aujourd'hui non tenable techniquement).
+- [ ] 🔴 Revérifier `needs_shipping` après création de la zone.
+
+**🔴 Blocage 3 — Réglages WooCommerce faux ou vides**
+- [ ] 🔴 **`woocommerce_store_address` / `_city` / `_postcode` = vides.** Adresse d'expédition inconnue → Boxtal ne peut pas calculer, les factures PDF et les étiquettes seront incomplètes. À remplir : 14 chemin de la Cour du Bois, 72600 Saint-Rémy-des-Monts.
+- [ ] 🔴 **`woocommerce_weight_unit = "lbs"` et `dimension_unit = "in"`.** Les poids saisis (0,230 ; 0,282 ; 1,25…) sont donc lus comme des **livres** et les dimensions comme des **pouces** : un jeu de 230 g est vu à 104 g, une boîte 15×9×3 cm est vue à 38×23×7,6 cm. **Tous les tarifs Boxtal seront faux.** Passer en kg / cm.
+- [ ] 🔴 **`woocommerce_allowed_countries = "all"`** : le site vend au monde entier (250 pays dans le sélecteur du checkout) alors que les CGV et la page Livraison disent « France métropolitaine, nous contacter pour le reste ». Restreindre à FR (+ éventuellement BE/CH/LU).
+- [ ] 🔴 **Page CGV non reliée à WooCommerce** (`terms page` non définie dans le system status) → pas de case à cocher « J'accepte les CGV » au checkout, seulement une phrase passive. En VAD France l'acceptation doit être un acte positif. Relier la page 86.
+- [ ] 🟡 Alertes de stock envoyées à `aetiennea@gmail.com` → basculer sur `contact@rigolettres.fr`.
+
+**🔴 Blocage 4 — Personne d'autre qu'Arthur ne peut gérer la boutique**
+`GET /wp/v2/users` → **1 seul compte** : `aetiennea@gmail.com` (administrator). Brigitte, Albéric et Flo n'ont **aucun accès**.
+- [ ] 🔴 Créer 3 comptes (Brigitte + Albéric en `shop_manager`, Flo selon son rôle) — emails à récupérer.
+- [ ] 🟠 Installer **Admin Menu Editor** et masquer tout sauf Commandes / Produits / Clients (exigence CLAUDE.md jamais faite).
+- [ ] 🟠 Rédiger le **mini-guide PDF visuel** pour Brigitte (traiter une commande, imprimer l'étiquette, marquer expédié) — absent du repo.
+
+**🟠 Conformité juridique — 3 trous résiduels** (les 4 pages légales sont par ailleurs complètes et en ligne)
+- [ ] 🔴 **Médiateur de la consommation non nommé.** Les CGV (art. 12) et les mentions légales (§6) renvoient à « un médiateur » sans l'identifier. L'article L.612-1 du Code de la consommation impose d'**adhérer** à un médiateur agréé et de communiquer **son nom et ses coordonnées**. Souscrire (CM2C, Medicys, AME Conso… ~50-100 €/an) puis nommer.
+- [ ] 🟠 **Renvoi à la plateforme ODR européenne obsolète.** `ec.europa.eu/consumers/odr` est cité dans les CGV et les mentions légales ; la plateforme a été fermée par la Commission en juillet 2025. À retirer.
+- [ ] 🟠 **Formulaire type de rétractation absent** (annexe obligatoire, art. R.221-1). À ajouter en fin de CGV + en PDF téléchargeable.
+
+**🟠 Catalogue — données non validées par Brigitte**
+- [ ] 🔴 **11 produits sur 14 n'ont aucune photo** (seuls 28, 29, 30, 31, 32 en ont, 1 ou 2 chacun). Les 4 packs et les 5 Rigoloverbes sont vendus sans aucun visuel.
+- [ ] 🔴 **Stock des packs et Rigoloverbes = 10 partout** → valeur par défaut, jamais renseignée par Brigitte. Risque de survente ou de rupture invisible.
+- [ ] 🟠 **Prix des packs non confirmés** : 55 € (R1+R2), 83 € (R1+R2+R3), 80 € (3 Rigoloverbes), 130 € (5 Rigoloverbes). À valider — notamment la remise réelle voulue sur les packs.
+- [ ] 🟠 **Poids/dimensions des packs** saisis à l'estimation (22×22×18 cm…), à mesurer une fois les unités corrigées.
+
+**✅ Ce qui fonctionne et est validé ce jour**
+- 4 pages légales en ligne et complètes (mentions 85, CGV 86, confidentialité 87, livraison-retours 88) avec SIRET, ADELI, adresses, hébergeur, garanties légales, rétractation 14 j étendue à 30 j.
+- Email : SPF `include:spf.brevo.com` + DMARC `p=none` + code de vérification Brevo tous présents en DNS ; emails WC brandés (vert #5C8E2E, crème #FBF8F1, signature Brigitte) ; `contact@rigolettres.fr` en expéditeur.
+- Bannière cookies Complianz opérationnelle (Accepter / Refuser / Préférences).
+- Plugins Facture PDF (v5.16.3) et Avis CusRev (v5.122.0) actifs.
+- Panier : ajout produit, quantité, totaux, cross-sells → OK. Les 46 liens de la home répondent 200.
+
+**⚠️ À ne pas oublier au go-live**
+- [ ] 🔴 Désactiver le **snippet 66 « [DEV MODE] Bypass LiteSpeed cache »**, toujours actif → le site sert tout sans cache aujourd'hui.
 
 ### 2026-05-10 (sprint 9) — ✅ BACKLOG Arthur 16/16 traités, sprint 9 closes the loop
 
