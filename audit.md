@@ -37,6 +37,27 @@
 
 ## 📓 Journal de session
 
+### 2026-10-03 (suite 5) — Franco supprimé, case CGV activée, produit de test créé
+
+**Décision Arthur** : la méthode « Livraison gratuite » est retirée de la zone WooCommerce (plus simple à gérer). Seules restent **Point relais - Mondial Relay** et **Colissimo à domicile**.
+
+**✅ Livré**
+- [x] 🔴 **Case à cocher CGV activée au checkout.** Relier la page CGV dans les réglages WC ne suffisait pas : le bloc Gutenberg de la page Commander (id 9) était `<!-- wp:woocommerce/checkout-terms-block -->` sans attribut. Patché en `{"checkbox":true}`. Le checkout affiche désormais « Vous devez accepter nos Conditions générales et notre Politique de confidentialité pour continuer vos achats. » avec une vraie case (`case_a_cocher: true`).
+- [x] 🔴 **Toutes les promesses « livraison offerte dès 80 € » retirées du site.** Sans ça, le site annonçait un franco inexistant sur le bandeau promo, le footer, la hero boutique, le drawer panier, la fiche produit et les meta SEO. Remplacées par d'autres arguments (décision Arthur : garder le bandeau, changer le sujet) :
+  - bandeau promo → « ✨ Jeux conçus par une orthophoniste, fabriqués en France dans la Sarthe »
+  - footer trust strip → « Expédié sous 48 h » / « Point relais dès 4,90 € »
+  - hero boutique → « ✓ Point relais dès 4,90 € »
+  - drawer panier → « Livraison en point relais dès 4,90 € »
+  - fiche produit → « 🚚 Livraison en point relais dès 4,90 € » (statique, plus de calcul dynamique)
+  - meta SEO home → « Fabriqués en France, expédiés sous 48 h depuis la Sarthe »
+  `rigo_free_shipping_threshold()` / `rigo_free_shipping_label()` remplacés par **`rigo_shipping_from_price()` / `rigo_shipping_from_label()`** (4,90 €, filtrable), à garder alignés sur la tranche basse de la méthode Point relais. La barre de progression du franco est neutralisée derrière `rigo_free_shipping_bar_visible` (défaut `false`), code conservé intact pour un éventuel retour du franco.
+- [x] 🔴 **Pages légales mises à jour** : CGV (86) — phrase de franco supprimée de l'article 7 ; Livraison & Retours (88) — Colissimo passé de 6,90 € à **8,90 €**, phrase de franco remplacée par « Les frais de port sont calculés selon le poids de votre commande et affichés avant la validation. Le point relais est le mode le plus économique. »
+- [x] **Produit de test créé** : ID **112**, « TEST — ne pas commander », **1,00 €**, SKU `TEST-1EUR`, poids 230 g, stock 999, statut `publish` + `catalog_visibility: hidden` (invisible en boutique et en recherche, accessible par lien direct uniquement).
+  URL : https://rigolettres.fr/product/test-ne-pas-commander/ · ajout direct au panier : `https://rigolettres.fr/?add-to-cart=112`
+  ⚠️ Un statut `private` avait d'abord été posé : le produit devenait alors **non achetable** par un visiteur non connecté (HTTP 400 à l'ajout au panier). `publish` + `hidden` est le bon réglage pour un produit de test.
+
+**✅ Checkout revérifié après ces changements** : panier produit test 1 € → Point relais 4,90 € · Colissimo 8,90 € → **total 5,90 €**, carte des points relais fonctionnelle, case CGV présente.
+
 ### 2026-10-03 (suite 4) — ✅ LE TUNNEL DE VENTE FONCTIONNE
 
 > Test bout-à-bout sur le live via l'API Store + rendu du checkout. **Le site peut encaisser une commande.** C'était le blocage n°1 depuis la création du projet.
