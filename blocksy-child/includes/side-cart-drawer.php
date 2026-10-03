@@ -37,7 +37,7 @@ add_action('wp_footer', function () {
           <span>Sous-total</span>
           <span id="rigo-drawer-total"></span>
         </div>
-        <div class="rigo-drawer-shipping-note">Livraison offerte dès <?php echo rigo_free_shipping_label(); ?></div>
+        <div class="rigo-drawer-shipping-note">Livraison en point relais dès <?php echo rigo_shipping_from_label(); ?></div>
         <a href="/checkout/" class="rigo-drawer-checkout-btn">Commander →</a>
         <a href="/cart/" class="rigo-drawer-cart-link">Voir le panier complet</a>
       </div>

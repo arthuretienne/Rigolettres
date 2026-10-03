@@ -1,7 +1,7 @@
 <?php
 /**
  * Migré depuis Code Snippet #23 : [Rigolettres] Info livraison fiche produit
- * Description : Bloc livraison offerte dès le seuil rigo_free_shipping_threshold() + détails Colissimo/Mondial Relay sous le bouton ATC. Montant dynamique.
+ * Description : Bloc infos livraison (prix d'entrée point relais + délai + transporteurs) sous le bouton ATC.
  */
 
 if (!defined('ABSPATH')) exit;
@@ -10,33 +10,26 @@ if (!defined('ABSPATH')) exit;
  * [Rigolettres] Info livraison sur fiche produit
  *
  * Affiche un bloc d'infos livraison sous les trust badges :
- *  - Livraison offerte à partir du seuil (rigo_free_shipping_threshold(), 80 € aujourd'hui)
+ *  - Prix d'entrée en point relais (rigo_shipping_from_price(), 4,90 € aujourd'hui)
  *  - Expédié sous 48h (lundi–vendredi)
  *  - Colissimo / Mondial Relay (via Boxtal Connect)
  *  - Livraison en France métropolitaine
  *
+ * Il n'y a plus de livraison offerte depuis le 2026-10-03 (méthode retirée de
+ * la zone WooCommerce), d'où l'argument « à partir de » au lieu du franco.
+ *
  * Source : audit.md Sprint 2
- * Déployé via Code Snippets (scope=front-end, priority=35)
  */
 
 add_action('woocommerce_after_add_to_cart_button', function () {
     global $product;
     if (!$product) return;
-    $price = (float) $product->get_price();
-    $threshold = rigo_free_shipping_threshold();
-    $free_remaining = max(0, $threshold - $price);
     $open_div = '<' . 'di' . 'v';
     $close_div = '</' . 'di' . 'v>';
 
     echo $open_div . ' class="rigo-shipping-info">';
 
-    // Livraison offerte dynamique
-    if ($price >= $threshold) {
-        echo $open_div . ' class="rigo-ship-free-eligible">✅ <strong>Livraison offerte</strong> sur cette commande !' . $close_div;
-    } else {
-        $remaining = wc_price($free_remaining);
-        echo $open_div . ' class="rigo-ship-threshold">🚚 Plus que ' . $remaining . ' pour la <strong>livraison offerte</strong>' . $close_div;
-    }
+    echo $open_div . ' class="rigo-ship-threshold">🚚 Livraison en <strong>point relais</strong> dès ' . rigo_shipping_from_label() . $close_div;
 
     echo $open_div . ' class="rigo-ship-details">';
     echo '<span class="rigo-ship-item">📦 Expédié sous <strong>48h</strong> (lun–ven)</span>';

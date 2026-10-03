@@ -27,24 +27,29 @@ add_action('wp_head', function () {
 }, 1);
 
 /**
- * Seuil de livraison offerte (France métropolitaine), en euros.
+ * Prix de livraison le moins cher affiché au client, en euros.
  *
- * Source de vérité unique : la valeur est répétée dans le bandeau promo, le
- * footer, la hero boutique, le drawer panier, la fiche produit, la barre de
- * progression et les meta SEO. Elle doit rester alignée sur le minimum de la
- * méthode « Livraison gratuite » de la zone WooCommerce (Réglages → Expédition).
+ * Il n'y a plus de livraison offerte (méthode « Livraison gratuite » retirée de
+ * la zone WooCommerce le 2026-10-03). L'argument commercial devient « à partir
+ * de X € en point relais ». Source de vérité unique : la valeur est reprise
+ * dans le footer, la hero boutique, le drawer panier et la fiche produit.
  *
- * Surcharge : add_filter('rigo_free_shipping_threshold', function () { return 60; });
+ * Doit rester aligné sur la tranche la plus basse de la méthode
+ * « Point relais - Mondial Relay » (Réglages → Expédition → France Métropolitaine).
+ *
+ * Surcharge : add_filter('rigo_shipping_from_price', function () { return 5.90; });
  */
-function rigo_free_shipping_threshold() {
-    return (float) apply_filters('rigo_free_shipping_threshold', 80);
+function rigo_shipping_from_price() {
+    return (float) apply_filters('rigo_shipping_from_price', 4.90);
 }
 
 /**
- * Le seuil formaté pour l'affichage, insécable : « 80 € ».
+ * Le prix formaté pour l'affichage, insécable : « 4,90 € ».
  */
-function rigo_free_shipping_label() {
-    return '<span class="nowrap">' . esc_html((string) (int) rigo_free_shipping_threshold()) . '&nbsp;€</span>';
+function rigo_shipping_from_label() {
+    $price = number_format(rigo_shipping_from_price(), 2, ',', ' ');
+
+    return '<span class="nowrap">' . esc_html($price) . '&nbsp;€</span>';
 }
 
 /**

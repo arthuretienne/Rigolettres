@@ -47,7 +47,7 @@ if (!function_exists('rigolettres_get_seo_data')) {
 
         if (is_front_page()) {
             $data['title'] = 'Rigolettres — jeux éducatifs pour apprendre à lire | méthode syllabique';
-            $data['description'] = 'Jeux et livres créés par Brigitte, orthophoniste à Mamers depuis 1978. Méthode syllabique ludique pour enfants de 5 à 12 ans. Fabriqués en France. Livraison offerte dès ' . (int) rigo_free_shipping_threshold() . ' €.';
+            $data['description'] = 'Jeux et livres créés par Brigitte, orthophoniste à Mamers depuis 1978. Méthode syllabique ludique pour enfants de 5 à 12 ans. Fabriqués en France, expédiés sous 48 h depuis la Sarthe.';
         } elseif (is_singular('product')) {
             global $post;
             $product = function_exists('wc_get_product') ? wc_get_product($post->ID) : null;

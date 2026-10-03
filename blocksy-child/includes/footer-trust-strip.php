@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) exit;
  * [Rigolettres] Footer trust strip — 5 piliers de réassurance
  *
  * Bandeau inséré juste avant le footer : Fabriqué FR / Paiement / Retours /
- * Orthophoniste / Livraison offerte.
+ * Orthophoniste / Expédition.
  * Utilise JS pour s'insérer avant l'élément <footer> existant.
  *
  * Scope : front-end
@@ -78,8 +78,8 @@ add_action('wp_footer', function () {
                     </svg>
                 </div>
                 <div class="rigo-trust-text">
-                    <strong>Livraison offerte dès <?php echo rigo_free_shipping_label(); ?></strong>
-                    <span>Colissimo &amp; Mondial Relay</span>
+                    <strong>Expédié sous 48&nbsp;h</strong>
+                    <span>Point relais dès <?php echo rigo_shipping_from_label(); ?></span>
                 </div>
             </div>
 

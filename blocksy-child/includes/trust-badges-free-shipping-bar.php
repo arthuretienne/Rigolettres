@@ -1,7 +1,7 @@
 <?php
 /**
  * Migré depuis Code Snippet #19 : [Rigolettres] Trust badges + Free shipping bar
- * Description : Trust badges sous ATC fiche produit + barre progression livraison gratuite (seuil rigo_free_shipping_threshold()). Sprint 1.
+ * Description : Trust badges sous ATC fiche produit. La barre de progression livraison gratuite est désactivée (plus de franco depuis le 2026-10-03). Sprint 1.
  */
 
 if (!defined('ABSPATH')) exit;
@@ -57,9 +57,15 @@ add_action('woocommerce_after_add_to_cart_button', function () {
 }, 25);
 
 // ── 2. Free shipping progress bar ─────────────────────────────────────────
+// DÉSACTIVÉE depuis le 2026-10-03 : la méthode « Livraison gratuite » a été
+// retirée de la zone WooCommerce, il n'y a plus de seuil à atteindre. Le code
+// est conservé intact pour pouvoir être rallumé si un franco est réintroduit :
+//   add_filter('rigo_free_shipping_bar_visible', '__return_true');
+// puis redéfinir le seuil ci-dessous sur le minimum de la méthode WooCommerce.
 add_action('wp_footer', function () {
+    if (!apply_filters('rigo_free_shipping_bar_visible', false)) return;
     if (!is_cart() && !is_checkout() && !is_product()) return;
-    $threshold = rigo_free_shipping_threshold();
+    $threshold = (float) apply_filters('rigo_free_shipping_threshold', 80);
     ?>
     <div id="rigo-ship-bar-wrap" style="display:none">
       <div id="rigo-ship-bar-msg"></div>
