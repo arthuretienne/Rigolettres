@@ -87,16 +87,21 @@ add_action('wp_footer', function () {
 
       // Show/hide based on native ATC button visibility
       var nativeAtc = document.querySelector('.single_add_to_cart_button, .cart button[type="submit"]');
-      var footer = document.querySelector('.site-footer, footer');
+      // Le pied de page Blocksy (footer#footer, masqué) précède le nôtre dans le DOM :
+      // « .site-footer, footer » le renvoyait, sa position valait 0 et la barre
+      // se croyait toujours arrivée en bas de page — elle ne s'affichait jamais.
+      var footer = document.querySelector('footer.site-footer');
       var showing = false;
 
       function update() {
         if (!nativeAtc) return;
         var rect = nativeAtc.getBoundingClientRect();
         var footerRect = footer ? footer.getBoundingClientRect() : {top: 9999};
-        var nativeVisible = rect.bottom > 0 && rect.top < window.innerHeight;
+        // La barre n'apparaît qu'une fois le bouton d'origine dépassé (pas en haut de
+        // page, quand il est encore sous la ligne de flottaison).
+        var passedNative = rect.bottom < 0;
         var footerVisible = footerRect.top < window.innerHeight - 60;
-        var shouldShow = !nativeVisible && !footerVisible;
+        var shouldShow = passedNative && !footerVisible;
         if (shouldShow !== showing) {
           showing = shouldShow;
           bar.classList.toggle('is-visible', showing);

@@ -146,6 +146,8 @@ add_action('wp_body_open', function () {
     }
     $links[] = ['Contact', home_url('/contact/'), 'Contact'];
     ?>
+    <a class="rigo-skip-link" href="#main">Aller au contenu</a>
+
     <div class="rigo-promo-bar" id="rigo-promo-bar" role="region" aria-label="Annonce">
       <p class="rigo-promo-text">✨ Jeux conçus par une orthophoniste, fabriqués en France dans la Sarthe</p>
       <button type="button" class="rigo-promo-close" id="rigo-promo-close" aria-label="Fermer l’annonce">
