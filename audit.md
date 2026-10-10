@@ -3,7 +3,7 @@
 > **Fichier source** pour suivre la progression du site vers le niveau "e-commerce premium 50 k€".
 > Toute session Claude **doit lire ce fichier au démarrage** et **le mettre à jour** dès qu'une feature est livrée (cocher les cases, ajouter une ligne au journal).
 
-**Dernière mise à jour :** 2026-10-10 (prix de la home resynchronisés sur le catalogue ; tunnel de vente fonctionnel depuis le 2026-10-03).
+**Dernière mise à jour :** 2026-10-10 (cache LiteSpeed réactivé + tâche cron serveur en place ; prix de la home resynchronisés sur le catalogue ; tunnel de vente fonctionnel depuis le 2026-10-03).
 **Score actuel estimé :** ~63 % du niveau "agence 50 k€" _(+3 pts grâce au catalogue passé de 5 à 14 SKU, à la cohérence "Brigitte Étienne · depuis 1978" propagée partout, et à la page À propos qui passe de 793 à ~1500 mots)_
 **Volet DA séparé :** voir [auditv2.md](auditv2.md) pour le plan refonte typo / photos / fiche produit premium / motion / chrome WC.
 **Benchmarks référence :** Respire, Les Raffineurs, Michel & Augustin, Maison du Pastel, Typology, Mangez et Relaxez (DTC FR fort taux de conversion) + Shopify Premier (Allbirds, Rothy's, Oura).
@@ -36,6 +36,27 @@
 ---
 
 ## 📓 Journal de session
+
+### 2026-10-10 (suite) — Cache LiteSpeed réactivé + tâche cron serveur
+
+**✅ Livré par Arthur** (hPanel + wp-admin), vérifié en lecture par Claude
+- [x] 🔴 **Snippet 66 « [DEV MODE] Bypass LiteSpeed cache » désactivé** (`active: false` confirmé via REST). Il faisait pire que le `no-store` annoncé : un `do_action('litespeed_purge_all')` hors hook purgeait **tout le cache à chaque requête**. Mesuré en live : home **2,4 s → 0,10 s**, `X-LiteSpeed-Cache: hit` + `x-hcdn-cache-status: HIT` (le CDN Hostinger met aussi le HTML en cache).
+- [x] 🔴 **Tâche cron serveur créée** dans hPanel : `*/15 * * * *` → `wget -q -O /dev/null "https://rigolettres.fr/wp-cron.php?doing_wp_cron" >/dev/null 2>&1`. Action Scheduler n'attend plus du trafic pour tourner (statuts Boxtal, emails, relance avis J+7).
+  **Décision : `DISABLE_WP_CRON` volontairement NON ajouté** dans `wp-config.php`. Cette constante sert à éviter les doubles déclenchements sur un site à fort trafic ; ici le déclenchement au trafic reste un filet de sécurité si la tâche Hostinger tombe, et on évite de toucher à `wp-config.php`.
+
+**✅ Vérifications cache (lecture seule, sur le live)**
+- `/cart/`, `/checkout/`, `/my-account/` : `no-cache, private`, CDN en `DYNAMIC` → jamais mis en cache.
+- Home, `/shop/`, fiches produit : `miss` puis `hit`, TTL public 7 jours.
+- Pas d'empoisonnement : après un ajout au panier dans une session, un visiteur anonyme reçoit toujours la page neutre. Avec cookies panier, le CDN passe en `BYPASS`.
+- Le thème est compatible cache : drawer panier, barre sticky mobile, upsell relisent le panier et le nonce en direct via l'API Store (`cache: 'no-store'`).
+
+**🔴 Régression détectée et corrigée (commit local, PAS ENCORE DÉPLOYÉ)**
+- [~] 🔴 **Le badge panier de l'en-tête affiche 0 pour un visiteur ayant déjà un article.** Le compteur est rendu en PHP (`rigo_cart_count()`), donc figé dans la page en cache ; `wc-cart-fragments.js` n'est pas chargé sur le site, le filtre `woocommerce_add_to_cart_fragments` existant ne sert donc à rien au chargement. Correctif dans [universal-header-footer-chrome.php](blocksy-child/includes/universal-header-footer-chrome.php) : si le cookie `woocommerce_items_in_cart` est présent, le script de l'en-tête relit `/wc/store/v1/cart` et met à jour le badge. Aucune requête supplémentaire pour un visiteur sans panier. **À pousser sur `main` puis revérifier en live.**
+
+**⏳ Reste à vérifier**
+- [ ] 🟠 **Un changement de prix purge-t-il bien la home et le CDN Hostinger ?** Les prix de la home sont injectés par [home-prix-dynamiques.php](blocksy-child/includes/home-prix-dynamiques.php) puis mis en cache 7 jours. LiteSpeed purge par défaut la page d'accueil à la mise à jour d'un contenu, mais ce n'est pas testé, et la propagation de la purge au CDN (`hcdn`) non plus. Test : ré-enregistrer le produit 112 à l'identique, puis vérifier que `/` repasse en `miss`. Si ce n'est pas le cas, purger la home sur `woocommerce_update_product`.
+- [ ] 🟡 Contrôler dans hPanel → Tâches Cron → « Afficher le résultat » que la tâche s'exécute sans erreur, puis que la bannière « actions en retard » d'Action Scheduler disparaît dans wp-admin.
+- [ ] 🟡 Le badge panier est rendu avec `data-cart-count` **sans valeur** côté PHP, donc la règle CSS `[data-cart-count="0"]{display:none}` ne s'applique jamais au premier affichage : un « 0 » reste visible sur l'icône panier.
 
 ### 2026-10-10 — 🔴 Prix de la home faux : les 5 cartes divergeaient du back-office
 
@@ -158,10 +179,10 @@ Or 13 des 14 produits sont sous 80 €. **Tant que ce n'est pas réglé, le site
 - [ ] 🟡 La zone 1 contient `continent:EU` en plus de `country:FR`. Sans effet aujourd'hui (vente restreinte à FR), mais à nettoyer avant toute ouverture à la Belgique ou la Suisse, sinon elles hériteront des tarifs France.
 
 **⏳ Reste à faire**
-- [ ] 🔴 **Tâche cron serveur** (hPanel Hostinger → Avancé → Tâches Cron) sur `wp-cron.php` toutes les 5-15 min + `define('DISABLE_WP_CRON', true)` dans `wp-config.php`. `wp_cron=true` et `remote_post/get` OK, mais WP-Cron se déclenche au trafic et le site n'en a pas → Action Scheduler accumule des actions en retard, donc **aucune synchronisation automatique** (remontée statut Boxtal, emails, relance avis J+7).
+- [x] 🔴 _(2026-10-10 : livré par Arthur dans hPanel, `*/15`, sans `DISABLE_WP_CRON` — voir journal)_ **Tâche cron serveur** (hPanel Hostinger → Avancé → Tâches Cron) sur `wp-cron.php` toutes les 5-15 min + `define('DISABLE_WP_CRON', true)` dans `wp-config.php`. `wp_cron=true` et `remote_post/get` OK, mais WP-Cron se déclenche au trafic et le site n'en a pas → Action Scheduler accumule des actions en retard, donc **aucune synchronisation automatique** (remontée statut Boxtal, emails, relance avis J+7).
 - [ ] 🟠 **Pages CGV (86) et Livraison & Retours (88)** annoncent encore « supérieure à 60 € ». À passer à 80 € — contenu en base, hors child theme.
 - [ ] 🟠 **PayPal** toujours `needs_setup: true`.
-- [ ] 🟠 **Snippet 66 « [DEV MODE] Bypass LiteSpeed cache »** toujours actif.
+- [x] 🟠 **Snippet 66 « [DEV MODE] Bypass LiteSpeed cache »** toujours actif. — 2026-10-10 : désactivé par Arthur
 - [ ] 🟡 Alertes de stock encore sur `aetiennea@gmail.com`.
 - [ ] 🟡 **9 produits sur 14 sans photo** ; stock à la valeur par défaut `10` sur 8 références (76 à 83).
 - [ ] 🟡 Médiateur de la consommation non nommé ; Colissimo annoncé 6,90 € pour un coût réel ~9,13 € TTC.
@@ -181,7 +202,7 @@ Ce n'est pas un bug ni un produit virtuel. `WC_Cart::needs_shipping()` retourne 
 **⏳ Reste bloquant pour le premier achat de bout en bout**
 - [ ] 🔴 **Zone de livraison France** à créer (toujours 0 zone ; seule la zone 0 « Emplacements non couverts » existe, sans méthode).
 - [ ] 🔴 **Mapping statuts Boxtal** : « Statut expédié » → `Terminée`, « Statut livré » → laisser vide.
-- [ ] 🔴 **Action Scheduler : actions en retard** signalées dans l'admin. `wp_cron=true` et `remote_post/get` OK, donc ce n'est pas un blocage réseau : WP-Cron se déclenche au trafic et le site n'en a pas. Sans vraie tâche cron serveur, **rien ne se synchronise tout seul** (sync Boxtal, emails, relance avis J+7). → tâche cron Hostinger sur `wp-cron.php` toutes les 5-15 min + `define('DISABLE_WP_CRON', true)` dans `wp-config.php`.
+- [x] 🔴 _(2026-10-10 : tâche cron serveur créée par Arthur — disparition de la bannière à contrôler)_ **Action Scheduler : actions en retard** signalées dans l'admin. `wp_cron=true` et `remote_post/get` OK, donc ce n'est pas un blocage réseau : WP-Cron se déclenche au trafic et le site n'en a pas. Sans vraie tâche cron serveur, **rien ne se synchronise tout seul** (sync Boxtal, emails, relance avis J+7). → tâche cron Hostinger sur `wp-cron.php` toutes les 5-15 min + `define('DISABLE_WP_CRON', true)` dans `wp-config.php`.
 - [ ] 🔴 **Klarna et Amazon Pay activés par erreur** sur Stripe (`stripe_klarna`, `stripe_amazon_pay` dans les passerelles actives). Hors sujet pour un jeu à 28 € et ça encombre le checkout. Garder carte + Link, désactiver le reste.
 - [ ] 🔴 **Stripe en mode LIVE** : toute commande de test débitera une vraie carte.
 - [ ] 🔴 **Page CGV toujours non reliée** à WooCommerce (`page_set: false`) → pas de case d'acceptation au checkout.
@@ -236,7 +257,7 @@ Ce n'est pas un bug ni un produit virtuel. `WC_Cart::needs_shipping()` retourne 
 - Panier : ajout produit, quantité, totaux, cross-sells → OK. Les 46 liens de la home répondent 200.
 
 **⚠️ À ne pas oublier au go-live**
-- [ ] 🔴 Désactiver le **snippet 66 « [DEV MODE] Bypass LiteSpeed cache »**, toujours actif → le site sert tout sans cache aujourd'hui.
+- [x] 🔴 Désactiver le **snippet 66 « [DEV MODE] Bypass LiteSpeed cache »**, toujours actif → le site sert tout sans cache aujourd'hui. — 2026-10-10 : désactivé par Arthur, home 2,4 s → 0,10 s
 
 ### 2026-05-10 (sprint 9) — ✅ BACKLOG Arthur 16/16 traités, sprint 9 closes the loop
 
