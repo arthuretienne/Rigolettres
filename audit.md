@@ -3,7 +3,7 @@
 > **Fichier source** pour suivre la progression du site vers le niveau "e-commerce premium 50 k€".
 > Toute session Claude **doit lire ce fichier au démarrage** et **le mettre à jour** dès qu'une feature est livrée (cocher les cases, ajouter une ligne au journal).
 
-**Dernière mise à jour :** 2026-10-03 (✅ le tunnel de vente fonctionne : paiement Stripe actif, livraison Boxtal opérationnelle avec carte de points relais, franco à 80 €).
+**Dernière mise à jour :** 2026-10-10 (prix de la home resynchronisés sur le catalogue ; tunnel de vente fonctionnel depuis le 2026-10-03).
 **Score actuel estimé :** ~63 % du niveau "agence 50 k€" _(+3 pts grâce au catalogue passé de 5 à 14 SKU, à la cohérence "Brigitte Étienne · depuis 1978" propagée partout, et à la page À propos qui passe de 793 à ~1500 mots)_
 **Volet DA séparé :** voir [auditv2.md](auditv2.md) pour le plan refonte typo / photos / fiche produit premium / motion / chrome WC.
 **Benchmarks référence :** Respire, Les Raffineurs, Michel & Augustin, Maison du Pastel, Typology, Mangez et Relaxez (DTC FR fort taux de conversion) + Shopify Premier (Allbirds, Rothy's, Oura).
@@ -36,6 +36,31 @@
 ---
 
 ## 📓 Journal de session
+
+### 2026-10-10 — 🔴 Prix de la home faux : les 5 cartes divergeaient du back-office
+
+**Signalé par Arthur.** La section « Notre petite collection » de la page 21 contient du HTML Gutenberg écrit à la main, avec les prix **en dur** dans `<span class="product-price">`. Tous avaient divergé :
+
+| Carte (data-pid) | Affiché | Réel | Écart |
+|---|---|---|---|
+| Pato N°1 (28) | 20 € | **28 €** | −8 € |
+| Luna N°2 (29) | 20 € | **30 €** | −10 € |
+| Rigoloverbes Passé Simple (30) | 22 € | **28 €** | −6 € |
+| Grammaire 1er niveau (31) | 24 € | **18 €** | +6 € |
+| Grammaire 2ème niveau (32) | 24 € | **25 €** | +1 € |
+
+**Trois cartes annonçaient un prix inférieur à celui du panier.** En vente à distance le prix affiché engage le vendeur, et c'est de toute façon le meilleur moyen de faire abandonner un panier au moment du choc de prix.
+
+**✅ Correctif livré** — nouveau module [home-prix-dynamiques.php](blocksy-child/includes/home-prix-dynamiques.php). Plutôt que de corriger les cinq nombres (qui auraient redivergé à la prochaine hausse), un filtre `the_content` sur la home remplace chaque prix par celui du produit, retrouvé via l'attribut `data-pid` déjà présent sur le bouton « Ajouter au panier ». Produit introuvable ou sans prix → HTML d'origine conservé, jamais de casse. **Les prix de la home ne peuvent plus diverger du catalogue.**
+
+**✅ Bandeau fantôme supprimé** — le contenu de la page 21 contenait encore un `<div class="announce">` « Nouveau site, livraison offerte en France métropolitaine à partir de 60 € », masqué par CSS mais toujours dans le HTML servi (donc lisible par Google et par les lecteurs d'écran), et doublement faux depuis le retrait du franco. Retiré du contenu en base.
+
+**Vérifié en live** : les 5 cartes affichent 28 / 30 / 28 / 18 / 25 €, plus aucune occurrence de « 60 € ».
+
+**🟡 Observations annexes**
+- [ ] La home ne met en avant que **5 produits sur 14**. Rigolettres N°3 (Zoé), les 4 autres Rigoloverbes et les 4 packs n'y figurent pas. Choix éditorial défendable (« notre petite collection »), mais à revoir une fois les photos disponibles.
+- [ ] La carte Grammaire 1 dit « 25 ans d'expérience en poche » alors que la cohérence retenue partout ailleurs est « depuis 1978 ».
+- [ ] Les deux cartes Grammaire mentionnent « Relié, éditions Le Charbonnier » — à faire confirmer par Brigitte, cette information n'apparaît nulle part dans les sources projet.
 
 ### 2026-10-03 (suite 5) — Franco supprimé, case CGV activée, produit de test créé
 
