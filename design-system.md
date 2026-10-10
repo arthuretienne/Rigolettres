@@ -1,5 +1,24 @@
 # Design System — Rigolettres.fr
 
+> ## ⚠️ Source de vérité : `blocksy-child/style.css` (section 1, tokens `--rigo-*`)
+>
+> Ce document décrit l'intention de départ (avril 2026). **Les valeurs ci-dessous marquées « historique » ne sont plus appliquées** depuis la refonte du 2026-10-10. En cas d'écart, c'est `style.css` qui fait foi.
+>
+> | Sujet | Appliqué aujourd'hui | Historique (ne plus utiliser) |
+> |---|---|---|
+> | Titres | **Fraunces** 700 (h1-h2), Nunito 800 (h3+) | Kalam / Caveat Brush |
+> | Texte | **Nunito** 400 / 600 / 700 / 800 | — |
+> | Manuscrite | **Caveat** 700 : wordmark, surtitres, signature, accent du hero | Kalam partout |
+> | Action (boutons, liens) | `--rigo-action` **#11739A** (5,3:1 sur blanc), survol #0C5C7C | #27B4E5 (2,4:1 : illisible avec du texte blanc) |
+> | Bleu ciel vif | `--rigo-sky` #27B4E5, **décor uniquement** | couleur de bouton |
+> | Vert | `--rigo-green-dark` #4A7325 : réussite, stock, surtitres | bouton d'achat (#68a033 = 3,15:1) |
+> | Encre | #2A1D0F / #4B3A28 / atténué #6A6257 | #1F2937 / #4B5563 / #9CA3AF (gris froids) |
+> | Fond | crème #FBF8F1, crème chaud #F4EFE3, blanc | — |
+> | Rayons | 8 / 16 / 24 / pill | — |
+> | Échelle typo | fluide : corps 16→17, h3 18→21, h2 24→34, h1 30→48, hero 38→68 px | échelle fixe 12→64 px |
+> | Espacements | 4 · 8 · 12 · 16 · 24 · 32 · 48 · 64 · 96 px | — |
+> | Points de rupture | 640 (mobile), 768 (tablette), 1024 (nav desktop) | — |
+
 > Basé sur la maquette [hero.png](hero.png) + la photo du packaging officiel (voir [assets/logo-pato-source.png](assets/logo-pato-source.png)). **Document vivant** — à ajuster quand le logo définitif (vectoriel HD) est fourni par Brigitte.
 
 ## Univers de marque (découvert depuis le packaging)

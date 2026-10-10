@@ -3,7 +3,7 @@
 > **Fichier source** pour suivre la progression du site vers le niveau "e-commerce premium 50 k€".
 > Toute session Claude **doit lire ce fichier au démarrage** et **le mettre à jour** dès qu'une feature est livrée (cocher les cases, ajouter une ligne au journal).
 
-**Dernière mise à jour :** 2026-10-10 (cache LiteSpeed réactivé + tâche cron serveur en place ; prix de la home resynchronisés sur le catalogue ; tunnel de vente fonctionnel depuis le 2026-10-03).
+**Dernière mise à jour :** 2026-10-10 (refonte UI/UX itération 1 : design system unique, en-tête et mega-menu réécrits, CSS hérité sorti du contenu des pages ; cache LiteSpeed réactivé ; tunnel de vente fonctionnel depuis le 2026-10-03).
 **Score actuel estimé :** ~63 % du niveau "agence 50 k€" _(+3 pts grâce au catalogue passé de 5 à 14 SKU, à la cohérence "Brigitte Étienne · depuis 1978" propagée partout, et à la page À propos qui passe de 793 à ~1500 mots)_
 **Volet DA séparé :** voir [auditv2.md](auditv2.md) pour le plan refonte typo / photos / fiche produit premium / motion / chrome WC.
 **Benchmarks référence :** Respire, Les Raffineurs, Michel & Augustin, Maison du Pastel, Typology, Mangez et Relaxez (DTC FR fort taux de conversion) + Shopify Premier (Allbirds, Rothy's, Oura).
@@ -37,6 +37,70 @@
 
 ## 📓 Journal de session
 
+### 2026-10-10 (suite 2) — 🎨 Refonte UI/UX : un seul design system, en-tête et mega-menu réécrits
+
+> Mission « audit + refonte UI/UX + responsive » lancée par Arthur, menée en boucle (`/loop`). **Itération 1 livrée et déployée** (4 commits, CI verte). Les itérations suivantes sont listées en bas de cette entrée.
+
+**🔎 Cause première des incohérences (confirmée par mesure sur le live)**
+
+Trois design systems cohabitaient, par-dessus un Customizer Blocksy resté aux valeurs par défaut (palette bleue `#2872fa`, conteneur 1290 px à 90vw) :
+
+| Zone | Titres | Bouton principal | Fond | Où vivait le CSS |
+|---|---|---|---|---|
+| Accueil | Kalam 76 px | bleu `#27B4E5` | crème | ~40 Ko **dans le contenu de la page 21** |
+| Panier / Commande / Compte | Kalam | vert ou bleu | crème | `<style id="rigol-wc-style">` **dans le contenu des pages 8, 9, 10**, tout en `!important` |
+| Boutique, fiche produit, pages | Fraunces 64 px | vert `#68a033` | gris-bleu `#FAFBFC` (Blocksy) | child theme + 12 blocs `<style>` de modules |
+
+Conséquences mesurées : 4 polices de titres, 5 teintes de bouton, 3 rayons de champ, deux pieds de page différents, deux H1 sur 5 gabarits. **Kalam n'était chargée que sur l'accueil et le panier** : partout ailleurs (fiche produit, quiz, pages guides) elle retombait sur la cursive système.
+
+**✅ Livré — socle**
+- [x] 🔴 **`style.css` restructuré en design system** (15 sections, sommaire en tête) : tokens `--rigo-*` (couleurs, échelle typo fluide, espacements, rayons, ombres, **échelle de z-index unique**), composants bouton / champ / carte / notification partagés.
+- [x] 🔴 **Pont Blocksy** : les variables du thème parent (`--theme-palette-color-*`, `--theme-button-*`, conteneur) sont redéfinies depuis les tokens. Tout ce que Blocksy et WooCommerce génèrent hérite du design system sans surcharge au cas par cas. Le fond crème s'applique enfin partout.
+- [x] 🔴 **3 polices, pas 5** : Fraunces (h1-h2), Nunito (texte, h3+), Caveat (wordmark, surtitres, signature). Kalam retirée. Graisses Google Fonts réduites à celles utilisées.
+- [x] 🔴 **Une couleur d'action** : `--rigo-action` `#11739A` (bleu ciel assombri, **5,3:1 sur blanc**). L'ancien bleu `#27B4E5` faisait 2,4:1 et le vert `#68a033` 3,15:1 (le « 4,6:1 ✅ » noté le 2026-04-22 était faux). Le vert est réservé à la réussite / au stock.
+- [x] 🔴 **CSS hérité sorti du contenu des pages** sans toucher à la base : [contenu-nettoyage-css-herite.php](blocksy-child/includes/contenu-nettoyage-css-herite.php) retire au rendu le `<style>`, le second en-tête et le second pied de page de l'accueil, et `rigol-wc-style` du panier / commande / compte. L'accueil est servie par [assets/css/home.css](blocksy-child/assets/css/home.css). Réversible : désactiver le module.
+- [x] 🟠 **13 modules tokenisés** (script) : 185 règles passées des hex en dur aux tokens.
+- [x] 🟠 **CI** : étape `php -l` avant rsync — une erreur de syntaxe PHP ne peut plus partir en production.
+
+**✅ Livré — en-tête, mega-menu, navigation**
+- [x] 🔴 **Mega-menu** : devenu enfant du `<header>` (`top:100%`). Plus de calcul JS de position, plus de décalage quand le bandeau d'annonce défile (l'ancienne valeur n'était recalculée qu'au chargement). Bouton chevron avec `aria-expanded`, Échap (rend le focus), flèche bas, clic extérieur, intention de survol (90 ms) et fermeture différée (220 ms). Vérifié en live à 1280 px : panneau collé à l'en-tête, colonnes alignées sur le logo.
+- [x] 🔴 **Tiroir mobile/tablette** (< 1024 px) : 3 accordéons exclusifs, cibles de 52 px, piège de focus, fermeture au passage en desktop. La classe `.mobile-menu` entrait en collision avec celle de Blocksy (`.mobile-menu a{font-weight…}`) → préfixe `rigo-navdrawer`.
+- [x] 🔴 **Le lien « Blog » pointait sur la page courante** sur tout le site (`get_permalink(0)`), et `/blog/` répond 404. Il n'apparaît plus tant qu'aucune page des articles n'est définie (Réglages → Lecture).
+- [x] 🔴 **Titres de page devenus sticky** : le module sticky ciblait `header[class*="header"]`, donc aussi `header.entry-header`. Désormais `#site-header` uniquement.
+- [x] 🟠 Pastille panier masquée à 0 (attribut `data-cart-count` enfin renseigné + observateur), icône compte, page courante signalée (`aria-current`), bandeau d'annonce mémorisé fermé pour la session.
+- [x] 🟠 Pied de page unique (l'accueil avait le sien, à 4 colonnes au lieu de 5).
+
+**✅ Livré — corrections de fond**
+- [x] 🔴 **64 px de vide sous l'en-tête de la boutique** : `body.post-type-archive-product .container{padding-bottom:64px}` touchait aussi le conteneur de l'en-tête.
+- [x] 🔴 **`section{padding:…}` global** gonflait tous les `<section>` de WooCommerce (≈ 90 px au-dessus de la grille boutique). Limité à l'accueil.
+- [x] 🔴 **Double H1** sur À propos, Témoignages, boutique et les 8 pages guides (titre Blocksy + H1 du contenu). Le filtre `blocksy:hero:enabled` utilisé jusque-là n'existe pas dans Blocksy 2.1 ; le bon est `blocksy:hero:custom-source`.
+- [x] 🔴 **Barre d'achat mobile jamais visible** : un `style="display:none"` inline l'emportait sur la media query. Les boutons flottants remontent maintenant au-dessus d'elle (`--rigo-bottom-bar`).
+- [x] 🟠 Boutons flottants (quiz + contact) : même ligne de base, pastille icône seule pour le contact sur mobile, masqués sur fiche produit / panier / commande. Ils se chevauchaient à deux hauteurs différentes et couvraient les CTA du hero.
+- [x] 🟠 Ombre du tiroir panier visible en permanence sur le bord droit de l'écran.
+- [x] 🟠 Fiche produit : onglets alignés à gauche (pastilles défilantes sur mobile), glyphes +/− lisibles (10 px chez Blocksy), 5 encarts de réassurance ramenés à une seule liste à filets, texte des onglets limité à ~75 caractères par ligne.
+- [x] 🟠 Boutique : grille pilotée par les variables Blocksy (2 colonnes en mobile au lieu d'1), filtre « Uncategorized » retiré, filigrane Pato sur les produits sans photo.
+- [x] 🟠 Panier : ventes croisées au gabarit des cartes boutique.
+- [x] 🟡 Hero d'accueil affiché sans attendre le JavaScript (il restait vide tant que le script n'avait pas tourné).
+
+**🧪 Vérifié en live (navigateur réel, après déploiement)**
+- Débordement horizontal : **0** sur 8 gabarits × 5 largeurs (320, 390, 768, 1024, 1440), **sans** le `overflow-x:hidden` qui masquait d'éventuels dépassements.
+- Mega-menu : ouverture au clic, Échap, retour du focus, alignement (mesures DOM).
+- Tiroir mobile à 390 px : ouverture, focus sur le bouton fermer, défilement de page bloqué.
+- Rendu visuel : accueil (1280 + 390), boutique 1280, fiche produit (1280 + 390), panier et commande 1280, À propos et page guide 1280.
+- 14 URL en HTTP 200, aucune erreur PHP dans le HTML servi.
+
+**⏳ Itérations suivantes (boucle en cours)**
+- [ ] 🔴 Revue visuelle tablette (768, 820) et mobile de : boutique, panier vide, commande, compte, contact, pages légales, 404, recherche.
+- [ ] 🔴 Accueil mobile : sections Histoire (polaroids), Gamme (3 800 px de haut), Méthode, Presse — densité et proportions.
+- [ ] 🟠 Rapatrier dans `style.css` le CSS encore inline des modules (quiz, tiroirs, popup, fiche produit, pages guides) pour finir d'unifier boutons et rayons.
+- [ ] 🟠 Largeurs 360, 375, 430, 820, 1280, 1920 à passer au crible ; test clavier complet du tunnel d'achat.
+- [ ] 🟠 Réduire les `!important` restants de la fiche produit (onglets, quantité).
+
+**⚠️ Relevé au passage — hors périmètre UI, à arbitrer par Arthur**
+- [ ] 🔴 **Le formulaire newsletter de l'accueil ne fait rien** : `onsubmit="event.preventDefault(); …success.show"`. Il affiche « Merci ! Vous recevrez le prochain numéro » alors que l'adresse n'est envoyée nulle part.
+- [ ] 🔴 **Le script de la page d'accueil injecte un `<meta robots noindex, nofollow, noarchive, nosnippet>`** en JavaScript, en plus du réglage WordPress. À retirer du contenu de la page 21 au go-live (décocher « Demander aux moteurs… » ne suffira pas).
+- [ ] 🟡 Aucune page des articles n'est définie : pas d'index de blog (`/blog/` = 404), seul l'article « Hello world! » existe.
+
 ### 2026-10-10 (suite) — Cache LiteSpeed réactivé + tâche cron serveur
 
 **✅ Livré par Arthur** (hPanel + wp-admin), vérifié en lecture par Claude
@@ -51,12 +115,12 @@
 - Le thème est compatible cache : drawer panier, barre sticky mobile, upsell relisent le panier et le nonce en direct via l'API Store (`cache: 'no-store'`).
 
 **🔴 Régression détectée et corrigée (commit local, PAS ENCORE DÉPLOYÉ)**
-- [~] 🔴 **Le badge panier de l'en-tête affiche 0 pour un visiteur ayant déjà un article.** Le compteur est rendu en PHP (`rigo_cart_count()`), donc figé dans la page en cache ; `wc-cart-fragments.js` n'est pas chargé sur le site, le filtre `woocommerce_add_to_cart_fragments` existant ne sert donc à rien au chargement. Correctif dans [universal-header-footer-chrome.php](blocksy-child/includes/universal-header-footer-chrome.php) : si le cookie `woocommerce_items_in_cart` est présent, le script de l'en-tête relit `/wc/store/v1/cart` et met à jour le badge. Aucune requête supplémentaire pour un visiteur sans panier. **À pousser sur `main` puis revérifier en live.**
+- [x] 🔴 **Le badge panier de l'en-tête affiche 0 pour un visiteur ayant déjà un article.** _(déployé le 2026-10-10 avec la refonte de l'en-tête)_ Le compteur est rendu en PHP (`rigo_cart_count()`), donc figé dans la page en cache ; `wc-cart-fragments.js` n'est pas chargé sur le site, le filtre `woocommerce_add_to_cart_fragments` existant ne sert donc à rien au chargement. Correctif dans [universal-header-footer-chrome.php](blocksy-child/includes/universal-header-footer-chrome.php) : si le cookie `woocommerce_items_in_cart` est présent, le script de l'en-tête relit `/wc/store/v1/cart` et met à jour le badge. Aucune requête supplémentaire pour un visiteur sans panier. **À pousser sur `main` puis revérifier en live.**
 
 **⏳ Reste à vérifier**
 - [ ] 🟠 **Un changement de prix purge-t-il bien la home et le CDN Hostinger ?** Les prix de la home sont injectés par [home-prix-dynamiques.php](blocksy-child/includes/home-prix-dynamiques.php) puis mis en cache 7 jours. LiteSpeed purge par défaut la page d'accueil à la mise à jour d'un contenu, mais ce n'est pas testé, et la propagation de la purge au CDN (`hcdn`) non plus. Test : ré-enregistrer le produit 112 à l'identique, puis vérifier que `/` repasse en `miss`. Si ce n'est pas le cas, purger la home sur `woocommerce_update_product`.
 - [ ] 🟡 Contrôler dans hPanel → Tâches Cron → « Afficher le résultat » que la tâche s'exécute sans erreur, puis que la bannière « actions en retard » d'Action Scheduler disparaît dans wp-admin.
-- [ ] 🟡 Le badge panier est rendu avec `data-cart-count` **sans valeur** côté PHP, donc la règle CSS `[data-cart-count="0"]{display:none}` ne s'applique jamais au premier affichage : un « 0 » reste visible sur l'icône panier.
+- [x] 🟡 _(2026-10-10 : attribut renseigné + observateur, la pastille est masquée à 0)_ Le badge panier est rendu avec `data-cart-count` **sans valeur** côté PHP, donc la règle CSS `[data-cart-count="0"]{display:none}` ne s'applique jamais au premier affichage : un « 0 » reste visible sur l'icône panier.
 
 ### 2026-10-10 — 🔴 Prix de la home faux : les 5 cartes divergeaient du back-office
 
@@ -713,10 +777,10 @@ Ce n'est pas un bug ni un produit virtuel. `WC_Cart::needs_shipping()` retourne 
 ### 0.8 Accessibilité & RGPD 🟠 P1
 - [x] **Bannière cookies Complianz** configurée 2026-05-08 (profil ecommerce FR RGPD, opt-in, banner bas-droite, boutons FR Accepter/Refuser/Préférences, page de privacy = /politique-confidentialite/).
 - [ ] **Alt text sur 100 % images** — 2/11 manquent (détecté audit initial)
-- [ ] **Skip-to-content link** absent
-- [ ] **Focus states clavier** visibles partout (manquent sur CTA custom)
-- [ ] **ARIA labels** sur icônes (cart, search, menu mobile)
-- [ ] **Audit contraste WCAG AA 4.5:1** complet (juste bouton vert fait, reste à auditer)
+- [x] **Skip-to-content link** — 2026-10-10 : le lien d'évitement Blocksy était présent mais invisible au focus ; stylé dans style.css §3
+- [x] **Focus states clavier** visibles partout — 2026-10-10 : anneau `:focus-visible` unique (style.css §15), clair sur fond sombre
+- [x] **ARIA labels** sur icônes (compte, panier, menu, chevron du mega-menu, fermeture) — 2026-10-10
+- [~] **Audit contraste WCAG AA 4.5:1** — 2026-10-10 : tokens recalculés (action 5,3:1, texte atténué 5,7:1, pastille panier 4,9:1, bordures de champ 3,6:1). Reste à contrôler le CSS encore inline des modules
 - [ ] **Test navigation clavier** de A à Z
 - [ ] **Test lecteur d'écran** (VoiceOver iOS, NVDA Windows)
 
@@ -732,7 +796,7 @@ Ce n'est pas un bug ni un produit virtuel. `WC_Cart::needs_shipping()` retourne 
 - [x] Textes EN WC → FR ("Shop"→"Notre gamme", 404 message, breadcrumb "Home"→"Accueil") — 2026-04-24 snippet id=41
 - [x] Header/footer uniforme entre home et sous-pages — 2026-04-24 snippet id=39
 - [ ] Hover states premium sur cartes produit (zoom image + quick view)
-- [ ] Hamburger menu mobile full-screen (style Respire) au lieu du drawer Blocksy basique
+- [x] Menu mobile : tiroir pleine hauteur à accordéons, piège de focus — 2026-10-10
 - [ ] Animation "flying card → panier" au add-to-cart
 - [ ] Transitions de page (fade in contenu à l'arrivée)
 - [ ] Décors saisonniers (bonnet Noël sur Pato en décembre)
@@ -799,7 +863,7 @@ Diagnostic brutal en 30 s de test utilisateur :
 - [ ] Badge "12 en stock" brut sur fiche produit → remplacer par "En stock — prêt à expédier" ou "Plus que 3 — dernières pièces"
 - [ ] Hover states pauvres sur cartes produit (pas de zoom, rotation légère, quick view)
 - [ ] Pas de micro-animation "flying card to cart" (la boule s'anime déjà ✓ mais trajet manquant)
-- [ ] Headings Kalam partout = trop lourd. Certaines lignes (résumé checkout) devraient passer en Nunito bold
+- [x] Headings Kalam partout = trop lourd — 2026-10-10 : Kalam retirée, Fraunces (h1-h2) + Nunito (h3+)
 - [x] Le banner "Nouveau site — livraison offerte" ne se ferme pas (pas de ✕) — 2026-04-22 snippet id=24
 
 ### Manque complet 🟠
@@ -1193,13 +1257,13 @@ Layout cible (ordre d'importance conversion) :
 - [x] Checkout WC Blocks mobile-first
 
 ### Manque à vérifier / corriger 🟠 P1
-- [ ] Sticky add-to-cart barre fixe bas fiche produit mobile (impact énorme)
-- [ ] Tap targets 44×44 min (WCAG)
-- [ ] Hamburger menu full-screen (comme Respire) au lieu du petit drawer Blocksy
+- [x] Sticky add-to-cart barre fixe bas fiche produit mobile — 2026-10-10 : elle existait mais ne s'affichait jamais (display:none inline), corrigé
+- [~] Tap targets 44×44 min (WCAG) — 2026-10-10 : en-tête, tiroir, filtres, boutons, fermetures à 44 px ; liens de pied de page à 36 px (≥ 24 px exigés en AA)
+- [x] Hamburger : tiroir pleine hauteur — 2026-10-10
 - [ ] Click-to-call contact mobile (Brigitte / SAV)
 - [ ] PWA manifest "ajouter à l'écran d'accueil"
-- [ ] Gestion encoche iPhone (`safe-area-inset`)
-- [ ] Nav sticky header cache/montre au scroll (comme Allbirds)
+- [x] Gestion encoche iPhone (`safe-area-inset`) sur le dock flottant, le pied du tiroir et la barre d'achat — 2026-10-10
+- [x] Nav sticky header cache/montre au scroll — existait, recadré sur `#site-header` le 2026-10-10
 
 ---
 
@@ -1298,9 +1362,9 @@ Gratuit jusqu'à 300 emails/jour, interface FR, intégration WC native.
 ### Accessibilité 🟠 P1
 - [ ] Alt text : 2/11 images sans alt — corriger
 - [x] **Contraste** : bouton vert `#8BC84B` → `#68a033` (ratio 4.6:1 WCAG AA ✅) — 2026-04-22 snippet id=24
-- [ ] Focus states visibles sur tous les éléments interactifs
-- [ ] Skip to main content link
-- [ ] ARIA labels sur icônes (cart, search)
+- [x] Focus states visibles sur tous les éléments interactifs — 2026-10-10
+- [x] Skip to main content link — 2026-10-10
+- [x] ARIA labels sur icônes — 2026-10-10
 - [ ] Lang attributes sur citations / expressions étrangères
 - [ ] Formulaires : `<label>` associés, messages d'erreur lisibles
 - [ ] Navigation clavier testée

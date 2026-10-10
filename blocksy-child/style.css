@@ -2107,14 +2107,27 @@ body.woocommerce div.product form.cart .quantity .ct-increase{min-width:44px;}
   border-radius:var(--rigo-r-sm);
   color:var(--rigo-ink);
 }
-body.woocommerce div.product .product_meta{text-transform:none;letter-spacing:0;}
+body.woocommerce div.product .product_meta,
+body.woocommerce div.product .product_meta *{
+  --theme-text-transform:none;
+  text-transform:none;
+  letter-spacing:0;
+}
 body.woocommerce div.product .product_meta > span{font-size:var(--rigo-fs-sm);}
+
+/* — Respiration : le fil d'Ariane suit l'en-tête de près, la fiche suit le fil d'Ariane — */
+body.single-product .site-main > [class*="ct-container"]{padding-top:var(--rigo-sp-4);}
+body.single-product .site-main .hero-section{margin-bottom:var(--rigo-sp-3);}
+body.single-product .ct-breadcrumbs{padding:0;}
+body.single-product div.product{margin-top:0;}
 
 /* — Onglets sur mobile : pastilles défilantes sur une ligne, pas une pile centrée — */
 @media (max-width:767px){
   body.single-product div.product .woocommerce-tabs ul.tabs,
   body.single-product div.product .woocommerce-tabs ul.wc-tabs{
+    flex-direction:row !important;
     flex-wrap:nowrap !important;
+    align-items:stretch;
     overflow-x:auto;
     -webkit-overflow-scrolling:touch;
     scrollbar-width:none;
@@ -2123,12 +2136,12 @@ body.woocommerce div.product .product_meta > span{font-size:var(--rigo-fs-sm);}
     padding:0 var(--rigo-gutter) !important;
   }
   body.single-product div.product .woocommerce-tabs ul.tabs::-webkit-scrollbar{display:none;}
+  body.single-product div.product .woocommerce-tabs ul.tabs li,
+  body.single-product div.product .woocommerce-tabs ul.wc-tabs li{flex:0 0 auto;width:auto;}
   body.single-product div.product .woocommerce-tabs ul.tabs li a,
   body.single-product div.product .woocommerce-tabs ul.wc-tabs li a{
     padding:14px 12px !important;
     white-space:nowrap;
-    text-transform:none !important;
-    letter-spacing:0 !important;
   }
   body.single-product div.product .woocommerce-tabs .panel{padding:var(--rigo-sp-5) var(--rigo-sp-4) !important;}
   body.woocommerce div.product form.cart{flex-wrap:wrap;}

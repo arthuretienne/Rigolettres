@@ -89,6 +89,7 @@ Par ordre d'importance :
 - **Wordmark "Rigolettres"** : lettres multicolores (rouge, jaune, vert, bleu, violet) en typo manuscrite — à récupérer en vectoriel.
 - **Maquette de référence** : [hero.png](hero.png) (maquette grossière faite par Arthur) — sert de base pour la direction artistique : chaleureux, illustré, fond crème, accents bleu ciel + vert tendre, typographies manuscrites sur titres.
 - **Tension DA** à arbitrer : maquette d'Arthur (vintage chaleureux adulte) vs packaging officiel (enfantin très coloré). **Parti pris retenu** : DA hybride — fond crème + typo douce de la maquette, wordmark multicolore + mascottes du packaging. Voir [design-system.md](design-system.md).
+- **Typographie retenue (2026-10-10)** : titres en serif **Fraunces**, texte en **Nunito**, manuscrite **Caveat** limitée au wordmark, aux surtitres et à l'accent du hero (« en s'amusant. »).
 - **Système de design** détaillé : [design-system.md](design-system.md) (tokens couleurs, typos, spacing).
 - **Produire un rendu pro qui convertit** : utiliser le skill `frontend-design` pour toute création de page/composant.
 
@@ -146,24 +147,36 @@ WordPress + WooCommerce + Blocksy + Stripe + PayPal + **Boxtal Connect** (Coliss
 
 ```
 blocksy-child/
-├── style.css            # Design system complet (tokens, typo, layout, WC, chrome, mega-menu)
+├── style.css            # Design system complet : tokens, pont Blocksy, boutons, champs, chrome, WooCommerce (sommaire en tête)
+├── assets/css/home.css  # Sections de la page d'accueil (chargé sur l'accueil uniquement)
 ├── functions.php        # Enqueue parent+child + Google Fonts + auto-require includes/
 └── includes/            # Un fichier = un module fonctionnel
-    ├── universal-header-footer-chrome.php  ← header sticky + mega-menu + mobile menu
+    ├── universal-header-footer-chrome.php  ← en-tête sticky + mega-menu + tiroir mobile + pied de page
+    ├── contenu-nettoyage-css-herite.php    ← retire au rendu le CSS collé dans le contenu des pages
     ├── quiz-aide-au-choix.php
     ├── product-page-cro.php
     └── ... (un fichier par feature)
 ```
 
 - **Nouveau module** → nouveau fichier `includes/nom-du-module.php` (chargé automatiquement par `functions.php`)
-- **CSS** → dans `style.css` (sections numérotées, tokens `--rigo-*` en variables)
+- **CSS** → dans `style.css` (sections numérotées, tokens `--rigo-*`). **Jamais de `<style>` dans le contenu d'une page**, jamais de hex en dur dans un module : on consomme les tokens.
 - **Code Snippets** → réservé aux one-shots ponctuels (patch DB, flush, purge) — jamais pour du code permanent
+
+### Design system — règles à ne pas réintroduire à l'envers (refonte du 2026-10-10)
+
+- **3 polices** : Fraunces (h1-h2), Nunito (texte, interface, h3+), Caveat (wordmark, surtitres, signature). **Kalam est retirée** — ne pas la recharger.
+- **Une couleur d'action** : `--rigo-action` (bleu ciel assombri, 5,3:1 sur blanc) pour tous les boutons et liens. Le vert sert à la réussite / au stock, **jamais à un bouton**. Le bleu vif `--rigo-sky` est décoratif (texte blanc dessus = 2,4:1, illisible).
+- **Pont Blocksy** (`style.css` §2) : on redéfinit les variables `--theme-*` du thème parent plutôt que de surcharger ses composants en `!important`.
+- **Classes à éviter** : `.mobile-menu` (appartient à Blocksy), sélecteurs d'élément nus (`section{}`, `header{}`) et `.container{}` contextuels — ils débordent sur l'en-tête et WooCommerce.
+- **z-index** : uniquement les tokens `--rigo-z-*`.
+- **Un seul H1 par page** : si le contenu d'une page a son `<h1>`, le bandeau de titre Blocksy est coupé automatiquement (filtre `blocksy:hero:custom-source`).
 
 ### Déploiement child theme — automatique via GitHub → Hostinger
 
 **Workflow CI** : [.github/workflows/deploy-theme.yml](.github/workflows/deploy-theme.yml) — déclenché à **chaque push sur `main` qui touche `blocksy-child/**`**.
 
 Le job fait :
+0. **Lint PHP** (`php -l` sur tout `blocksy-child/`) — une erreur de syntaxe bloque le déploiement
 1. SSH dans Hostinger via clé déployée (secret `SSH_KEY`, port 65002, user `secrets.SSH_USER`, host `secrets.SSH_HOST`)
 2. `mkdir -p` du dossier distant si absent
 3. `rsync -avz --checksum --delete` du dossier `blocksy-child/` (exclu : `.git`, `README.md`) vers `~/domains/rigolettres.fr/public_html/wp-content/themes/blocksy-child/`
