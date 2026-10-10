@@ -262,10 +262,10 @@ add_action('wp_footer', function () {
     }
     .rigo-quiz-close {
         position: absolute;
-        top: 14px;
-        right: 14px;
-        width: 32px;
-        height: 32px;
+        top: 10px;
+        right: 10px;
+        width: 44px;
+        height: 44px;
         border: 0;
         background: var(--rigo-cream-warm);
         border-radius: 50%;

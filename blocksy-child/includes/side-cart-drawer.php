@@ -81,7 +81,7 @@ add_action('wp_footer', function () {
       color: var(--rigo-ink); margin: 0;
     }
     .rigo-drawer-close {
-      width: 36px; height: 36px;
+      width: 44px; height: 44px;
       display: grid; place-items: center;
       border-radius: 50%; border: 0;
       background: transparent; cursor: pointer;

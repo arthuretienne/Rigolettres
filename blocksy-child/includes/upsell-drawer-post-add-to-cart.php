@@ -188,9 +188,10 @@ add_action('wp_footer', function () {
     }
     .rigo-ud-close {
         background: none; border: none; cursor: pointer;
-        font-size: 18px; color: var(--rigo-muted);
+        font-size: 18px; color: var(--rigo-ink-soft);
+        min-width: 44px; min-height: 44px;
         padding: 4px 6px;
-        border-radius: 6px;
+        border-radius: 50%;
         transition: color 200ms, background 200ms;
         line-height: 1;
     }

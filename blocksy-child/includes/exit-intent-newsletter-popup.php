@@ -67,8 +67,8 @@ add_action('wp_footer', function () {
     #rigo-popup.is-open[aria-hidden="false"] { visibility: visible; }
 
     .rigo-popup-close {
-      position: absolute; top: 14px; right: 16px;
-      width: 32px; height: 32px; border-radius: 50%;
+      position: absolute; top: 8px; right: 8px;
+      width: 44px; height: 44px; border-radius: 50%;
       border: 0; background: transparent; cursor: pointer;
       font-size: 16px; color: var(--rigo-muted);
       display: grid; place-items: center;

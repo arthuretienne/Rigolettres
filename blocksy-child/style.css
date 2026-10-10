@@ -1526,6 +1526,10 @@ ul.products[data-products]{
   transition:transform var(--rigo-med) var(--rigo-ease);
 }
 .woocommerce ul.products li.product:hover .ct-media-container img{transform:scale(1.04);}
+/* Produit sans photo : on laisse voir le filigrane Pato plutôt que l'icône grise de WooCommerce */
+.woocommerce ul.products li.product img[src*="woocommerce-placeholder"],
+.wc-block-product img[src*="woocommerce-placeholder"],
+.wc-block-grid__product img[src*="woocommerce-placeholder"]{opacity:0;}
 
 .woocommerce ul.products li.product .rigo-card-body{
   display:flex;
@@ -2039,6 +2043,73 @@ body.woocommerce div.product .woocommerce-product-gallery img{
   object-fit:contain;
 }
 
+/* — Onglets : alignés à gauche, casse normale (Blocksy : centrés, capitales) — */
+body.single-product div.product .woocommerce-tabs ul.tabs,
+body.single-product div.product .woocommerce-tabs ul.wc-tabs{
+  justify-content:flex-start;
+  width:100%;
+  max-width:none;
+}
+body.single-product div.product .woocommerce-tabs ul.tabs li a,
+body.single-product div.product .woocommerce-tabs ul.wc-tabs li a{
+  text-transform:none !important;
+  letter-spacing:0 !important;
+}
+/* Texte des panneaux : longueur de ligne lisible (≈ 75 caractères), pas 1 100 px */
+body.single-product div.product .woocommerce-tabs .panel > *{max-width:46rem;}
+body.single-product div.product .woocommerce-tabs .panel > table,
+body.single-product div.product .woocommerce-tabs .panel > #reviews,
+body.single-product div.product .woocommerce-tabs .panel > .rigo-faq-accordion{max-width:none;}
+
+/* — Quantité : glyphes lisibles (Blocksy les rend en 10 px) — */
+body.woocommerce div.product form.cart .quantity .ct-decrease::before,
+body.woocommerce div.product form.cart .quantity .ct-increase::before{
+  font-family:var(--rigo-sans);
+  font-size:1.25rem;
+  font-weight:700;
+  line-height:1;
+}
+body.woocommerce div.product form.cart .quantity .ct-decrease,
+body.woocommerce div.product form.cart .quantity .ct-increase{min-width:44px;}
+
+/* — Réassurance sous le bouton d'achat —
+   Cinq modules impriment chacun leur encart (badges, livraison, garantie, paiement,
+   délai) avec cinq fonds et cinq bordures différents. On les présente comme une
+   seule liste : même gabarit, séparés par un filet. */
+.summary .rigo-trust-badges,
+.summary .rigo-shipping-info,
+.summary .rigo-guarantee-row,
+.summary .rigo-payment-row,
+.summary .rigo-urgence-wrap{
+  width:100%;
+  margin:0;
+  padding:var(--rigo-sp-3) 0;
+  background:transparent;
+  border:0;
+  border-top:1px solid var(--rigo-border);
+  border-radius:0;
+  box-shadow:none;
+  color:var(--rigo-ink-soft);
+  font-family:var(--rigo-sans);
+  font-size:var(--rigo-fs-sm);
+  line-height:1.5;
+}
+.summary .rigo-trust-badges{margin-top:var(--rigo-sp-5);}
+.summary .rigo-shipping-info strong,
+.summary .rigo-guarantee-row strong,
+.summary .rigo-urgence-wrap strong{color:var(--rigo-ink);}
+/* Le délai d'expédition est l'information qui déclenche l'achat : seul encart teinté */
+.summary .rigo-urgence-wrap{
+  margin-top:var(--rigo-sp-1);
+  padding:var(--rigo-sp-3) var(--rigo-sp-4);
+  background:var(--rigo-cream-warm);
+  border:1px solid var(--rigo-border);
+  border-radius:var(--rigo-r-sm);
+  color:var(--rigo-ink);
+}
+body.woocommerce div.product .product_meta{text-transform:none;letter-spacing:0;}
+body.woocommerce div.product .product_meta > span{font-size:var(--rigo-fs-sm);}
+
 /* — Onglets sur mobile : pastilles défilantes sur une ligne, pas une pile centrée — */
 @media (max-width:767px){
   body.single-product div.product .woocommerce-tabs ul.tabs,
@@ -2096,8 +2167,9 @@ body.woocommerce-checkout .entry-content > *,
 body.woocommerce-account .entry-content > *{max-width:none;}
 
 /* — Colonnes principale + récapitulatif — */
-.wc-block-components-sidebar-layout{gap:var(--rigo-sp-6);}
-.wc-block-components-sidebar-layout .wc-block-components-main{padding-right:0;}
+/* WooCommerce répartit 65 % + 35 % : l'écart se règle par le padding de la colonne
+   principale (un gap ferait passer le récapitulatif à la ligne). */
+.wc-block-components-sidebar-layout.is-large .wc-block-components-main{padding-right:var(--rigo-sp-7);}
 .wc-block-components-sidebar,
 .wp-block-woocommerce-checkout-order-summary-block{
   background:var(--rigo-paper);
@@ -2193,14 +2265,6 @@ table.wc-block-cart-items .wc-block-cart-items__header{
 .wc-block-cart__submit-container{padding:0;}
 
 /* — Étapes de commande — */
-.wc-block-components-checkout-step{
-  margin-bottom:var(--rigo-sp-5);
-  padding:var(--rigo-sp-5);
-  background:var(--rigo-paper);
-  border:1px solid var(--rigo-border);
-  border-radius:var(--rigo-r-md);
-  box-shadow:var(--rigo-sh-1);
-}
 .wc-block-components-checkout-step__heading{margin:0 0 var(--rigo-sp-3);}
 .wc-block-components-checkout-step__description{color:var(--rigo-muted);font-size:var(--rigo-fs-sm);}
 .wc-block-components-checkout-step__container::after{display:none;}
@@ -2342,6 +2406,76 @@ table.wc-block-cart-items .wc-block-cart-items__header{
   font-size:var(--rigo-fs-sm);
 }
 
+/* — Ventes croisées (bloc « Collection de produits ») : mêmes cartes que la boutique — */
+.wp-block-woocommerce-product-collection{margin-top:var(--rigo-sp-7);}
+.wp-block-woocommerce-product-collection > h2.wp-block-heading,
+.wp-block-woocommerce-product-collection > h3.wp-block-heading{
+  margin:0 0 var(--rigo-sp-4);
+  font-family:var(--rigo-sans);
+  font-size:var(--rigo-fs-h3) !important;
+  font-weight:800;
+  letter-spacing:-.005em;
+}
+ul.wc-block-product-template{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(min(100%,180px),1fr));
+  gap:var(--rigo-sp-4);
+  margin:0;
+  padding:0;
+  list-style:none;
+}
+ul.wc-block-product-template > li.wc-block-product{
+  display:flex;
+  flex-direction:column;
+  width:auto;
+  max-width:none;
+  margin:0;
+  overflow:hidden;
+  background:var(--rigo-paper);
+  border:1px solid var(--rigo-border);
+  border-radius:var(--rigo-r-md);
+  box-shadow:var(--rigo-sh-1);
+  text-align:left;
+}
+li.wc-block-product .wc-block-components-product-image{
+  margin:0;
+  background:var(--rigo-cream) url("https://rigolettres.fr/wp-content/uploads/2026/04/logo-pato-provisoire.png") center / 64px no-repeat;
+  border-bottom:1px solid var(--rigo-border);
+}
+li.wc-block-product .wc-block-components-product-image img{
+  width:100%;
+  aspect-ratio:1 / 1;
+  padding:var(--rigo-sp-3);
+  object-fit:contain;
+  background:var(--rigo-cream);
+  box-sizing:border-box;
+}
+li.wc-block-product .wp-block-post-title{
+  margin:var(--rigo-sp-3) var(--rigo-sp-4) 0;
+  font-family:var(--rigo-sans);
+  font-size:var(--rigo-fs-md) !important;
+  font-weight:800;
+  line-height:1.3;
+  letter-spacing:-.005em;
+  text-align:left;
+}
+li.wc-block-product .wp-block-post-title a{color:var(--rigo-ink);font:inherit;text-decoration:none;}
+li.wc-block-product .wp-block-post-title a:hover{color:var(--rigo-action-dark);}
+li.wc-block-product .wp-block-woocommerce-product-price{
+  margin:var(--rigo-sp-2) var(--rigo-sp-4) auto;
+  font-size:1.0625rem !important;
+  text-align:left;
+}
+li.wc-block-product .wc-block-components-product-button{
+  margin:var(--rigo-sp-3) var(--rigo-sp-4) var(--rigo-sp-4);
+}
+li.wc-block-product .wc-block-components-product-button .wp-block-button__link{
+  width:100%;
+  min-height:44px;
+  padding:8px 12px;
+  font-size:var(--rigo-fs-sm);
+}
+
 /* — Mon compte — */
 .woocommerce-account .woocommerce{
   display:grid;
@@ -2405,7 +2539,12 @@ table.wc-block-cart-items .wc-block-cart-items__header{
 .woocommerce form.login .button,
 .woocommerce form.register .button{width:100%;}
 .woocommerce .woocommerce-LostPassword{margin:var(--rigo-sp-4) 0 0;font-size:var(--rigo-fs-sm);text-align:center;}
-.woocommerce .show-password-input{top:50%;transform:translateY(-50%);}
+.woocommerce .show-password-input{
+  top:50%; right:4px;
+  transform:translateY(-50%);
+  display:grid; place-items:center;
+  width:40px; height:40px;
+}
 
 /* Tableaux WooCommerce classiques (commandes, adresses) */
 .woocommerce table.shop_table{
