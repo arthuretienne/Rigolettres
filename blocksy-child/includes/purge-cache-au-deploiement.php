@@ -70,3 +70,22 @@ add_action('wp_loaded', function () {
         rigo_purge_all_caches();
     }
 }, 5);
+
+/**
+ * Le CDN Hostinger garde le HTML en cache et ne peut pas être purgé depuis le
+ * site : après un déploiement (ou un changement de prix), il continuait à servir
+ * l'ancienne page pendant plus d'une heure alors que LiteSpeed était déjà purgé.
+ *
+ * On lui demande donc de ne pas stocker le HTML (`no-cache`). Le cache de pages
+ * reste assuré par LiteSpeed, à l'origine, que le thème sait purger. Les fichiers
+ * statiques (CSS, JS, images) restent servis par le CDN.
+ * Les pages qui posent déjà leur propre en-tête (panier, commande, compte) ne
+ * sont pas touchées.
+ */
+add_filter('wp_headers', function ($headers) {
+    if (is_admin()) return $headers;
+    if (empty($headers['Cache-Control'])) {
+        $headers['Cache-Control'] = 'no-cache, must-revalidate, max-age=0';
+    }
+    return $headers;
+}, 20);
