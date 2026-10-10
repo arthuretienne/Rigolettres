@@ -137,8 +137,8 @@ add_action('wp_footer', function () {
     #rigo-upsell-overlay {
         display: none;
         position: fixed; inset: 0;
-        background: rgba(31,41,55,.35);
-        z-index: 9998;
+        background: rgba(42,29,15,.35);
+        z-index: var(--rigo-z-overlay);
         opacity: 0;
         transition: opacity 280ms ease;
         backdrop-filter: blur(2px);
@@ -151,15 +151,15 @@ add_action('wp_footer', function () {
         width: min(420px, 100vw);
         height: 100dvh;
         background: #fff;
-        z-index: 9999;
+        z-index: var(--rigo-z-drawer);
         transform: translateX(100%);
         transition: transform 320ms cubic-bezier(.4,0,.2,1);
         display: flex;
         flex-direction: column;
-        box-shadow: -8px 0 40px rgba(31,41,55,.14);
-        border-left: 1.5px solid #E7E2D5;
+        box-shadow: -8px 0 40px rgba(42,29,15,.14);
+        border-left: 1.5px solid var(--rigo-border);
         overflow-y: auto;
-        font-family: "Nunito", sans-serif;
+        font-family: var(--rigo-sans);
     }
     #rigo-upsell-drawer.rigo-ud-open { transform: translateX(0); }
 
@@ -169,12 +169,12 @@ add_action('wp_footer', function () {
         align-items: center;
         gap: 10px;
         padding: 18px 20px;
-        border-bottom: 1.5px solid #E7E2D5;
+        border-bottom: 1.5px solid var(--rigo-border);
         background: #F0FBE6;
     }
     .rigo-ud-check {
         width: 28px; height: 28px;
-        background: #68a033;
+        background: var(--rigo-green-dark);
         border-radius: 50%;
         display: flex; align-items: center; justify-content: center;
         flex-shrink: 0;
@@ -188,13 +188,13 @@ add_action('wp_footer', function () {
     }
     .rigo-ud-close {
         background: none; border: none; cursor: pointer;
-        font-size: 18px; color: #9CA3AF;
+        font-size: 18px; color: var(--rigo-muted);
         padding: 4px 6px;
         border-radius: 6px;
         transition: color 200ms, background 200ms;
         line-height: 1;
     }
-    .rigo-ud-close:hover { color: #1F2937; background: #F3F4F6; }
+    .rigo-ud-close:hover { color: var(--rigo-ink); background: var(--rigo-cream-warm); }
 
     /* Produit ajouté */
     .rigo-ud-added-product {
@@ -202,40 +202,40 @@ add_action('wp_footer', function () {
         align-items: center;
         gap: 14px;
         padding: 20px;
-        border-bottom: 1.5px solid #E7E2D5;
+        border-bottom: 1.5px solid var(--rigo-border);
     }
     .rigo-ud-added-product img {
         width: 64px; height: 64px;
         object-fit: cover;
         border-radius: 10px;
-        border: 1.5px solid #E7E2D5;
+        border: 1.5px solid var(--rigo-border);
         flex-shrink: 0;
     }
     .rigo-ud-pname {
         font-weight: 700;
         font-size: 14.5px;
-        color: #1F2937;
+        color: var(--rigo-ink);
         margin: 0 0 4px;
         line-height: 1.4;
     }
     .rigo-ud-pprice {
         font-weight: 800;
         font-size: 15px;
-        color: #68a033;
+        color: var(--rigo-green-dark);
         margin: 0;
     }
-    .rigo-ud-pprice del { color: #9CA3AF; font-weight: 400; font-size: 13px; margin-right: 4px; }
+    .rigo-ud-pprice del { color: var(--rigo-muted); font-weight: 400; font-size: 13px; margin-right: 4px; }
 
     /* Suggestion */
     .rigo-ud-suggest {
         padding: 18px 20px;
-        border-bottom: 1.5px solid #E7E2D5;
-        background: #FBF8F1;
+        border-bottom: 1.5px solid var(--rigo-border);
+        background: var(--rigo-cream);
     }
     .rigo-ud-suggest-label {
         font-size: 12.5px;
         font-weight: 800;
-        color: #9CA3AF;
+        color: var(--rigo-muted);
         text-transform: uppercase;
         letter-spacing: .06em;
         margin: 0 0 12px;
@@ -245,7 +245,7 @@ add_action('wp_footer', function () {
         align-items: center;
         gap: 12px;
         background: #fff;
-        border: 1.5px solid #E7E2D5;
+        border: 1.5px solid var(--rigo-border);
         border-radius: 12px;
         padding: 12px;
     }
@@ -253,16 +253,16 @@ add_action('wp_footer', function () {
         width: 56px; height: 56px;
         object-fit: cover;
         border-radius: 8px;
-        border: 1px solid #E7E2D5;
+        border: 1px solid var(--rigo-border);
         flex-shrink: 0;
     }
     .rigo-ud-suggest-info { flex: 1; min-width: 0; }
     .rigo-ud-suggest-btn {
         flex-shrink: 0;
-        font-family: "Nunito", sans-serif;
+        font-family: var(--rigo-sans);
         font-weight: 800;
         font-size: 13px;
-        background: #68a033;
+        background: var(--rigo-green-dark);
         color: #fff;
         border: none;
         border-radius: 9999px;
@@ -271,7 +271,7 @@ add_action('wp_footer', function () {
         transition: background 200ms;
         white-space: nowrap;
     }
-    .rigo-ud-suggest-btn:hover { background: #5a8c2b; }
+    .rigo-ud-suggest-btn:hover { background: var(--rigo-green-dark); }
     .rigo-ud-suggest-btn.loading { opacity: .7; pointer-events: none; }
 
     /* CTAs */
@@ -285,10 +285,10 @@ add_action('wp_footer', function () {
     .rigo-ud-btn-primary {
         display: block;
         text-align: center;
-        font-family: "Nunito", sans-serif;
+        font-family: var(--rigo-sans);
         font-weight: 800;
         font-size: 15px;
-        background: #68a033;
+        background: var(--rigo-green-dark);
         color: #fff;
         border: none;
         border-radius: 9999px;
@@ -298,22 +298,22 @@ add_action('wp_footer', function () {
         box-shadow: 0 4px 14px rgba(104,160,51,.28);
         transition: background 200ms;
     }
-    .rigo-ud-btn-primary:hover { background: #5a8c2b; color: #fff; }
+    .rigo-ud-btn-primary:hover { background: var(--rigo-green-dark); color: #fff; }
     .rigo-ud-btn-secondary {
         display: block;
         width: 100%;
-        font-family: "Nunito", sans-serif;
+        font-family: var(--rigo-sans);
         font-weight: 700;
         font-size: 14px;
         background: transparent;
-        color: #4B5563;
-        border: 1.5px solid #E7E2D5;
+        color: var(--rigo-ink-soft);
+        border: 1.5px solid var(--rigo-border);
         border-radius: 9999px;
         padding: 12px 24px;
         cursor: pointer;
         transition: background 200ms, color 200ms;
     }
-    .rigo-ud-btn-secondary:hover { background: #F3F4F6; color: #1F2937; }
+    .rigo-ud-btn-secondary:hover { background: var(--rigo-cream-warm); color: var(--rigo-ink); }
 
     @media (max-width: 480px) {
         #rigo-upsell-drawer { width: 100vw; }

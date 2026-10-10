@@ -38,6 +38,7 @@ add_action('woocommerce_before_main_content', function () {
               'taxonomy'   => 'product_cat',
               'hide_empty' => true,
               'parent'     => 0,
+              'exclude'    => [(int) get_option('default_product_cat')],
           ]);
           if (!is_wp_error($cats)) {
               foreach ($cats as $cat) {

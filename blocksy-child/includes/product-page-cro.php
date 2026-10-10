@@ -183,7 +183,7 @@ add_action('wp_head', function () {
     }
     .rigo-guarantee-row svg {
         width: 18px; height: 18px;
-        stroke: #68a033;
+        stroke: var(--rigo-green-dark);
         flex-shrink: 0;
         margin-top: 1px;
     }
@@ -199,7 +199,7 @@ add_action('wp_head', function () {
     .rigo-payment-label {
         font-family: Nunito, sans-serif;
         font-size: 11.5px;
-        color: #9CA3AF;
+        color: var(--rigo-muted);
         font-weight: 600;
         margin-right: 4px;
     }
@@ -207,7 +207,7 @@ add_action('wp_head', function () {
         height: 26px;
         width: auto;
         border-radius: 4px;
-        border: 1px solid #E5E7EB;
+        border: 1px solid var(--rigo-border);
         display: inline-block;
         vertical-align: middle;
     }
@@ -216,7 +216,7 @@ add_action('wp_head', function () {
     .rigo-brigitte-section {
         margin: 40px 0;
         background: linear-gradient(135deg, #FBF8F0 0%, #F3EDD8 100%);
-        border: 1.5px solid #E7E2D5;
+        border: 1.5px solid var(--rigo-border);
         border-radius: 16px;
         overflow: hidden;
     }
@@ -233,13 +233,13 @@ add_action('wp_head', function () {
         width: 80px; height: 80px;
         border-radius: 50%;
         overflow: hidden;
-        border: 3px solid #E7E2D5;
+        border: 3px solid var(--rigo-border);
     }
     .rigo-brigitte-avatar svg { width: 100%; height: 100%; }
     .rigo-brigitte-label {
-        font-family: Kalam, cursive;
+        font-family: var(--rigo-script);
         font-size: 13px;
-        color: #68a033;
+        color: var(--rigo-green-dark);
         font-weight: 700;
         margin: 0 0 8px;
         text-transform: uppercase;
@@ -248,7 +248,7 @@ add_action('wp_head', function () {
     .rigo-brigitte-quote {
         font-family: Nunito, sans-serif;
         font-size: 15px;
-        color: #3a2913;
+        color: var(--rigo-ink);
         line-height: 1.7;
         font-style: italic;
         margin: 0 0 10px;
@@ -256,7 +256,7 @@ add_action('wp_head', function () {
     .rigo-brigitte-sig {
         font-family: Nunito, sans-serif;
         font-size: 13px;
-        color: #6B7280;
+        color: var(--rigo-muted);
         margin: 0;
     }
     @media (max-width: 600px) {
@@ -269,13 +269,13 @@ add_action('wp_head', function () {
         margin: 32px 0;
     }
     .rigo-faq-title {
-        font-family: Kalam, cursive;
+        font-family: var(--rigo-serif);
         font-size: 22px;
-        color: #3a2913;
+        color: var(--rigo-ink);
         margin: 0 0 16px;
     }
     .rigo-faq-item {
-        border: 1.5px solid #E7E2D5;
+        border: 1.5px solid var(--rigo-border);
         border-radius: 10px;
         margin-bottom: 8px;
         overflow: hidden;
@@ -295,15 +295,15 @@ add_action('wp_head', function () {
         font-family: Nunito, sans-serif;
         font-size: 15px;
         font-weight: 700;
-        color: #3a2913;
+        color: var(--rigo-ink);
         transition: background .15s;
     }
-    .rigo-faq-q:hover { background: #F7F4ED; }
-    .rigo-faq-q[aria-expanded="true"] { background: #F7F4ED; }
+    .rigo-faq-q:hover { background: var(--rigo-cream-warm); }
+    .rigo-faq-q[aria-expanded="true"] { background: var(--rigo-cream-warm); }
     .rigo-faq-chevron {
         width: 18px; height: 18px;
         flex-shrink: 0;
-        stroke: #68a033;
+        stroke: var(--rigo-green-dark);
         transition: transform .25s ease;
     }
     .rigo-faq-q[aria-expanded="true"] .rigo-faq-chevron {
@@ -313,7 +313,7 @@ add_action('wp_head', function () {
         padding: 0 18px 16px;
         font-family: Nunito, sans-serif;
         font-size: 14.5px;
-        color: #4B5563;
+        color: var(--rigo-ink-soft);
         line-height: 1.7;
     }
     .rigo-faq-a p { margin: 0; }

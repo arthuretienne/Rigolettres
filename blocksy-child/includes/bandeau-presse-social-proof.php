@@ -72,17 +72,17 @@ add_action('wp_footer', function () {
         gap: 12px 24px;
         padding: 18px 28px;
         background: #fff;
-        border-top: 1.5px solid #E7E2D5;
-        border-bottom: 1.5px solid #E7E2D5;
+        border-top: 1.5px solid var(--rigo-border);
+        border-bottom: 1.5px solid var(--rigo-border);
         margin: 32px 0;
     }
     .rigo-press-label {
-        font-family: "Nunito", sans-serif;
+        font-family: var(--rigo-sans);
         font-size: 11px;
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: .1em;
-        color: #9CA3AF;
+        color: var(--rigo-muted);
         white-space: nowrap;
         flex-shrink: 0;
     }
@@ -102,20 +102,20 @@ add_action('wp_footer', function () {
     }
     a.rigo-press-item:hover { opacity: .7; }
     .rigo-press-name {
-        font-family: "Nunito", sans-serif;
+        font-family: var(--rigo-sans);
         font-size: 13.5px;
         font-weight: 800;
-        color: #374151;
+        color: var(--rigo-ink);
     }
     .rigo-press-extract {
-        font-family: "Nunito", sans-serif;
+        font-family: var(--rigo-sans);
         font-size: 11.5px;
-        color: #9CA3AF;
+        color: var(--rigo-muted);
         font-style: italic;
     }
     .rigo-press-divider {
         width: 1px; height: 32px;
-        background: #E7E2D5;
+        background: var(--rigo-border);
         flex-shrink: 0;
     }
     @media (max-width: 600px) {

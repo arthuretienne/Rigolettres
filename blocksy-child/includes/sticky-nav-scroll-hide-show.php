@@ -1,105 +1,56 @@
 <?php
 /**
- * Migré depuis Code Snippet #28 : [Rigolettres] 17 — Sticky nav scroll hide/show
- * Description : Header se cache au scroll vers le bas, réapparaît au scroll vers le haut + ombre backdrop-filter
+ * [Rigolettres] En-tête sticky : se replie au défilement vers le bas,
+ * réapparaît dès qu'on remonte.
+ *
+ * Le script ne fait que poser deux classes sur <html> :
+ *   - rigo-header-scrolled : la page a quitté le haut (ombre sous l'en-tête)
+ *   - rigo-header-hidden   : l'en-tête est replié
+ * Le CSS correspondant vit dans style.css (section 8) et ne cible QUE
+ * #site-header. L'ancienne version ciblait `header[class*="header"]`, ce qui
+ * rendait aussi sticky les titres de page (`header.entry-header`).
+ *
+ * L'en-tête ne se replie jamais tant que le mega-menu ou le tiroir est ouvert,
+ * ni quand le focus clavier est dedans.
  */
 
 if (!defined('ABSPATH')) exit;
 
-/**
- * [Rigolettres] Sticky nav — hide on scroll down, reveal on scroll up
- *
- * Comportement :
- * - Header se cache proprement quand on scroll vers le bas (> 80px)
- * - Réapparaît instantanément quand on remonte (comme Allbirds, Respire)
- * - Ajoute une ombre douce quand le header est sticky
- * - Sur mobile : hamburger padding safe-area-inset géré
- *
- * Scope : front-end
- * Priority : 8
- */
-
 add_action('wp_footer', function () {
+    if (is_admin()) return;
     ?>
-    <style id="rigo-sticky-nav-css">
-    /* ── Transition header ── */
-    #masthead,
-    .site-header,
-    header.site-header,
-    .ct-header,
-    header[class*="header"] {
-        transition: transform 280ms cubic-bezier(.4,0,.2,1),
-                    box-shadow 280ms ease,
-                    background 200ms ease !important;
-        will-change: transform;
-        position: sticky !important;
-        top: 0 !important;
-        z-index: 500 !important;
-    }
-
-    /* Classe ajoutée quand le header est éloigné du top */
-    .rigo-header-scrolled #masthead,
-    .rigo-header-scrolled .site-header,
-    .rigo-header-scrolled .ct-header,
-    .rigo-header-scrolled header[class*="header"] {
-        box-shadow: 0 2px 16px rgba(31,41,55,.10) !important;
-        background: rgba(251,248,241,.97) !important;
-        backdrop-filter: blur(8px) !important;
-        -webkit-backdrop-filter: blur(8px) !important;
-    }
-
-    /* Classe appliquée quand on scroll vers le bas — header caché */
-    .rigo-header-hidden #masthead,
-    .rigo-header-hidden .site-header,
-    .rigo-header-hidden .ct-header,
-    .rigo-header-hidden header[class*="header"] {
-        transform: translateY(-100%) !important;
-        box-shadow: none !important;
-    }
-
-    /* Safe-area iPhone encoche (iOS 11+) */
-    @supports (padding-top: env(safe-area-inset-top)) {
-        #masthead,
-        .site-header,
-        .ct-header {
-            padding-top: env(safe-area-inset-top);
-        }
-    }
-    </style>
-
     <script id="rigo-sticky-nav-js">
     (function () {
-        var lastY = 0;
+        var html = document.documentElement;
+        var header = document.getElementById('site-header');
+        if (!header) return;
+
+        var lastY = window.scrollY || 0;
         var ticking = false;
-        var HIDE_THRESHOLD = 80;  // px depuis le top avant d'activer le hide
-        var SCROLL_DELTA   = 8;   // px de scroll minimal pour déclencher
+        var HIDE_AFTER = 160; // px depuis le haut avant d'autoriser le repli
+        var DELTA = 8;        // amplitude minimale pour changer d'état
+
+        function locked() {
+            return html.classList.contains('rigo-mega-open')
+                || document.body.classList.contains('mobile-menu-open')
+                || header.contains(document.activeElement);
+        }
 
         function update() {
-            var currentY = window.scrollY || window.pageYOffset;
-            var delta    = currentY - lastY;
-            var html     = document.documentElement;
+            var y = window.scrollY || 0;
+            var delta = y - lastY;
 
-            // Ajout classe "scrolled" dès qu'on quitte le top
-            if (currentY > 20) {
-                html.classList.add('rigo-header-scrolled');
-            } else {
-                html.classList.remove('rigo-header-scrolled');
+            html.classList.toggle('rigo-header-scrolled', y > 20);
+
+            if (y <= HIDE_AFTER || locked()) {
                 html.classList.remove('rigo-header-hidden');
-                lastY = currentY;
-                ticking = false;
-                return;
-            }
-
-            // Scroll vers le bas et au-delà du seuil → cacher
-            if (delta > SCROLL_DELTA && currentY > HIDE_THRESHOLD) {
+            } else if (delta > DELTA) {
                 html.classList.add('rigo-header-hidden');
-            }
-            // Scroll vers le haut → montrer
-            else if (delta < -SCROLL_DELTA) {
+            } else if (delta < -DELTA) {
                 html.classList.remove('rigo-header-hidden');
             }
 
-            lastY = currentY;
+            if (Math.abs(delta) > DELTA || y <= HIDE_AFTER) lastY = y;
             ticking = false;
         }
 
@@ -109,6 +60,13 @@ add_action('wp_footer', function () {
                 ticking = true;
             }
         }, { passive: true });
+
+        // Le focus clavier revient dans l'en-tête replié : on le montre
+        header.addEventListener('focusin', function () {
+            html.classList.remove('rigo-header-hidden');
+        });
+
+        update();
     })();
     </script>
     <?php

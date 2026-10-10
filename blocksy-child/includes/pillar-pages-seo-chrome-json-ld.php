@@ -60,8 +60,8 @@ add_action( 'wp_enqueue_scripts', function () {
   max-width: 760px;
   margin: 0 auto;
   padding: 0 20px 64px;
-  font-family: "Nunito", system-ui, -apple-system, sans-serif;
-  color: var(--ink, #2D2420);
+  font-family: var(--rigo-sans);
+  color: var(--ink, var(--rigo-ink));
   line-height: 1.65;
   font-size: 17px;
 }
@@ -69,40 +69,40 @@ add_action( 'wp_enqueue_scripts', function () {
 /* ---------- HERO ---------- */
 .rigo-pillar-hero {
   padding: 48px 0 32px;
-  border-bottom: 1px solid var(--border, #E6E0D5);
+  border-bottom: 1px solid var(--border, var(--rigo-border));
   margin-bottom: 40px;
 }
 .rigo-pillar-eyebrow {
-  font-family: "Kalam", cursive;
+  font-family: var(--rigo-script);
   font-size: 15px;
-  color: var(--primary, #27B4E5);
+  color: var(--primary, var(--rigo-action));
   margin: 0 0 12px;
   letter-spacing: .02em;
   font-weight: 700;
 }
 .rigo-pillar-hero h1 {
-  font-family: "Kalam", cursive;
+  font-family: var(--rigo-serif);
   font-size: clamp(30px, 4.5vw, 48px);
   line-height: 1.15;
   font-weight: 700;
   margin: 0 0 20px;
-  color: var(--ink, #2D2420);
+  color: var(--ink, var(--rigo-ink));
   letter-spacing: -.01em;
 }
 .rigo-pillar-lede {
   font-size: 19px;
   line-height: 1.6;
-  color: var(--ink-soft, #5C524A);
+  color: var(--ink-soft, var(--rigo-ink-soft));
   margin: 0 0 20px;
   font-weight: 400;
 }
 .rigo-pillar-lede strong {
-  color: var(--ink, #2D2420);
+  color: var(--ink, var(--rigo-ink));
   font-weight: 700;
 }
 .rigo-pillar-meta {
   font-size: 14px;
-  color: var(--ink-mute, #8A7F73);
+  color: var(--ink-mute, var(--rigo-muted));
   margin: 0;
 }
 
@@ -115,10 +115,10 @@ add_action( 'wp_enqueue_scripts', function () {
   margin: 0 0 48px;
 }
 .rigo-pillar-toc-title {
-  font-family: "Kalam", cursive;
+  font-family: var(--rigo-serif);
   font-size: 18px;
   font-weight: 700;
-  color: var(--ink, #2D2420);
+  color: var(--ink, var(--rigo-ink));
   margin: 0 0 10px;
 }
 .rigo-pillar-toc ol {
@@ -131,21 +131,21 @@ add_action( 'wp_enqueue_scripts', function () {
 @media (max-width: 640px) { .rigo-pillar-toc ol { columns: 1; } }
 .rigo-pillar-toc li { margin: 4px 0; break-inside: avoid; }
 .rigo-pillar-toc a {
-  color: var(--primary-dark, #1f8fc4);
+  color: var(--primary-dark, var(--rigo-action-dark));
   text-decoration: none;
   transition: color .15s;
 }
-.rigo-pillar-toc a:hover { color: var(--primary, #27B4E5); text-decoration: underline; }
+.rigo-pillar-toc a:hover { color: var(--primary, var(--rigo-action)); text-decoration: underline; }
 
 /* ---------- H2 / H3 ---------- */
 .rigo-pillar-article h2,
 .rigo-pillar-h2 {
-  font-family: "Kalam", cursive;
+  font-family: var(--rigo-serif);
   font-size: clamp(24px, 3vw, 32px);
   line-height: 1.2;
   font-weight: 700;
   margin: 56px 0 20px;
-  color: var(--ink, #2D2420);
+  color: var(--ink, var(--rigo-ink));
   scroll-margin-top: 120px;
   position: relative;
   padding-left: 16px;
@@ -156,15 +156,15 @@ add_action( 'wp_enqueue_scripts', function () {
   position: absolute;
   left: 0; top: 8px; bottom: 8px;
   width: 4px;
-  background: var(--primary, #27B4E5);
+  background: var(--primary, var(--rigo-action));
   border-radius: 2px;
 }
 .rigo-pillar-article h3 {
-  font-family: "Nunito", sans-serif;
+  font-family: var(--rigo-sans);
   font-size: 20px;
   font-weight: 800;
   margin: 36px 0 12px;
-  color: var(--ink, #2D2420);
+  color: var(--ink, var(--rigo-ink));
   line-height: 1.3;
 }
 
@@ -173,23 +173,23 @@ add_action( 'wp_enqueue_scripts', function () {
 .rigo-pillar-article ul,
 .rigo-pillar-article ol { margin: 0 0 20px; padding-left: 22px; }
 .rigo-pillar-article li { margin: 8px 0; }
-.rigo-pillar-article strong { font-weight: 800; color: var(--ink, #2D2420); }
+.rigo-pillar-article strong { font-weight: 800; color: var(--ink, var(--rigo-ink)); }
 .rigo-pillar-article em { font-style: italic; }
 
 .rigo-pillar-article a {
-  color: var(--primary-dark, #1f8fc4);
+  color: var(--primary-dark, var(--rigo-action-dark));
   text-decoration: underline;
   text-decoration-thickness: 1.5px;
   text-underline-offset: 2px;
   transition: color .15s;
 }
-.rigo-pillar-article a:hover { color: var(--primary, #27B4E5); }
+.rigo-pillar-article a:hover { color: var(--primary, var(--rigo-action)); }
 
 /* ---------- QUOTE ---------- */
 .rigo-pillar-quote,
 .rigo-pillar-article blockquote.rigo-pillar-quote {
-  background: #FBF8F1;
-  border-left: 4px solid var(--accent, #68a033);
+  background: var(--rigo-cream);
+  border-left: 4px solid var(--accent, var(--rigo-green-dark));
   padding: 20px 24px;
   margin: 32px 0;
   border-radius: 0 8px 8px 0;
@@ -197,27 +197,27 @@ add_action( 'wp_enqueue_scripts', function () {
   font-size: 18px;
   line-height: 1.55;
 }
-.rigo-pillar-quote p { margin: 0 0 8px; color: var(--ink, #2D2420); }
+.rigo-pillar-quote p { margin: 0 0 8px; color: var(--ink, var(--rigo-ink)); }
 .rigo-pillar-quote cite {
   font-style: normal;
   font-size: 14px;
-  color: var(--ink-soft, #5C524A);
-  font-family: "Kalam", cursive;
+  color: var(--ink-soft, var(--rigo-ink-soft));
+  font-family: var(--rigo-script);
   font-weight: 700;
 }
 
 /* ---------- CARTES PRODUIT intégrées ---------- */
 .rigo-pillar-product-card {
   background: #fff;
-  border: 1px solid var(--border, #E6E0D5);
+  border: 1px solid var(--border, var(--rigo-border));
   border-radius: 14px;
   padding: 24px;
   margin: 28px 0;
-  box-shadow: 0 2px 8px rgba(31,41,55,.04);
+  box-shadow: 0 2px 8px rgba(42,29,15,.04);
   transition: box-shadow .2s, transform .2s;
 }
 .rigo-pillar-product-card:hover {
-  box-shadow: 0 4px 16px rgba(31,41,55,.08);
+  box-shadow: 0 4px 16px rgba(42,29,15,.08);
   transform: translateY(-2px);
 }
 .rigo-pillar-product-card.rigo-pillar-product-card--gift {
@@ -226,7 +226,7 @@ add_action( 'wp_enqueue_scripts', function () {
 }
 .rigo-pillar-product-badge {
   display: inline-block;
-  background: var(--primary, #27B4E5);
+  background: var(--primary, var(--rigo-action));
   color: #fff;
   padding: 4px 10px;
   border-radius: 6px;
@@ -237,15 +237,15 @@ add_action( 'wp_enqueue_scripts', function () {
   margin-bottom: 12px;
 }
 .rigo-pillar-product-title {
-  font-family: "Kalam", cursive;
+  font-family: var(--rigo-serif);
   font-size: 24px !important;
   margin: 0 0 6px !important;
-  color: var(--ink, #2D2420);
+  color: var(--ink, var(--rigo-ink));
   padding-left: 0 !important;
 }
 .rigo-pillar-product-title::before { display: none !important; }
 .rigo-pillar-product-subtitle {
-  color: var(--ink-soft, #5C524A);
+  color: var(--ink-soft, var(--rigo-ink-soft));
   font-size: 15px;
   font-style: italic;
   margin: 0 0 16px !important;
@@ -256,7 +256,7 @@ add_action( 'wp_enqueue_scripts', function () {
 }
 .rigo-pillar-cta-btn {
   display: inline-block;
-  background: var(--accent, #68a033);
+  background: var(--accent, var(--rigo-green-dark));
   color: #fff !important;
   padding: 10px 20px;
   border-radius: 10px;
@@ -272,12 +272,12 @@ add_action( 'wp_enqueue_scripts', function () {
 
 /* ---------- FAQ <details> ---------- */
 .rigo-pillar-faq {
-  border-top: 1px solid var(--border, #E6E0D5);
+  border-top: 1px solid var(--border, var(--rigo-border));
   padding-top: 8px;
   margin: 24px 0 48px;
 }
 .rigo-pillar-faq-item {
-  border-bottom: 1px solid var(--border, #E6E0D5);
+  border-bottom: 1px solid var(--border, var(--rigo-border));
   padding: 18px 0;
 }
 .rigo-pillar-faq-item summary {
@@ -285,7 +285,7 @@ add_action( 'wp_enqueue_scripts', function () {
   cursor: pointer;
   font-weight: 800;
   font-size: 17px;
-  color: var(--ink, #2D2420);
+  color: var(--ink, var(--rigo-ink));
   padding-right: 32px;
   position: relative;
   line-height: 1.4;
@@ -298,46 +298,46 @@ add_action( 'wp_enqueue_scripts', function () {
   font-size: 24px;
   font-weight: 400;
   line-height: 1;
-  color: var(--primary, #27B4E5);
+  color: var(--primary, var(--rigo-action));
   transition: transform .2s;
 }
 .rigo-pillar-faq-item[open] summary::after { content: "−"; }
-.rigo-pillar-faq-item summary:hover { color: var(--primary-dark, #1f8fc4); }
+.rigo-pillar-faq-item summary:hover { color: var(--primary-dark, var(--rigo-action-dark)); }
 .rigo-pillar-faq-item p {
   margin: 12px 0 0;
-  color: var(--ink-soft, #5C524A);
+  color: var(--ink-soft, var(--rigo-ink-soft));
   line-height: 1.6;
 }
 
 /* ---------- SIGNATURE BRIGITTE ---------- */
 .rigo-pillar-signature {
-  background: #FBF8F1;
-  border: 1px solid var(--border, #E6E0D5);
+  background: var(--rigo-cream);
+  border: 1px solid var(--border, var(--rigo-border));
   border-radius: 14px;
   padding: 24px 28px;
   margin: 48px 0;
 }
 .rigo-pillar-signature-intro {
   font-size: 13px;
-  color: var(--ink-mute, #8A7F73);
+  color: var(--ink-mute, var(--rigo-muted));
   text-transform: uppercase;
   letter-spacing: .08em;
   margin: 0 0 6px;
 }
 .rigo-pillar-signature-name {
-  font-family: "Kalam", cursive;
+  font-family: var(--rigo-script);
   font-size: 24px;
   margin: 0 0 4px;
-  color: var(--ink, #2D2420);
+  color: var(--ink, var(--rigo-ink));
 }
 .rigo-pillar-signature-title {
   font-size: 14px;
-  color: var(--ink-soft, #5C524A);
+  color: var(--ink-soft, var(--rigo-ink-soft));
   margin: 0 0 12px;
 }
 .rigo-pillar-signature-bio {
   font-size: 15px;
-  color: var(--ink-soft, #5C524A);
+  color: var(--ink-soft, var(--rigo-ink-soft));
   margin: 0;
   line-height: 1.55;
 }
@@ -371,7 +371,7 @@ add_action( 'wp_enqueue_scripts', function () {
 }
 .rigo-pillar-links-list a::before {
   content: "→ ";
-  color: var(--primary, #27B4E5);
+  color: var(--primary, var(--rigo-action));
   font-weight: 800;
   margin-right: 4px;
 }

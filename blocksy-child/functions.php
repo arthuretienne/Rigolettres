@@ -3,7 +3,8 @@
  * Blocksy Child Rigolettres — bootstrap.
  *
  * - Charge la feuille du parent puis celle de l'enfant (versionnée par mtime → busting auto).
- * - Préconnexion + chargement Google Fonts (Fraunces + Nunito + Caveat).
+ * - Préconnexion + chargement Google Fonts : Fraunces (titres), Nunito (texte), Caveat (script).
+ *   Seules les graisses utilisées par le design system sont demandées.
  */
 
 if (!defined('ABSPATH')) {
@@ -23,7 +24,7 @@ add_action('wp_enqueue_scripts', function () {
 add_action('wp_head', function () {
     echo '<link rel="preconnect" href="https://fonts.googleapis.com">' . "\n";
     echo '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' . "\n";
-    echo '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,800&family=Nunito:wght@400;500;600;700;800&family=Caveat:wght@500;700&display=swap">' . "\n";
+    echo '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Nunito:wght@400;600;700;800&family=Caveat:wght@700&display=swap">' . "\n";
 }, 1);
 
 /**

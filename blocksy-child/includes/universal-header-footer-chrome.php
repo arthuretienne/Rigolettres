@@ -1,29 +1,26 @@
 <?php
 /**
- * Migré depuis Code Snippet #39 : [Rigolettres] 26 — Universal header/footer chrome
- * Description : Header + footer site-wide avec colonne Guides vers pages pilier SEO
+ * [Rigolettres] En-tête et pied de page universels.
+ *
+ * Un seul en-tête et un seul pied de page pour tout le site, accueil comprise.
+ * Le header/footer natif de Blocksy est masqué (style.css, section 8), et ceux
+ * qui traînaient dans le contenu de la page d'accueil sont retirés au rendu par
+ * includes/contenu-nettoyage-css-herite.php.
+ *
+ * Structure :
+ *   - bandeau d'annonce (fermable, mémorisé pour la session)
+ *   - en-tête sticky : logo, navigation, mega-menu Boutique, compte, panier
+ *   - tiroir de navigation (mobile + tablette, < 1024 px)
+ *   - pied de page
+ *
+ * Le mega-menu est un enfant direct de <header> positionné en `top:100%` :
+ * il suit l'en-tête sans calcul JS, y compris quand le bandeau d'annonce
+ * défile ou que l'en-tête se replie au scroll.
+ *
+ * Tout le CSS vit dans style.css (sections 8 et 9).
  */
 
 if (!defined('ABSPATH')) exit;
-
-/**
- * [Rigolettres] Universal header + footer (site-wide one-page chrome)
- *
- * Problème résolu : la home portait son <header>/<footer> dans le contenu de page.
- * Toutes les autres pages (fiche produit, cart, checkout, blog) tombaient sur le
- * header/footer Blocksy par défaut → incohérence visuelle.
- *
- * Solution :
- *  1. Injecte le MÊME header custom + footer custom sur toutes les pages SAUF la home
- *     (la home garde son header/footer natif stocké dans le contenu page).
- *  2. Masque le header/footer Blocksy (ct-header / ct-footer) PARTOUT.
- *  3. Menu one-page : tous les liens pointent vers /#section (absolu) pour que
- *     cliquer "Nos jeux" depuis /product/pato/ ramène vers la home puis scroll.
- *  4. Cart count live via fragments WC.
- *
- * Scope : global
- * Priority : 2 (avant 24-blocksy-design-system-override pour poser les tokens)
- */
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 if (!function_exists('rigo_home_url')) {
@@ -48,6 +45,28 @@ if (!function_exists('rigo_shop_url')) {
         return home_url('/shop/');
     }
 }
+if (!function_exists('rigo_account_url')) {
+    function rigo_account_url() {
+        if (function_exists('wc_get_page_permalink')) {
+            $url = wc_get_page_permalink('myaccount');
+            if ($url) return $url;
+        }
+        return home_url('/my-account/');
+    }
+}
+
+/**
+ * Attribut aria-current="page" si l'URL donnée est la page affichée.
+ * Sert à marquer l'entrée active du menu (repère visuel + lecteurs d'écran).
+ */
+if (!function_exists('rigo_nav_current')) {
+    function rigo_nav_current($url) {
+        $current = isset($_SERVER['REQUEST_URI']) ? wp_parse_url(wp_unslash($_SERVER['REQUEST_URI']), PHP_URL_PATH) : '';
+        $target  = wp_parse_url($url, PHP_URL_PATH);
+        if (!$current || !$target) return '';
+        return (untrailingslashit($current) === untrailingslashit($target)) ? ' aria-current="page"' : '';
+    }
+}
 
 // ── Wordmark réutilisable ──────────────────────────────────────────────────
 if (!function_exists('rigo_wordmark_html')) {
@@ -63,92 +82,114 @@ if (!function_exists('rigo_wordmark_html')) {
     }
 }
 
-// ── HEADER injecté ─────────────────────────────────────────────────────────
+/**
+ * Catalogue du mega-menu : groupe => [libellé, [id produit => [nom, sous-titre]]].
+ * Partagé entre le panneau desktop et le tiroir mobile.
+ */
+if (!function_exists('rigo_mega_catalog')) {
+    function rigo_mega_catalog() {
+        return [
+            'lecture' => [
+                'label' => 'Jeux de lecture',
+                'items' => [
+                    28 => ['Pato le Chien — N°1',  'CP · 5-7 ans · Syllabes à 2 lettres'],
+                    29 => ['Luna les Sons — N°2',   'CE1 · 7-8 ans · Sons complexes'],
+                    75 => ['Zoé — N°3',             'CE1-CE2 · 7-9 ans · Syllabes avancées'],
+                ],
+            ],
+            'verbes' => [
+                'label' => 'Rigoloverbes',
+                'items' => [
+                    76 => ['Présent',        'CE2-CM1 · Toutes les terminaisons'],
+                    77 => ['Imparfait',      'CM1 · Conjugaison narrative'],
+                    78 => ['Futur simple',   'CM1-CM2 · Projections et récits'],
+                    79 => ['Passé composé',  'CE2-CM1 · Auxiliaires être/avoir'],
+                    30 => ['Passé simple',   'CM2 · Textes littéraires'],
+                ],
+            ],
+            'livres' => [
+                'label' => 'Livres & Packs',
+                'items' => [
+                    31 => ['Grammaire — Niveau 1',       'CP-CE1 · Les fondamentaux'],
+                    32 => ['Grammaire — Niveau 2',       'CE2-CM · Approfondissement'],
+                    80 => ['Pack Rigolettres R1+R2',     'Économie 3 €'],
+                    81 => ['Pack Rigolettres R1+R2+R3',  'Économie 7 €'],
+                    83 => ['Pack 5 Rigoloverbes',        'Intégrale conjugaison'],
+                ],
+            ],
+        ];
+    }
+}
+
+// ── EN-TÊTE ────────────────────────────────────────────────────────────────
 add_action('wp_body_open', function () {
     if (is_admin()) return;
 
     $logo     = 'https://rigolettres.fr/wp-content/uploads/2026/04/logo-pato-provisoire.png';
     $cart_url = function_exists('wc_get_cart_url') ? wc_get_cart_url() : home_url('/cart/');
     $shop     = rigo_shop_url();
+    $account  = rigo_account_url();
     $count    = rigo_cart_count();
-    $blog_url = get_permalink((int) get_option('page_for_posts')) ?: home_url('/blog/');
+    $mega     = rigo_mega_catalog();
 
-    // Catalogue pour le mega-menu : id => [nom, sous-titre niveau/thème]
-    $mega = [
-        'lecture' => [
-            'label' => 'Jeux de lecture',
-            'items' => [
-                28 => ['Pato le Chien — N°1',  'CP · 5-7 ans · Syllabes à 2 lettres'],
-                29 => ['Luna les Sons — N°2',   'CE1 · 7-8 ans · Sons complexes'],
-                75 => ['Zoé — N°3',             'CE1-CE2 · 7-9 ans · Syllabes avancées'],
-            ],
-        ],
-        'verbes' => [
-            'label' => 'Rigoloverbes',
-            'items' => [
-                76 => ['Présent',        'CE2-CM1 · Toutes les terminaisons'],
-                77 => ['Imparfait',      'CM1 · Conjugaison narrative'],
-                78 => ['Futur simple',   'CM1-CM2 · Projections et récits'],
-                79 => ['Passé composé',  'CE2-CM1 · Auxiliaires être/avoir'],
-                30 => ['Passé simple',   'CM2 · Textes littéraires'],
-            ],
-        ],
-        'livres' => [
-            'label' => 'Livres & Packs',
-            'items' => [
-                31 => ['Grammaire — Niveau 1',       'CP-CE1 · Les fondamentaux'],
-                32 => ['Grammaire — Niveau 2',       'CE2-CM · Approfondissement'],
-                80 => ['Pack Rigolettres R1+R2',     'Économie 3 €'],
-                81 => ['Pack Rigolettres R1+R2+R3',  'Économie 7 €'],
-                83 => ['Pack 5 Rigoloverbes',        'Intégrale conjugaison'],
-            ],
-        ],
+    $links = [
+        ['Pour les pros', home_url('/pour-orthophonistes/'), 'Pour les orthophonistes'],
+        ['La méthode',    home_url('/methode-syllabique/'),  'La méthode syllabique'],
+        ['Brigitte',      home_url('/a-propos/'),            'L’histoire de Brigitte'],
     ];
+    // « Blog » n'apparaît que si une page des articles est définie (Réglages → Lecture).
+    // Sans elle, get_permalink(0) renvoyait l'URL de la page courante : le lien « Blog »
+    // pointait sur lui-même partout, et /blog/ répond 404.
+    $blog_id = (int) get_option('page_for_posts');
+    if ($blog_id) {
+        $links[] = ['Blog', get_permalink($blog_id), 'Blog'];
+    }
+    $links[] = ['Contact', home_url('/contact/'), 'Contact'];
     ?>
-    <div class="rigo-promo-bar" id="rigo-promo-bar">
-      <span>✨ Jeux conçus par une orthophoniste, fabriqués en France dans la Sarthe</span>
-      <button class="rigo-promo-close" aria-label="Fermer" onclick="this.closest('#rigo-promo-bar').style.display='none';document.documentElement.style.setProperty('--rigo-hdr-h',document.getElementById('site-header').getBoundingClientRect().bottom+'px')">×</button>
+    <div class="rigo-promo-bar" id="rigo-promo-bar" role="region" aria-label="Annonce">
+      <p class="rigo-promo-text">✨ Jeux conçus par une orthophoniste, fabriqués en France dans la Sarthe</p>
+      <button type="button" class="rigo-promo-close" id="rigo-promo-close" aria-label="Fermer l’annonce">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" width="16" height="16" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
     </div>
+    <script>try{if(sessionStorage.getItem('rigo_promo_closed')){document.getElementById('rigo-promo-bar').hidden=true;}}catch(e){}</script>
 
     <header class="site-header site-header--injected" id="site-header">
       <div class="container header-inner">
 
         <a class="brand" href="<?php echo esc_url(home_url('/')); ?>" aria-label="Rigolettres, accueil">
           <span class="brand-pato">
-            <img decoding="async" src="<?php echo esc_url($logo); ?>" alt="" aria-hidden="true" width="44" height="44">
+            <img decoding="async" src="<?php echo esc_url($logo); ?>" alt="" width="44" height="44">
           </span>
           <?php echo rigo_wordmark_html(); ?>
-          <span class="visually-hidden">Rigolettres</span>
         </a>
 
         <nav class="nav" aria-label="Menu principal" id="main-nav">
-
-          <!-- ▾ BOUTIQUE — trigger seulement, panel en dehors du <header> -->
           <div class="nav-has-mega" id="rigo-nav-boutique">
-            <a href="<?php echo esc_url($shop); ?>" class="nav-link" aria-haspopup="true" aria-expanded="false" aria-controls="rigo-mega-boutique">
-              Boutique
-              <svg class="nav-chevron" viewBox="0 0 16 16" fill="currentColor" width="12" height="12" aria-hidden="true">
+            <a href="<?php echo esc_url($shop); ?>" class="nav-link"<?php echo rigo_nav_current($shop); ?>>Boutique</a>
+            <button type="button" class="nav-mega-toggle" id="rigo-mega-toggle" aria-expanded="false" aria-controls="rigo-mega-boutique" aria-label="Afficher le sous-menu Boutique">
+              <svg class="nav-chevron" viewBox="0 0 16 16" fill="currentColor" width="14" height="14" aria-hidden="true">
                 <path d="M3.47 5.47a.75.75 0 0 1 1.06 0L8 8.94l3.47-3.47a.75.75 0 1 1 1.06 1.06l-4 4a.75.75 0 0 1-1.06 0l-4-4a.75.75 0 0 1 0-1.06z"/>
               </svg>
-            </a>
-          </div><!-- .nav-has-mega -->
-
-          <!-- Liens simples vers pages réelles -->
-          <a href="<?php echo esc_url(home_url('/pour-orthophonistes/')); ?>" class="nav-link">Pour les pros</a>
-          <a href="<?php echo esc_url(home_url('/methode-syllabique/')); ?>" class="nav-link">La méthode</a>
-          <a href="<?php echo esc_url(home_url('/a-propos/')); ?>" class="nav-link">Brigitte</a>
-          <a href="<?php echo esc_url($blog_url); ?>" class="nav-link">Blog</a>
-          <a href="<?php echo esc_url(home_url('/contact/')); ?>" class="nav-link">Contact</a>
-
-        </nav><!-- .nav -->
+            </button>
+          </div>
+          <?php foreach ($links as $l): ?>
+          <a href="<?php echo esc_url($l[1]); ?>" class="nav-link"<?php echo rigo_nav_current($l[1]); ?>><?php echo esc_html($l[0]); ?></a>
+          <?php endforeach; ?>
+        </nav>
 
         <div class="header-actions">
+          <a href="<?php echo esc_url($account); ?>" class="account header-action-btn" aria-label="Mon compte">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" width="22" height="22" aria-hidden="true">
+              <circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/>
+            </svg>
+          </a>
           <a href="<?php echo esc_url($cart_url); ?>" class="cart header-action-btn" aria-label="Voir le panier">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" width="22" height="22" aria-hidden="true">
               <path d="M3 4h3l2.6 13.3a2 2 0 0 0 2 1.7h8.4a2 2 0 0 0 2-1.6L22 8H6"/>
               <circle cx="10" cy="21" r="1.2"/><circle cx="18" cy="21" r="1.2"/>
             </svg>
-            <span class="cart-count" data-cart-count><?php echo (int) $count; ?></span>
+            <span class="cart-count" data-cart-count="<?php echo (int) $count; ?>"><?php echo (int) $count; ?></span>
           </a>
           <button class="hamburger" type="button" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="mobile-menu" id="rigo-hamburger">
             <span aria-hidden="true"></span>
@@ -158,46 +199,48 @@ add_action('wp_body_open', function () {
         </div>
 
       </div><!-- .header-inner -->
+
+      <!-- Mega-menu Boutique : enfant du header, positionné en top:100% -->
+      <div class="mega-panel" id="rigo-mega-boutique" role="region" aria-label="Sous-menu Boutique">
+        <div class="mega-inner container">
+
+          <?php foreach ($mega as $col): ?>
+          <div class="mega-col">
+            <p class="mega-col-title"><?php echo esc_html($col['label']); ?></p>
+            <ul class="mega-list">
+              <?php foreach ($col['items'] as $pid => $info):
+                $url = get_permalink($pid);
+                if (!$url) continue;
+              ?>
+              <li>
+                <a href="<?php echo esc_url($url); ?>" class="mega-product-link">
+                  <span class="mega-product-name"><?php echo esc_html($info[0]); ?></span>
+                  <span class="mega-product-sub"><?php echo esc_html($info[1]); ?></span>
+                </a>
+              </li>
+              <?php endforeach; ?>
+            </ul>
+          </div>
+          <?php endforeach; ?>
+
+          <div class="mega-col mega-col--cta">
+            <img src="<?php echo esc_url($logo); ?>" alt="" width="56" height="56" loading="lazy">
+            <p class="mega-cta-label">Pas sûr(e) de votre choix ?</p>
+            <p class="mega-cta-desc">Notre quiz en 3 questions vous recommande le jeu idéal.</p>
+            <a href="#rigo-quiz" class="btn btn-primary btn-sm rigo-quiz-trigger">Aide au choix</a>
+            <a href="<?php echo esc_url($shop); ?>" class="mega-all-btn">Voir toute la boutique →</a>
+          </div>
+
+        </div><!-- .mega-inner -->
+      </div><!-- #rigo-mega-boutique -->
     </header>
 
-    <!-- ─── Mega-panel HORS du header (évite le piège will-change/stacking context) ─── -->
-    <div class="mega-panel" id="rigo-mega-boutique" role="region" aria-label="Sous-menu Boutique">
-      <div class="mega-inner container">
-
-        <?php foreach ($mega as $col): ?>
-        <div class="mega-col">
-          <p class="mega-col-title"><?php echo esc_html($col['label']); ?></p>
-          <?php foreach ($col['items'] as $pid => $info):
-            $url = get_permalink($pid);
-            if (!$url) continue;
-          ?>
-          <a href="<?php echo esc_url($url); ?>" class="mega-product-link">
-            <span class="mega-product-name"><?php echo esc_html($info[0]); ?></span>
-            <span class="mega-product-sub"><?php echo esc_html($info[1]); ?></span>
-          </a>
-          <?php endforeach; ?>
-          <a href="<?php echo esc_url($shop); ?>" class="mega-see-all">Voir tout →</a>
-        </div>
-        <?php endforeach; ?>
-
-        <!-- CTA colonne -->
-        <div class="mega-col mega-col--cta">
-          <img src="<?php echo esc_url($logo); ?>" alt="Pato" width="60" height="60">
-          <p class="mega-cta-label">Pas sûr(e) de votre choix ?</p>
-          <p class="mega-cta-desc">Notre quiz en 3 questions vous recommande le jeu idéal.</p>
-          <a href="#rigo-quiz" class="btn-primary rigo-quiz-trigger">Aide au choix</a>
-          <a href="<?php echo esc_url($shop); ?>" class="mega-all-btn">Voir toute la boutique →</a>
-        </div>
-
-      </div><!-- .mega-inner -->
-    </div><!-- #rigo-mega-boutique -->
-
-    <!-- ─── Mobile menu (drawer droit) ─────────────────────────────────── -->
-    <div class="mobile-menu" id="mobile-menu" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Menu navigation">
-      <div class="mobile-menu-inner">
+    <!-- Tiroir de navigation (mobile + tablette) -->
+    <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
+      <div class="mobile-menu-inner" role="dialog" aria-modal="true" aria-label="Menu de navigation" tabindex="-1">
 
         <div class="mobile-menu-head">
-          <a href="<?php echo esc_url(home_url('/')); ?>" aria-label="Rigolettres, accueil">
+          <a class="mobile-menu-brand" href="<?php echo esc_url(home_url('/')); ?>" aria-label="Rigolettres, accueil">
             <?php echo rigo_wordmark_html(); ?>
           </a>
           <button type="button" class="mobile-close" aria-label="Fermer le menu" id="rigo-mobile-close">
@@ -209,33 +252,34 @@ add_action('wp_body_open', function () {
 
         <nav class="mobile-nav" aria-label="Menu mobile">
 
-          <!-- Boutique accordion -->
-          <details class="mobile-details" open>
-            <summary class="mobile-summary">Boutique</summary>
+          <a href="<?php echo esc_url($shop); ?>" class="mobile-link mobile-link--strong"<?php echo rigo_nav_current($shop); ?>>Toute la boutique</a>
+
+          <?php foreach ($mega as $col): ?>
+          <details class="mobile-details" name="rigo-mobile-shop">
+            <summary class="mobile-summary"><?php echo esc_html($col['label']); ?></summary>
             <div class="mobile-submenu">
-              <?php foreach ($mega as $col): ?>
-              <p class="mobile-sub-label"><?php echo esc_html($col['label']); ?></p>
               <?php foreach ($col['items'] as $pid => $info):
                 $url = get_permalink($pid);
                 if (!$url) continue;
               ?>
-              <a href="<?php echo esc_url($url); ?>" class="mobile-sub-link"><?php echo esc_html($info[0]); ?></a>
+              <a href="<?php echo esc_url($url); ?>" class="mobile-sub-link">
+                <span class="mobile-sub-name"><?php echo esc_html($info[0]); ?></span>
+                <span class="mobile-sub-meta"><?php echo esc_html($info[1]); ?></span>
+              </a>
               <?php endforeach; ?>
-              <?php endforeach; ?>
-              <a href="<?php echo esc_url($shop); ?>" class="mobile-see-all-btn">Voir toute la boutique →</a>
             </div>
           </details>
+          <?php endforeach; ?>
 
-          <a href="<?php echo esc_url(home_url('/pour-orthophonistes/')); ?>" class="mobile-link">Pour les orthophonistes</a>
-          <a href="<?php echo esc_url(home_url('/methode-syllabique/')); ?>" class="mobile-link">La méthode syllabique</a>
-          <a href="<?php echo esc_url(home_url('/a-propos/')); ?>" class="mobile-link">L'histoire de Brigitte</a>
-          <a href="<?php echo esc_url($blog_url); ?>" class="mobile-link">Blog</a>
-          <a href="<?php echo esc_url(rigo_home_url('contact')); ?>" class="mobile-link">Contact</a>
+          <?php foreach ($links as $l): ?>
+          <a href="<?php echo esc_url($l[1]); ?>" class="mobile-link"<?php echo rigo_nav_current($l[1]); ?>><?php echo esc_html($l[2]); ?></a>
+          <?php endforeach; ?>
+          <a href="<?php echo esc_url($account); ?>" class="mobile-link"<?php echo rigo_nav_current($account); ?>>Mon compte</a>
 
         </nav>
 
         <div class="mobile-menu-foot">
-          <a href="#rigo-quiz" class="btn-primary rigo-quiz-trigger mobile-cta">Aide au choix →</a>
+          <a href="#rigo-quiz" class="btn btn-primary rigo-quiz-trigger mobile-cta">Quel jeu pour mon enfant ?</a>
         </div>
 
       </div><!-- .mobile-menu-inner -->
@@ -244,90 +288,178 @@ add_action('wp_body_open', function () {
     <script>
     (function(){
       'use strict';
-      var hamburger   = document.getElementById('rigo-hamburger');
-      var mobileMenu  = document.getElementById('mobile-menu');
-      var mobileClose = document.getElementById('rigo-mobile-close');
+      var doc = document, html = doc.documentElement;
+      var header = doc.getElementById('site-header');
+      if (!header) return;
 
-      function openMobile(){
-        mobileMenu.classList.add('is-open');
-        mobileMenu.setAttribute('aria-hidden','false');
+      /* ── Hauteur d'en-tête exposée au CSS (ancres, tiroirs) ── */
+      function setHeaderHeight(){
+        html.style.setProperty('--rigo-hdr-h', header.offsetHeight + 'px');
+      }
+      setHeaderHeight();
+      if ('ResizeObserver' in window) { new ResizeObserver(setHeaderHeight).observe(header); }
+      else { window.addEventListener('resize', setHeaderHeight); }
+
+      /* ── Bandeau d'annonce ── */
+      var promo = doc.getElementById('rigo-promo-bar');
+      var promoClose = doc.getElementById('rigo-promo-close');
+      if (promo && promoClose) {
+        promoClose.addEventListener('click', function(){
+          promo.hidden = true;
+          try { sessionStorage.setItem('rigo_promo_closed', '1'); } catch(e) {}
+        });
+      }
+
+      /* ── Tiroir de navigation ── */
+      var hamburger = doc.getElementById('rigo-hamburger');
+      var drawer    = doc.getElementById('mobile-menu');
+      var panel     = drawer ? drawer.querySelector('.mobile-menu-inner') : null;
+      var closeBtn  = doc.getElementById('rigo-mobile-close');
+      var FOCUSABLE = 'a[href], button:not([disabled]), summary, [tabindex]:not([tabindex="-1"])';
+
+      function drawerIsOpen(){ return drawer && drawer.classList.contains('is-open'); }
+      function openDrawer(){
+        if (!drawer) return;
+        megaHide(false);
+        drawer.classList.add('is-open');
+        drawer.setAttribute('aria-hidden','false');
         hamburger.setAttribute('aria-expanded','true');
-        document.body.classList.add('mobile-menu-open');
-        if (mobileClose) mobileClose.focus();
+        hamburger.setAttribute('aria-label','Fermer le menu');
+        doc.body.classList.add('mobile-menu-open');
+        if (closeBtn) closeBtn.focus();
       }
-      function closeMobile(){
-        mobileMenu.classList.remove('is-open');
-        mobileMenu.setAttribute('aria-hidden','true');
+      function closeDrawer(restoreFocus){
+        if (!drawerIsOpen()) return;
+        drawer.classList.remove('is-open');
+        drawer.setAttribute('aria-hidden','true');
         hamburger.setAttribute('aria-expanded','false');
-        document.body.classList.remove('mobile-menu-open');
-        if (hamburger) hamburger.focus();
+        hamburger.setAttribute('aria-label','Ouvrir le menu');
+        doc.body.classList.remove('mobile-menu-open');
+        if (restoreFocus !== false) hamburger.focus();
+      }
+      if (hamburger && drawer) {
+        hamburger.addEventListener('click', function(){ drawerIsOpen() ? closeDrawer() : openDrawer(); });
+        if (closeBtn) closeBtn.addEventListener('click', function(){ closeDrawer(); });
+        drawer.addEventListener('click', function(e){
+          if (e.target === drawer) { closeDrawer(); return; }
+          /* Le quiz s'ouvre par-dessus : on referme le tiroir sans voler le focus */
+          if (e.target.closest('.rigo-quiz-trigger')) closeDrawer(false);
+        });
+        /* Piège de focus : Tab boucle à l'intérieur du tiroir ouvert */
+        drawer.addEventListener('keydown', function(e){
+          if (e.key !== 'Tab' || !drawerIsOpen()) return;
+          var items = Array.prototype.filter.call(panel.querySelectorAll(FOCUSABLE), function(el){
+            return el.offsetParent !== null;
+          });
+          if (!items.length) return;
+          var first = items[0], last = items[items.length - 1];
+          if (e.shiftKey && doc.activeElement === first) { e.preventDefault(); last.focus(); }
+          else if (!e.shiftKey && doc.activeElement === last) { e.preventDefault(); first.focus(); }
+        });
+        /* Passage en largeur desktop tiroir ouvert : on le referme */
+        var mq = window.matchMedia('(min-width: 1024px)');
+        var onMq = function(){ if (mq.matches) closeDrawer(false); };
+        if (mq.addEventListener) mq.addEventListener('change', onMq); else if (mq.addListener) mq.addListener(onMq);
       }
 
-      if (hamburger)   hamburger.addEventListener('click', openMobile);
-      if (mobileClose) mobileClose.addEventListener('click', closeMobile);
+      /* ── Mega-menu Boutique ── */
+      var navItem   = doc.getElementById('rigo-nav-boutique');
+      var megaPanel = doc.getElementById('rigo-mega-boutique');
+      var megaBtn   = doc.getElementById('rigo-mega-toggle');
+      var megaLink  = navItem ? navItem.querySelector('.nav-link') : null;
+      var openTimer = null, closeTimer = null;
+      var canHover  = window.matchMedia('(hover: hover) and (pointer: fine)');
 
-      // Clic sur le backdrop
-      if (mobileMenu) mobileMenu.addEventListener('click', function(e){
-        if (e.target === mobileMenu) closeMobile();
+      function megaIsOpen(){ return megaPanel && megaPanel.classList.contains('is-open'); }
+      function clearTimers(){ clearTimeout(openTimer); clearTimeout(closeTimer); openTimer = closeTimer = null; }
+      function megaShow(){
+        if (!megaPanel) return;
+        clearTimers();
+        megaPanel.classList.add('is-open');
+        megaBtn.setAttribute('aria-expanded','true');
+        megaBtn.setAttribute('aria-label','Masquer le sous-menu Boutique');
+        html.classList.add('rigo-mega-open');
+      }
+      function megaHide(restoreFocus){
+        if (!megaPanel) return;
+        clearTimers();
+        var hadFocus = megaPanel.contains(doc.activeElement);
+        megaPanel.classList.remove('is-open');
+        megaBtn.setAttribute('aria-expanded','false');
+        megaBtn.setAttribute('aria-label','Afficher le sous-menu Boutique');
+        html.classList.remove('rigo-mega-open');
+        if (restoreFocus || (restoreFocus !== false && hadFocus)) megaBtn.focus();
+      }
+
+      if (navItem && megaPanel && megaBtn) {
+        /* Souris : ouverture avec une courte intention (évite l'ouverture au simple
+           survol en diagonale), fermeture différée pour laisser rejoindre le panneau. */
+        var hoverIn  = function(){ if (!canHover.matches) return; clearTimeout(closeTimer); if (!megaIsOpen()) openTimer = setTimeout(megaShow, 90); };
+        var hoverOut = function(){ if (!canHover.matches) return; clearTimeout(openTimer); closeTimer = setTimeout(function(){ megaHide(false); }, 220); };
+        navItem.addEventListener('mouseenter', hoverIn);
+        megaPanel.addEventListener('mouseenter', hoverIn);
+        navItem.addEventListener('mouseleave', hoverOut);
+        megaPanel.addEventListener('mouseleave', hoverOut);
+
+        /* Clic, tactile et clavier : le bouton chevron ouvre et ferme */
+        megaBtn.addEventListener('click', function(){ megaIsOpen() ? megaHide(false) : megaShow(); });
+
+        /* Flèche bas depuis « Boutique » ou le chevron : ouvre et entre dans le panneau */
+        var arrowOpen = function(e){
+          if (e.key !== 'ArrowDown') return;
+          e.preventDefault();
+          megaShow();
+          var first = megaPanel.querySelector('a[href]');
+          if (first) first.focus();
+        };
+        megaBtn.addEventListener('keydown', arrowOpen);
+        if (megaLink) megaLink.addEventListener('keydown', arrowOpen);
+
+        /* Le focus quitte la zone (Tab) : fermeture */
+        header.addEventListener('focusout', function(e){
+          if (!megaIsOpen()) return;
+          var next = e.relatedTarget;
+          if (next && (navItem.contains(next) || megaPanel.contains(next))) return;
+          if (!next) return; /* clic dans le vide : géré par le listener de clic */
+          megaHide(false);
+        });
+        doc.addEventListener('click', function(e){
+          if (megaIsOpen() && !navItem.contains(e.target) && !megaPanel.contains(e.target)) megaHide(false);
+        });
+        /* Un lien du panneau ouvre le quiz : on referme le panneau */
+        megaPanel.addEventListener('click', function(e){
+          if (e.target.closest('.rigo-quiz-trigger')) megaHide(false);
+        });
+      }
+
+      /* ── Échap : ferme ce qui est ouvert, rend le focus au déclencheur ── */
+      doc.addEventListener('keydown', function(e){
+        if (e.key !== 'Escape') return;
+        if (drawerIsOpen()) { closeDrawer(); return; }
+        if (megaIsOpen()) megaHide(true);
       });
 
-      // Escape
-      document.addEventListener('keydown', function(e){
-        if (e.key === 'Escape' && mobileMenu && mobileMenu.classList.contains('is-open')) closeMobile();
-      });
-
-      // Mega-menu desktop — le panel est un sibling du header (hors stacking context)
-      var navItem   = document.getElementById('rigo-nav-boutique');
-      var megaPanel = document.getElementById('rigo-mega-boutique');
-      var megaTrig  = navItem && navItem.querySelector('.nav-link');
-
-      if (navItem && megaPanel && megaTrig) {
-        function megaShow(){ megaTrig.setAttribute('aria-expanded','true');  megaPanel.classList.add('is-open'); }
-        function megaHide(){ megaTrig.setAttribute('aria-expanded','false'); megaPanel.classList.remove('is-open'); }
-
-        // Délai de fermeture (ms) pour laisser le temps de bouger
-        // entre le trigger et le panel (et inversement) sans perdre le hover.
-        var megaCloseTimer = null;
-        function megaShowNow(){ if (megaCloseTimer) { clearTimeout(megaCloseTimer); megaCloseTimer = null; } megaShow(); }
-        function megaHideSoon(){ if (megaCloseTimer) clearTimeout(megaCloseTimer); megaCloseTimer = setTimeout(megaHide, 220); }
-
-        navItem.addEventListener('mouseenter', megaShowNow);
-        megaPanel.addEventListener('mouseenter', megaShowNow);
-        navItem.addEventListener('mouseleave', megaHideSoon);
-        megaPanel.addEventListener('mouseleave', megaHideSoon);
-
-        megaTrig.addEventListener('focus', megaShowNow);
-        navItem.addEventListener('focusout', function(e){
-          if (!navItem.contains(e.relatedTarget) && !megaPanel.contains(e.relatedTarget)) megaHide();
-        });
-        megaPanel.addEventListener('focusout', function(e){
-          if (!megaPanel.contains(e.relatedTarget) && !navItem.contains(e.relatedTarget)) megaHide();
-        });
-        document.addEventListener('click', function(e){
-          if (!navItem.contains(e.target) && !megaPanel.contains(e.target)) megaHide();
+      /* ── Pastille panier ──
+         La page sort du cache : le compteur rendu en PHP vaut 0 pour tout le monde.
+         1) on le resynchronise si un panier existe ; 2) plusieurs scripts ne mettent
+         à jour que le texte : un observateur recopie le texte dans l'attribut
+         data-cart-count, dont dépend l'affichage (masqué à 0). */
+      var badges = header.querySelectorAll('.cart-count');
+      function syncBadge(el){
+        var n = parseInt(el.textContent, 10) || 0;
+        if (el.getAttribute('data-cart-count') !== String(n)) el.setAttribute('data-cart-count', String(n));
+      }
+      if ('MutationObserver' in window) {
+        Array.prototype.forEach.call(badges, function(el){
+          new MutationObserver(function(){ syncBadge(el); }).observe(el, {childList:true, characterData:true, subtree:true});
         });
       }
-
-      // Positionner le mega-panel exactement sous le header sticky
-      function setMegaTop(){
-        var hdr = document.getElementById('site-header');
-        if (!hdr) return;
-        document.documentElement.style.setProperty('--rigo-hdr-h', hdr.getBoundingClientRect().bottom + 'px');
-      }
-      setMegaTop();
-      window.addEventListener('resize', setMegaTop);
-
-      // Badge panier : la page vient du cache LiteSpeed, le compteur rendu en PHP
-      // vaut donc 0 pour tout le monde. On le resynchronise si un panier existe.
-      if (document.cookie.indexOf('woocommerce_items_in_cart=') !== -1) {
+      if (doc.cookie.indexOf('woocommerce_items_in_cart=') !== -1) {
         fetch('/wp-json/wc/store/v1/cart', {credentials:'include', cache:'no-store'})
           .then(function(r){ return r.json(); })
           .then(function(data){
             var count = data.items_count || 0;
-            document.querySelectorAll('.site-header [data-cart-count]').forEach(function(el){
-              el.textContent = String(count);
-              el.setAttribute('data-cart-count', String(count));
-            });
+            Array.prototype.forEach.call(badges, function(el){ el.textContent = String(count); syncBadge(el); });
           })
           .catch(function(){});
       }
@@ -336,9 +468,8 @@ add_action('wp_body_open', function () {
     <?php
 }, 1);
 
-// ── FOOTER injecté ─────────────────────────────────────────────────────────
+// ── PIED DE PAGE ───────────────────────────────────────────────────────────
 add_action('wp_footer', function () {
-    if (is_front_page()) return; // home a son footer
     if (is_admin()) return;
 
     $logo = 'https://rigolettres.fr/wp-content/uploads/2026/04/logo-pato-provisoire.png';
@@ -352,7 +483,7 @@ add_action('wp_footer', function () {
       <div class="container footer-inner">
         <div class="footer-brand">
           <div class="footer-logo">
-            <img decoding="async" src="<?php echo esc_url($logo); ?>" alt="">
+            <img decoding="async" loading="lazy" src="<?php echo esc_url($logo); ?>" alt="" width="40" height="40">
             <?php echo rigo_wordmark_html(); ?>
           </div>
           <p>
@@ -360,11 +491,11 @@ add_action('wp_footer', function () {
           </p>
           <p class="footer-address">
             <strong>Rigolettres</strong> · Mamers (Sarthe)<br>
-            contact@rigolettres.fr
+            <a href="mailto:contact@rigolettres.fr">contact@rigolettres.fr</a>
           </p>
         </div>
-        <div class="footer-col">
-          <h4>Boutique</h4>
+        <nav class="footer-col" aria-label="Boutique">
+          <h2 class="footer-col-title">Boutique</h2>
           <a href="<?php echo esc_url($shop); ?>">Tous les jeux</a>
           <?php
           $shop_links = [
@@ -379,18 +510,18 @@ add_action('wp_footer', function () {
               if ($url) echo '<a href="' . esc_url($url) . '">' . esc_html($label) . '</a>';
           }
           ?>
-        </div>
-        <div class="footer-col">
-          <h4>Découvrir</h4>
+        </nav>
+        <nav class="footer-col" aria-label="Découvrir">
+          <h2 class="footer-col-title">Découvrir</h2>
           <a href="<?php echo esc_url(rigo_home_url('histoire')); ?>">L&rsquo;histoire de Brigitte</a>
           <a href="<?php echo esc_url(home_url('/methode-syllabique/')); ?>">La méthode syllabique</a>
           <a href="<?php echo esc_url(home_url('/a-propos/')); ?>">À propos</a>
           <a href="<?php echo esc_url(home_url('/temoignages/')); ?>">Témoignages</a>
           <a href="<?php echo esc_url(rigo_home_url('presse')); ?>">Dans la presse</a>
           <a href="<?php echo esc_url(home_url('/contact/')); ?>">Contact</a>
-        </div>
-        <div class="footer-col">
-          <h4>Guides &amp; conseils</h4>
+        </nav>
+        <nav class="footer-col" aria-label="Guides et conseils">
+          <h2 class="footer-col-title">Guides &amp; conseils</h2>
           <a href="<?php echo esc_url(home_url('/guide-parents-lecture/')); ?>">Mon enfant ne sait pas lire en CP</a>
           <a href="<?php echo esc_url(home_url('/apprendre-lire-cp/')); ?>">Apprendre à lire en CP</a>
           <a href="<?php echo esc_url(home_url('/dysorthographie-aide/')); ?>">Dysorthographie : aider</a>
@@ -398,34 +529,28 @@ add_action('wp_footer', function () {
           <a href="<?php echo esc_url(home_url('/jeu-conjugaison/')); ?>">Jeux de conjugaison</a>
           <a href="<?php echo esc_url(home_url('/cadeau-cp-utile/')); ?>">Cadeau utile pour un CP</a>
           <a href="<?php echo esc_url(home_url('/pour-orthophonistes/')); ?>">Pour les orthophonistes</a>
-        </div>
-        <div class="footer-col">
-          <h4>Infos pratiques</h4>
+        </nav>
+        <nav class="footer-col" aria-label="Infos pratiques">
+          <h2 class="footer-col-title">Infos pratiques</h2>
           <a href="<?php echo esc_url(home_url('/livraison-retours/')); ?>">Livraison &amp; retours</a>
-          <a href="<?php echo esc_url(home_url('/mon-compte/')); ?>">Mon compte</a>
+          <a href="<?php echo esc_url(rigo_account_url()); ?>">Mon compte</a>
           <a href="<?php echo esc_url(home_url('/cgv/')); ?>">CGV</a>
           <a href="<?php echo esc_url(home_url('/mentions-legales/')); ?>">Mentions légales</a>
           <a href="<?php echo esc_url(get_privacy_policy_url() ?: home_url('/politique-confidentialite/')); ?>">Confidentialité</a>
-        </div>
+        </nav>
       </div>
       <div class="container footer-bottom">
-        <p>© <?php echo date('Y'); ?> Rigolettres — Marque déposée. Fabriqué à Mamers, en France. 🇫🇷</p>
-        <p class="footer-made">Fait avec <span style="color:#E74C3C">♥</span> pour Brigitte.</p>
+        <p>© <?php echo esc_html(date('Y')); ?> Rigolettres — Marque déposée. Fabriqué à Mamers, en France. 🇫🇷</p>
+        <p class="footer-made">Fait avec <span class="footer-heart" aria-hidden="true">♥</span> pour Brigitte.</p>
       </div>
     </footer>
     <?php
 }, 5);
 
-/*
- * CSS du header/footer injectés : déplacé dans blocksy-child/style.css
- * (section "Universal chrome — header/footer injectés"). Cascade naturelle,
- * tokens --rigo-*, plus de wp_add_inline_style legacy.
- */
-
-// ── Cart count live refresh (WC fragments) ─────────────────────────────────
+// ── Compteur panier : fragment WooCommerce (ajout au panier en AJAX) ────────
 add_filter('woocommerce_add_to_cart_fragments', function ($fragments) {
     $count = rigo_cart_count();
-    $fragments['.site-header .cart-count[data-cart-count]'] =
+    $fragments['.site-header .cart-count'] =
         '<span class="cart-count" data-cart-count="' . (int) $count . '">' . (int) $count . '</span>';
     return $fragments;
 });

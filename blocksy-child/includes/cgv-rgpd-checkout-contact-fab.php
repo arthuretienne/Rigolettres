@@ -43,17 +43,17 @@ add_action('woocommerce_review_order_before_submit', function () {
     .rigo-cgv-wrap {
         margin: 16px 0;
         padding: 14px 16px;
-        background: #F7F4ED;
-        border: 1.5px solid #E7E2D5;
+        background: var(--rigo-cream-warm);
+        border: 1.5px solid var(--rigo-border);
         border-radius: 10px;
     }
     .rigo-cgv-label {
         display: flex;
         align-items: flex-start;
         gap: 10px;
-        font-family: "Nunito", sans-serif;
+        font-family: var(--rigo-sans);
         font-size: 13.5px;
-        color: #4B5563;
+        color: var(--rigo-ink-soft);
         line-height: 1.6;
         cursor: pointer;
     }
@@ -61,18 +61,18 @@ add_action('woocommerce_review_order_before_submit', function () {
         width: 18px !important;
         height: 18px !important;
         min-width: 18px;
-        border: 2px solid #E7E2D5 !important;
+        border: 2px solid var(--rigo-border) !important;
         border-radius: 4px !important;
         margin-top: 2px;
         flex-shrink: 0;
-        accent-color: #68a033;
+        accent-color: var(--rigo-green-dark);
         cursor: pointer;
     }
     .rigo-cgv-label a {
-        color: #68a033;
+        color: var(--rigo-green-dark);
         text-decoration: underline;
     }
-    .rigo-cgv-label em { color: #9CA3AF; font-size: 12px; }
+    .rigo-cgv-label em { color: var(--rigo-muted); font-size: 12px; }
     </style>
     <?php
 }, 10);
@@ -111,46 +111,5 @@ add_action('wp_footer', function () {
         <span class="rigo-contact-fab-label">Une question ?</span>
     </a>
 
-    <style id="rigo-fab-css">
-    .rigo-contact-fab {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        position: fixed;
-        bottom: calc(80px + env(safe-area-inset-bottom, 0px)); /* au-dessus du sticky ATC */
-        right: 16px;
-        background: <?php echo $tel ? '#25D366' : '#27B4E5'; ?>;
-        color: #fff;
-        border-radius: 9999px;
-        padding: 10px 16px 10px 12px;
-        text-decoration: none;
-        font-family: "Nunito", sans-serif;
-        font-size: 13px;
-        font-weight: 700;
-        box-shadow: 0 4px 16px rgba(0,0,0,.20);
-        z-index: 800;
-        transition: transform 200ms, box-shadow 200ms;
-        white-space: nowrap;
-    }
-    .rigo-contact-fab:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 24px rgba(0,0,0,.25);
-        color: #fff;
-    }
-    .rigo-contact-fab svg { width: 20px; height: 20px; flex-shrink: 0; }
-    .rigo-contact-fab-label { line-height: 1; }
-
-    /* Masquer le label sur très petits écrans */
-    @media (max-width: 360px) { .rigo-contact-fab-label { display: none; } }
-
-    /* Sur desktop → coin inférieur droit standard, sans décalage sticky ATC */
-    @media (min-width: 769px) {
-        .rigo-contact-fab { bottom: 24px; right: 24px; }
-    }
-
-    /* Cacher sur checkout (trop distrayant) */
-    .woocommerce-checkout .rigo-contact-fab,
-    .woocommerce-cart .rigo-contact-fab { display: none; }
-    </style>
     <?php
 }, 30);

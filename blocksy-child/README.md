@@ -1,34 +1,41 @@
 # Blocksy Child — Rigolettres
 
-Thème enfant qui remplace les snippets `rigo-ds-v2` (48), `rigo-ds-v2-patch` (50) et `rigo-ds-v2-wc` (53).
-
-## Installation (Hostinger File Manager)
-
-1. **hPanel Hostinger → File Manager → `public_html/wp-content/themes/`**
-2. Créer le dossier `blocksy-child/`
-3. Uploader les 2 fichiers : `style.css` + `functions.php`
-4. **Admin WP → Apparence → Thèmes** → activer **Blocksy Child Rigolettres**
-5. **LiteSpeed → Toolbox → Purge All**
-
-## Migration depuis les snippets
-
-Une fois le child theme actif et le rendu confirmé :
-- Désactiver les snippets : 48, 50, 53 (et tout `rigo-ds-v2-*`)
-- Garder l'autre logique métier (marquee, sections home, trust strip, etc.) dans Code Snippets — c'est toujours leur place.
+Thème enfant de Blocksy. **Tout le code permanent du site vit ici** (jamais dans Code Snippets).
 
 ## Structure
 
 ```
 blocksy-child/
-├── style.css        # Tokens + design system (sans !important, cascade naturelle)
-├── functions.php    # Enqueue parent+child + Google Fonts
-└── README.md        # Ce fichier
+├── style.css               # Design system : tokens, pont Blocksy, base, boutons, formulaires,
+│                           #   layout, en-tête/mega-menu, pied de page, boutique, fiche produit,
+│                           #   panier/commande/compte, accessibilité (sommaire en tête de fichier)
+├── assets/css/home.css     # Sections de la page d'accueil (chargé sur l'accueil uniquement)
+├── functions.php           # Enqueue parent + enfant, Google Fonts, auto-require de includes/
+└── includes/               # Un fichier = un module (chargé automatiquement)
 ```
 
-## Avantages vs snippets
+## Règles du design system
 
-- CSS dans un vrai fichier minifiable par LiteSpeed
-- Versioning auto via `filemtime()` → cache busté à chaque modif
-- Fini la guerre de spécificité (`!important` partout) — la cascade Blocksy joue normalement
-- Versionnable Git
-- Survit à un déplacement du site (alors qu'un snippet vit dans la DB)
+- **Tokens** : toutes les couleurs, tailles, espacements, rayons, ombres et z-index sont des
+  variables `--rigo-*` déclarées en section 1 de `style.css`. Pas de hex en dur ailleurs.
+- **Pont Blocksy** (section 2) : les variables du thème parent (`--theme-palette-color-*`,
+  `--theme-button-*`, conteneur…) sont redéfinies à partir des tokens. Ce que Blocksy et
+  WooCommerce génèrent hérite donc du design system sans surcharge composant par composant.
+- **Polices** : Fraunces (titres h1-h2), Nunito (texte, interface, h3-h6), Caveat (wordmark,
+  surtitres, signature). Rien d'autre.
+- **Couleur d'action** : `--rigo-action` (bleu ciel assombri, 5.3:1 sur blanc). Le vert est
+  réservé à la réussite / disponibilité, jamais aux boutons.
+- **Boutons** : un composant, deux variantes (pleine `.btn-primary`, contour `.btn-ghost`).
+  Les classes propres aux modules y sont rattachées en section 4.
+- **Points de rupture** : 640 px (mobile), 768 px (tablette), 1024 px (navigation desktop).
+
+## Contenu hérité
+
+Les pages Accueil, Panier, Commande et Mon compte contenaient leur propre `<style>` en base.
+`includes/contenu-nettoyage-css-herite.php` les retire au rendu (sans toucher à la base) ;
+le style est servi par ce thème. Désactiver ce module restaure l'ancien rendu.
+
+## Déploiement
+
+Push sur `main` → `.github/workflows/deploy-theme.yml` : lint PHP, rsync vers Hostinger,
+purge LiteSpeed. Une erreur de syntaxe PHP bloque le déploiement.

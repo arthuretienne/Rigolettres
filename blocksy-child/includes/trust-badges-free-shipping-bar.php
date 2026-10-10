@@ -42,16 +42,16 @@ add_action('woocommerce_after_add_to_cart_button', function () {
       display: flex; flex-wrap: wrap; gap: 10px 18px;
       margin: 18px 0 8px;
       padding: 14px 16px;
-      background: #F7F4ED;
+      background: var(--rigo-cream-warm);
       border-radius: 14px;
-      border: 1px solid #E7E2D5;
+      border: 1px solid var(--rigo-border);
     }
     .rigo-badge {
       display: flex; align-items: center; gap: 7px;
       font-size: 12.5px; font-weight: 700;
-      color: #4B5563;
+      color: var(--rigo-ink-soft);
     }
-    .rigo-badge svg { width: 16px; height: 16px; flex-shrink: 0; stroke: #8BC84B; }
+    .rigo-badge svg { width: 16px; height: 16px; flex-shrink: 0; stroke: var(--rigo-green); }
     </style>
     <?php
 }, 25);
@@ -73,16 +73,16 @@ add_action('wp_footer', function () {
     </div>
     <style>
     #rigo-ship-bar-wrap {
-      background: #EEF7DE; border-bottom: 1px solid #C8E69A;
+      background: var(--rigo-green-soft); border-bottom: 1px solid #C8E69A;
       padding: 9px 20px; text-align: center;
       position: sticky; top: 0; z-index: 200;
     }
-    #rigo-ship-bar-msg { font-size: 13px; font-weight: 700; color: #3a2913; margin-bottom: 6px; }
+    #rigo-ship-bar-msg { font-size: 13px; font-weight: 700; color: var(--rigo-ink); margin-bottom: 6px; }
     .rigo-ship-track {
       max-width: 280px; height: 6px; border-radius: 99px;
       background: #C8E69A; margin: 0 auto; overflow: hidden;
     }
-    .rigo-ship-fill { height: 100%; background: #8BC84B; border-radius: 99px; transition: width .5s ease; }
+    .rigo-ship-fill { height: 100%; background: var(--rigo-green); border-radius: 99px; transition: width .5s ease; }
     </style>
     <script>
     (function() {

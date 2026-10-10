@@ -118,23 +118,23 @@ add_action('wp_head', function () {
         align-items: flex-start;
         gap: 20px;
         padding: 32px;
-        background: linear-gradient(135deg, #F0FBE6 0%, #EEF7DE 100%);
+        background: linear-gradient(135deg, #F0FBE6 0%, var(--rigo-green-soft) 100%);
         border: 1.5px solid #C5E09B;
         border-radius: 20px;
         margin-bottom: 28px;
     }
     .rigo-ty-hero-icon svg { width: 72px; height: 72px; flex-shrink: 0; }
     .rigo-ty-title {
-        font-family: "Kalam", cursive;
+        font-family: var(--rigo-serif);
         font-size: 32px;
         color: #2D5A1B;
         margin: 0 0 8px;
         line-height: 1.2;
     }
     .rigo-ty-subtitle {
-        font-family: "Nunito", sans-serif;
+        font-family: var(--rigo-sans);
         font-size: 15px;
-        color: #4B5563;
+        color: var(--rigo-ink-soft);
         line-height: 1.6;
         margin: 0;
     }
@@ -152,7 +152,7 @@ add_action('wp_head', function () {
         margin-bottom: 28px;
         padding: 24px;
         background: #fff;
-        border: 1.5px solid #E7E2D5;
+        border: 1.5px solid var(--rigo-border);
         border-radius: 16px;
     }
     .rigo-ty-step {
@@ -162,33 +162,33 @@ add_action('wp_head', function () {
         gap: 8px;
         flex: 1;
         max-width: 120px;
-        font-family: "Nunito", sans-serif;
+        font-family: var(--rigo-sans);
         font-size: 12.5px;
         font-weight: 700;
-        color: #9CA3AF;
+        color: var(--rigo-muted);
         text-align: center;
         line-height: 1.4;
     }
     .rigo-ty-step-icon {
         width: 40px; height: 40px;
         border-radius: 50%;
-        background: #F3F4F6;
+        background: var(--rigo-cream-warm);
         display: flex; align-items: center; justify-content: center;
-        border: 2px solid #E5E7EB;
+        border: 2px solid var(--rigo-border);
     }
-    .rigo-ty-step-icon svg { width: 18px; height: 18px; stroke: #9CA3AF; }
+    .rigo-ty-step-icon svg { width: 18px; height: 18px; stroke: var(--rigo-muted); }
     .rigo-ty-step-line {
         flex: 1;
         height: 2px;
-        background: #E5E7EB;
+        background: var(--rigo-border);
         margin: 0 4px;
         align-self: flex-start;
         margin-top: 19px;
     }
     .rigo-ty-step-done .rigo-ty-step-icon {
-        background: #F0FBE6; border-color: #68a033;
+        background: #F0FBE6; border-color: var(--rigo-green-dark);
     }
-    .rigo-ty-step-done .rigo-ty-step-icon svg { stroke: #68a033; }
+    .rigo-ty-step-done .rigo-ty-step-icon svg { stroke: var(--rigo-green-dark); }
     .rigo-ty-step-done { color: #2D5A1B; }
     .rigo-ty-step-active .rigo-ty-step-icon {
         background: #FFF3CD; border-color: #F59E0B;
@@ -213,26 +213,26 @@ add_action('wp_head', function () {
         align-items: flex-start;
         gap: 18px;
         padding: 24px 28px;
-        background: #FBF8F1;
-        border: 1.5px solid #E7E2D5;
+        background: var(--rigo-cream);
+        border: 1.5px solid var(--rigo-border);
         border-radius: 16px;
         margin-bottom: 28px;
     }
     .rigo-ty-brigitte-avatar svg { width: 60px; height: 60px; flex-shrink: 0; border-radius: 50%; }
     .rigo-ty-brigitte-quote {
         margin: 0;
-        font-family: "Nunito", sans-serif;
+        font-family: var(--rigo-sans);
     }
     .rigo-ty-brigitte-quote p {
         font-size: 14.5px;
-        color: #4B5563;
+        color: var(--rigo-ink-soft);
         line-height: 1.75;
         font-style: italic;
         margin: 0 0 10px;
     }
     .rigo-ty-brigitte-quote footer {
         font-size: 13px;
-        color: #9CA3AF;
+        color: var(--rigo-muted);
     }
     @media (max-width: 600px) {
         .rigo-ty-brigitte { flex-direction: column; padding: 18px; }
@@ -242,29 +242,29 @@ add_action('wp_head', function () {
     .rigo-ty-footer-cta {
         text-align: center;
         padding: 28px 20px;
-        border-top: 1.5px solid #E7E2D5;
+        border-top: 1.5px solid var(--rigo-border);
         margin-top: 20px;
     }
     .rigo-ty-footer-text {
-        font-family: "Nunito", sans-serif;
+        font-family: var(--rigo-sans);
         font-size: 15px;
-        color: #6B7280;
+        color: var(--rigo-muted);
         margin-bottom: 14px;
     }
     .rigo-ty-shop-btn {
         display: inline-block;
-        font-family: "Nunito", sans-serif;
+        font-family: var(--rigo-sans);
         font-weight: 700;
         font-size: 14px;
-        color: #1F2937;
-        border: 1.5px solid #E7E2D5;
+        color: var(--rigo-ink);
+        border: 1.5px solid var(--rigo-border);
         border-radius: 9999px;
         padding: 11px 24px;
         text-decoration: none;
         transition: background 200ms, color 200ms;
     }
     .rigo-ty-shop-btn:hover {
-        background: #1F2937;
+        background: var(--rigo-ink);
         color: #fff;
     }
     </style>

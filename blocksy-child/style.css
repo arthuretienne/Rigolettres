@@ -1,313 +1,1618 @@
 /*
 Theme Name:   Blocksy Child Rigolettres
 Theme URI:    https://rigolettres.fr/
-Description:  Thème enfant de Blocksy pour Rigolettres — design system éditorial (Fraunces + Nunito), palette crème/vert, boutons pill.
+Description:  Thème enfant de Blocksy pour Rigolettres — design system unique (Fraunces + Nunito + Caveat), fond crème, action bleu ciel, boutons pill.
 Author:       Arthur Etienne
 Author URI:   https://rigolettres.fr/
 Template:     blocksy
-Version:      1.1.0
+Version:      2.0.0
 Text Domain:  blocksy-child
 */
 
 /* ===========================================================
-   1. TOKENS — variables design system
+   SOMMAIRE
+    1. Tokens
+    2. Pont Blocksy (variables du thème parent → tokens)
+    3. Base & typographie
+    4. Boutons
+    5. Formulaires
+    6. Layout (conteneurs, pages de contenu, titres de page)
+    7. Cartes, badges, notifications
+    8. En-tête, mega-menu, menu mobile
+    9. Pied de page
+   10. Éléments flottants & tiroirs (z-index, dock, overlays)
+   11. Boutique (archives produit)
+   12. Fiche produit
+   13. Panier, commande, compte (blocs WooCommerce)
+   14. Pages de contenu, blog, utilitaires
+   15. Accessibilité & préférences utilisateur
+   =========================================================== */
+
+/* ===========================================================
+   1. TOKENS
+   Source de vérité unique. Aucun hex en dur ailleurs : les modules
+   PHP (includes/) et home.css consomment ces variables.
    =========================================================== */
 :root{
+  /* Fonds */
   --rigo-cream:#FBF8F1;
   --rigo-cream-warm:#F4EFE3;
   --rigo-paper:#FFFFFF;
+
+  /* Encre (texte) — tous ≥ 4.5:1 sur crème, crème chaud et blanc */
   --rigo-ink:#2A1D0F;
   --rigo-ink-soft:#4B3A28;
-  --rigo-muted:#6B7280;
-  --rigo-border:#E7E2D5;
+  --rigo-muted:#6A6257;
+
+  /* Traits */
+  --rigo-border:#E7E2D5;        /* séparateurs, contours de cartes */
+  --rigo-field-border:#8F8674;  /* contours de champs : 3:1 mini (WCAG 1.4.11) */
+
+  /* Action — bleu ciel assombri pour porter du texte blanc (5.3:1) */
+  --rigo-action:#11739A;
+  --rigo-action-dark:#0C5C7C;
+  --rigo-action-soft:#E3F3FA;
+  --rigo-sky:#27B4E5;           /* bleu ciel vif : décor uniquement, jamais de texte dessus */
+
+  /* Vert — réussite, disponibilité, nature. Jamais pour un bouton d'action. */
   --rigo-green:#5C8E2E;
   --rigo-green-dark:#4A7325;
-  --rigo-sky:#1E9FCB;
-  --rigo-sky-dark:#167FA3;
-  --rigo-accent:#E8553D;
-  --rigo-serif:'Fraunces','Cormorant Garamond',Georgia,serif;
-  --rigo-sans:'Nunito',system-ui,-apple-system,sans-serif;
-  --rigo-script:'Caveat',cursive;
+  --rigo-green-soft:#EEF5E4;
+
+  /* Accents ponctuels */
+  --rigo-accent:#C8412B;        /* rouge cœur de Pato : pastille panier, promo */
+  --rigo-warm:#D9A066;          /* ocre : décor */
+  --rigo-warm-dark:#8A5A22;     /* ocre lisible en petit texte */
+  --rigo-yellow:#FFD966;
+  --rigo-danger:#B3261E;
+  --rigo-danger-soft:#FBEAE8;
+
+  /* Alias historiques (anciens noms encore référencés) */
+  --rigo-sky-dark:var(--rigo-action-dark);
+  --rigo-blue:var(--rigo-action);
+  --rigo-cream-dark:var(--rigo-cream-warm);
+
+  /* Familles — 3 seulement, chargées une fois dans functions.php */
+  --rigo-serif:'Fraunces',Georgia,'Times New Roman',serif;      /* titres */
+  --rigo-sans:'Nunito',system-ui,-apple-system,'Segoe UI',sans-serif; /* texte, interface */
+  --rigo-script:'Caveat','Segoe Script',cursive;                /* wordmark, surtitres, signature */
+
+  /* Échelle typographique (fluide entre 360 et 1280 px) */
+  --rigo-fs-xs:.8125rem;                                  /* 13 */
+  --rigo-fs-sm:.875rem;                                   /* 14 */
+  --rigo-fs-md:.9375rem;                                  /* 15 */
+  --rigo-fs-body:clamp(1rem,.975rem + .11vw,1.0625rem);   /* 16 → 17 */
+  --rigo-fs-lead:clamp(1.0625rem,1rem + .28vw,1.1875rem); /* 17 → 19 */
+  --rigo-fs-h4:1.0625rem;                                 /* 17 */
+  --rigo-fs-h3:clamp(1.125rem,1.05rem + .33vw,1.3125rem); /* 18 → 21 */
+  --rigo-fs-h2:clamp(1.5rem,1.28rem + .98vw,2.125rem);    /* 24 → 34 */
+  --rigo-fs-h1:clamp(1.875rem,1.43rem + 1.96vw,3rem);     /* 30 → 48 */
+  --rigo-fs-h2-display:clamp(1.75rem,1.3rem + 2vw,2.75rem); /* 28 → 44 : titres de section (accueil) */
+  --rigo-fs-display:clamp(2.375rem,1.6rem + 3.4vw,4.25rem); /* 38 → 68 : hero d'accueil */
+  --rigo-lh-tight:1.15;
+  --rigo-lh-snug:1.3;
+  --rigo-lh-body:1.65;
+
+  /* Espacements (base 4 px) */
+  --rigo-sp-1:4px;
+  --rigo-sp-2:8px;
+  --rigo-sp-3:12px;
+  --rigo-sp-4:16px;
+  --rigo-sp-5:24px;
+  --rigo-sp-6:32px;
+  --rigo-sp-7:48px;
+  --rigo-sp-8:64px;
+  --rigo-sp-9:96px;
+  --rigo-gutter:clamp(18px,5vw,32px);          /* marge latérale des conteneurs */
+  --rigo-section-y:clamp(48px,7vw,96px);       /* rythme vertical entre sections */
+  --rigo-block-y:clamp(32px,5vw,56px);         /* respiration haut/bas d'une page */
+
+  /* Largeurs */
+  --rigo-container:1200px;
+  --rigo-measure:44rem;                        /* colonne de lecture ≈ 70 caractères */
+
+  /* Rayons */
   --rigo-r-sm:8px;
-  --rigo-r-md:14px;
+  --rigo-r-md:16px;
   --rigo-r-lg:24px;
   --rigo-r-pill:9999px;
-  --rigo-container:1200px;
+
+  /* Ombres (teintées encre, jamais gris froid) */
   --rigo-sh-1:0 1px 2px rgba(42,29,15,.05);
   --rigo-sh-2:0 6px 18px rgba(42,29,15,.08);
-  --rigo-sh-3:0 12px 32px rgba(42,29,15,.12);
+  --rigo-sh-3:0 14px 36px rgba(42,29,15,.13);
+  --rigo-sh-action:0 6px 16px rgba(17,115,154,.26);
+
+  /* Mouvement */
+  --rigo-ease:cubic-bezier(.22,.61,.36,1);
+  --rigo-fast:160ms;
+  --rigo-med:260ms;
+
+  /* Focus clavier */
+  --rigo-focus:var(--rigo-action);
+
+  /* Empilement — une seule échelle pour tout le site */
+  --rigo-z-dock:400;      /* boutons flottants */
+  --rigo-z-sticky:450;    /* barre d'achat mobile */
+  --rigo-z-header:500;    /* en-tête + mega-menu */
+  --rigo-z-overlay:1000;  /* voiles */
+  --rigo-z-drawer:1010;   /* tiroirs (menu, panier, upsell) */
+  --rigo-z-modal:1100;    /* quiz, popup */
+  --rigo-z-toast:1200;
+
+  /* Hauteur réservée en bas d'écran par une barre fixe (barre d'achat mobile) */
+  --rigo-bottom-bar:0px;
 }
 
 /* ===========================================================
-   2. BASE — body, typo de fond
+   2. PONT BLOCKSY
+   Le Customizer Blocksy est resté sur ses valeurs par défaut (palette
+   bleue #2872fa, conteneur 1290 px à 90vw, corps 16 px). Plutôt que de
+   surcharger composant par composant, on redéfinit ses variables : tout
+   ce que le thème parent génère hérite alors des tokens Rigolettres.
+   `:root:root` (0,2,0) passe devant le `:root` du CSS dynamique Blocksy,
+   qui est imprimé après cette feuille.
    =========================================================== */
-body{
-  background:var(--rigo-cream);
+:root:root{
+  --theme-palette-color-1:var(--rigo-action);
+  --theme-palette-color-2:var(--rigo-action-dark);
+  --theme-palette-color-3:var(--rigo-ink-soft);
+  --theme-palette-color-4:var(--rigo-ink);
+  --theme-palette-color-5:var(--rigo-border);
+  --theme-palette-color-6:var(--rigo-cream-warm);
+  --theme-palette-color-7:var(--rigo-cream);
+  --theme-palette-color-8:var(--rigo-paper);
+
+  --theme-text-color:var(--rigo-ink-soft);
+  --theme-headings-color:var(--rigo-ink);
+  --theme-link-initial-color:var(--rigo-action);
+  --theme-link-hover-color:var(--rigo-action-dark);
+  --theme-border-color:var(--rigo-border);
+  --theme-selection-text-color:#fff;
+  --theme-selection-background-color:var(--rigo-action);
+
+  --theme-font-family:var(--rigo-sans);
+  --theme-font-size:var(--rigo-fs-body);
+  --theme-line-height:var(--rigo-lh-body);
+
+  --theme-button-font-weight:800;
+  --theme-button-font-size:var(--rigo-fs-md);
+  --theme-button-min-height:48px;
+  --theme-button-padding:12px 24px;
+  --theme-button-border-radius:var(--rigo-r-pill);
+  --theme-button-text-initial-color:#fff;
+  --theme-button-text-hover-color:#fff;
+  --theme-button-background-initial-color:var(--rigo-action);
+  --theme-button-background-hover-color:var(--rigo-action-dark);
+
+  --theme-form-field-border-initial-color:var(--rigo-field-border);
+  --theme-form-field-border-focus-color:var(--rigo-action);
+  --theme-form-selection-field-initial-color:var(--rigo-field-border);
+  --theme-form-selection-field-active-color:var(--rigo-action);
+  --theme-form-field-border-radius:var(--rigo-r-sm);
+  --theme-form-field-height:48px;
+
+  /* Conteneur : même boîte que l'en-tête (1200 px, gouttière en padding) */
+  --theme-normal-container-max-width:var(--rigo-container);
+  --theme-narrow-container-max-width:calc(var(--rigo-measure) + 2 * var(--rigo-gutter));
+  --theme-container-edge-spacing:100vw;
+  --theme-content-vertical-spacing:var(--rigo-block-y);
+  --theme-content-spacing:1.25em;
+}
+
+/* ===========================================================
+   3. BASE & TYPOGRAPHIE
+   =========================================================== */
+html{
+  -webkit-text-size-adjust:100%;
+  scroll-padding-top:calc(var(--rigo-hdr-h,72px) + 16px); /* ancres non masquées par l'en-tête */
+}
+/* `html body` (0,0,2) : Blocksy imprime `body{background-color:…}` après nous */
+html body{
+  background-color:var(--rigo-cream);
   color:var(--rigo-ink-soft);
   font-family:var(--rigo-sans);
-  font-size:17px;
-  line-height:1.65;
+  font-size:var(--rigo-fs-body);
+  line-height:var(--rigo-lh-body);
   -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  text-rendering:optimizeLegibility;
 }
 
-/* ===========================================================
-   3. TYPOGRAPHIE — titres & paragraphes
-   =========================================================== */
-h1, h2, h3, h4, .h1, .h2, .h3, .h4{
-  font-family:var(--rigo-serif);
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4{
   color:var(--rigo-ink);
   font-weight:700;
-  line-height:1.15;
-  letter-spacing:-0.015em;
+  margin-top:0;
+  text-wrap:balance;
+  overflow-wrap:break-word;
 }
-h1, .h1{font-size:clamp(2.4rem,5vw,4rem);letter-spacing:-0.025em;}
-h2, .h2{font-size:clamp(1.9rem,3.4vw,2.8rem);}
-h3, .h3{font-size:clamp(1.2rem,1.8vw,1.5rem);font-family:var(--rigo-sans);letter-spacing:-0.005em;line-height:1.3;}
-h4{font-size:1.1rem;font-family:var(--rigo-sans);line-height:1.35;}
+/* Fraunces : niveaux 1 et 2 (titres de page et de section) */
+h1, h2, .h1, .h2{
+  font-family:var(--rigo-serif);
+  line-height:var(--rigo-lh-tight);
+  letter-spacing:-.02em;
+}
+/* Nunito : niveaux 3 à 6 (intertitres, titres de cartes) */
+h3, h4, h5, h6, .h3, .h4{
+  font-family:var(--rigo-sans);
+  font-weight:800;
+  line-height:var(--rigo-lh-snug);
+  letter-spacing:-.005em;
+}
+h1, .h1{font-size:var(--rigo-fs-h1);}
+h2, .h2{font-size:var(--rigo-fs-h2);}
+h3, .h3{font-size:var(--rigo-fs-h3);}
+h4, .h4{font-size:var(--rigo-fs-h4);}
+h5, h6{font-size:var(--rigo-fs-md);}
 
+p, li, dd, dt, blockquote, figcaption, td, th{
+  font-family:var(--rigo-sans);
+}
+p{margin-top:0;margin-bottom:1.1em;}
+p:last-child{margin-bottom:0;}
+small, .rigo-small{font-size:var(--rigo-fs-sm);}
+
+/* Surtitres et signatures manuscrites — seul usage de la police script hors wordmark */
 .rigo-eyebrow,
 .rigo-script,
 .rigo-signature,
 .quote-author{
   font-family:var(--rigo-script);
   font-weight:700;
+  font-size:1.25rem;
+  line-height:1.2;
   color:var(--rigo-green-dark);
 }
 
-p, li{
-  font-family:var(--rigo-sans);
-  font-size:17px;
-  line-height:1.65;
-  color:var(--rigo-ink-soft);
+a{
+  color:var(--rigo-action);
+  text-decoration-thickness:1.5px;
+  text-underline-offset:3px;
+  transition:color var(--rigo-fast) ease;
 }
-p{margin-bottom:1.1em;}
+a:hover{color:var(--rigo-action-dark);}
 
-a{color:var(--rigo-green-dark);text-underline-offset:3px;text-decoration-thickness:1.5px;}
-a:hover{color:var(--rigo-green);}
+/* Liens dans le texte courant : toujours soulignés (pas seulement colorés) */
+.entry-content p a:not([class]),
+.entry-content li a:not([class]),
+.woocommerce-Tabs-panel p a:not([class]),
+.woocommerce-Tabs-panel li a:not([class]){
+  text-decoration:underline;
+}
+
+img, svg, video{max-width:100%;height:auto;}
+hr{border:0;border-top:1px solid var(--rigo-border);margin:var(--rigo-sp-6) 0;}
+::selection{background:var(--rigo-action);color:#fff;}
+
+.nowrap{white-space:nowrap;}
+.visually-hidden,
+.screen-reader-text:not(:focus):not(:active){
+  position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+  overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+}
+/* Lien d'évitement : visible dès qu'il reçoit le focus clavier */
+.skip-link.screen-reader-text:focus{
+  position:fixed; top:12px; left:12px; z-index:var(--rigo-z-toast);
+  width:auto; height:auto; clip:auto; margin:0;
+  padding:12px 20px;
+  background:var(--rigo-ink); color:#fff;
+  border-radius:var(--rigo-r-pill);
+  font-weight:800; text-decoration:none;
+}
 
 /* ===========================================================
-   4. BOUTONS — primary, secondary, ghost
+   4. BOUTONS
+   Un seul composant, trois variantes :
+     · primaire  = action bleue pleine (achat, CTA principal)
+     · secondaire = contour encre (action alternative)
+     · lien       = texte souligné
+   Les classes propres aux modules (quiz, tiroirs, barre d'achat…) sont
+   rattachées ici plutôt que redéfinies dans chaque module.
    =========================================================== */
 .btn,
 .btn-primary,
 .btn-secondary,
 .btn-ghost,
+.rigo-cta,
 a.button,
 button.button,
+input.button,
+input[type=submit],
 .wp-block-button__link,
+.wp-element-button,
 .woocommerce a.button,
 .woocommerce button.button,
+.woocommerce input.button,
+.woocommerce #respond input#submit,
 button.single_add_to_cart_button,
-.wc-block-components-button,
-.rigo-cta{
+.wc-block-components-button:not(.is-link),
+.wpforms-form button[type=submit],
+.rigo-quiz-btn-primary,
+.rigo-quiz-btn-secondary,
+.rigo-ud-btn-primary,
+.rigo-ud-btn-secondary,
+.rigo-drawer-checkout-btn,
+.rigo-sticky-btn{
   display:inline-flex;
   align-items:center;
   justify-content:center;
   gap:8px;
-  font-family:var(--rigo-sans);
-  font-weight:700;
-  font-size:16px;
-  line-height:1;
-  padding:14px 26px;
+  min-height:48px;
+  padding:12px 24px;
+  border:2px solid transparent;
   border-radius:var(--rigo-r-pill);
-  border:1.5px solid transparent;
-  cursor:pointer;
+  font-family:var(--rigo-sans);
+  font-size:var(--rigo-fs-md);
+  font-weight:800;
+  line-height:1.2;
+  letter-spacing:0;
+  text-align:center;
   text-decoration:none;
-  letter-spacing:-0.005em;
-  transition:transform 200ms ease,box-shadow 200ms ease,background 200ms ease,border-color 200ms ease,color 200ms ease;
+  text-transform:none;
+  cursor:pointer;
+  transition:background-color var(--rigo-fast) ease, border-color var(--rigo-fast) ease,
+             color var(--rigo-fast) ease, box-shadow var(--rigo-fast) ease, transform var(--rigo-fast) ease;
+  -webkit-tap-highlight-color:transparent;
 }
 
+/* — Primaire — */
 .btn-primary,
-.wp-block-button.is-style-primary .wp-block-button__link,
-.woocommerce button.single_add_to_cart_button,
-button.single_add_to_cart_button,
+.rigo-cta--primary,
+input[type=submit],
+.wp-block-button:not(.is-style-outline) > .wp-block-button__link,
+.wp-element-button,
 .woocommerce a.button.alt,
+.woocommerce button.button.alt,
+.woocommerce input.button.alt,
+.woocommerce #respond input#submit,
+.woocommerce a.add_to_cart_button,
+.woocommerce a.button.product_type_simple,
+button.single_add_to_cart_button,
+.woocommerce button.single_add_to_cart_button,
 .wc-block-components-button.contained,
-.rigo-cta--primary{
-  background:var(--rigo-green);
+.wc-block-cart__submit-button,
+.wc-block-components-checkout-place-order-button,
+.wpforms-form button[type=submit],
+.woocommerce form .button[type=submit],
+.rigo-quiz-btn-primary,
+.rigo-ud-btn-primary,
+.rigo-drawer-checkout-btn,
+.rigo-sticky-btn{
+  background-color:var(--rigo-action);
+  border-color:var(--rigo-action);
   color:#fff;
-  border-color:var(--rigo-green);
-  box-shadow:0 1px 0 rgba(255,255,255,.2) inset, 0 6px 18px rgba(92,142,46,.25);
+  box-shadow:var(--rigo-sh-action);
 }
 .btn-primary:hover,
-.woocommerce button.single_add_to_cart_button:hover,
-button.single_add_to_cart_button:hover,
+.rigo-cta--primary:hover,
+input[type=submit]:hover,
+.wp-block-button:not(.is-style-outline) > .wp-block-button__link:hover,
+.wp-element-button:hover,
 .woocommerce a.button.alt:hover,
+.woocommerce button.button.alt:hover,
+.woocommerce input.button.alt:hover,
+.woocommerce #respond input#submit:hover,
+.woocommerce a.add_to_cart_button:hover,
+.woocommerce a.button.product_type_simple:hover,
+button.single_add_to_cart_button:hover,
+.woocommerce button.single_add_to_cart_button:hover,
 .wc-block-components-button.contained:hover,
-.rigo-cta--primary:hover{
-  background:var(--rigo-green-dark);
-  border-color:var(--rigo-green-dark);
+.wc-block-cart__submit-button:hover,
+.wc-block-components-checkout-place-order-button:hover,
+.wpforms-form button[type=submit]:hover,
+.woocommerce form .button[type=submit]:hover,
+.rigo-quiz-btn-primary:hover,
+.rigo-ud-btn-primary:hover,
+.rigo-drawer-checkout-btn:hover,
+.rigo-sticky-btn:hover{
+  background-color:var(--rigo-action-dark);
+  border-color:var(--rigo-action-dark);
   color:#fff;
+  box-shadow:0 10px 22px rgba(17,115,154,.32);
   transform:translateY(-1px);
-  box-shadow:0 10px 24px rgba(92,142,46,.32);
 }
 
+/* — Secondaire (contour) — */
 .btn-secondary,
-.rigo-cta--secondary{
-  background:var(--rigo-sky);
-  color:#fff;
-  border-color:var(--rigo-sky);
-  box-shadow:0 6px 18px rgba(30,159,203,.25);
-}
-.btn-secondary:hover,
-.rigo-cta--secondary:hover{
-  background:var(--rigo-sky-dark);
-  border-color:var(--rigo-sky-dark);
-  transform:translateY(-1px);
-}
-
 .btn-ghost,
-.wp-block-button.is-style-outline .wp-block-button__link,
-.woocommerce a.button:not(.alt){
-  background:transparent;
+.rigo-cta--secondary,
+.wp-block-button.is-style-outline > .wp-block-button__link,
+.woocommerce a.button:not(.alt):not(.add_to_cart_button):not(.product_type_simple),
+.woocommerce button.button:not(.alt):not(.single_add_to_cart_button):not([type=submit]),
+.wc-block-components-button.outlined,
+.rigo-quiz-btn-secondary,
+.rigo-ud-btn-secondary{
+  background-color:transparent;
+  border-color:var(--rigo-ink);
   color:var(--rigo-ink);
-  border:1.5px solid var(--rigo-ink);
   box-shadow:none;
 }
+.btn-secondary:hover,
 .btn-ghost:hover,
-.woocommerce a.button:not(.alt):hover{
-  background:var(--rigo-ink);
+.rigo-cta--secondary:hover,
+.wp-block-button.is-style-outline > .wp-block-button__link:hover,
+.woocommerce a.button:not(.alt):not(.add_to_cart_button):not(.product_type_simple):hover,
+.woocommerce button.button:not(.alt):not(.single_add_to_cart_button):not([type=submit]):hover,
+.wc-block-components-button.outlined:hover,
+.rigo-quiz-btn-secondary:hover,
+.rigo-ud-btn-secondary:hover{
+  background-color:var(--rigo-ink);
+  border-color:var(--rigo-ink);
   color:#fff;
   transform:translateY(-1px);
 }
 
-.btn-sm{font-size:14px;padding:10px 18px;}
-.btn-lg{font-size:17px;padding:18px 32px;}
+/* — Tailles — */
+.btn-sm{min-height:40px;padding:8px 18px;font-size:var(--rigo-fs-sm);}
+.btn-lg{min-height:56px;padding:16px 32px;font-size:1.0625rem;}
+
+/* — États — */
+.btn:active,
+.btn-primary:active,
+.btn-ghost:active,
+button.single_add_to_cart_button:active,
+.wc-block-components-button:active{transform:translateY(0) scale(.985);}
+
+.btn[disabled], .btn.disabled, .btn[aria-disabled=true],
+a.button.disabled, button.button:disabled, button.button.disabled,
+button.single_add_to_cart_button:disabled,
+button.single_add_to_cart_button.disabled,
+.wc-block-components-button:disabled,
+.wc-block-components-button[aria-disabled=true],
+input[type=submit]:disabled{
+  opacity:.5;
+  cursor:not-allowed;
+  box-shadow:none;
+  transform:none;
+}
+.button.loading,
+.btn[aria-busy=true],
+.wc-block-components-button--loading{cursor:progress;opacity:.75;}
 
 /* ===========================================================
-   5. LAYOUT — containers, sections
+   5. FORMULAIRES
    =========================================================== */
-.ct-container, .container, .rigo-container{
+input[type=text], input[type=email], input[type=tel], input[type=number],
+input[type=password], input[type=search], input[type=url], input[type=date],
+textarea, select,
+.woocommerce form .form-row .input-text,
+.select2-container--default .select2-selection--single{
+  width:100%;
+  min-height:48px;
+  padding:12px 14px;
+  background-color:var(--rigo-paper);
+  border:1.5px solid var(--rigo-field-border);
+  border-radius:var(--rigo-r-sm);
+  color:var(--rigo-ink);
+  font-family:var(--rigo-sans);
+  font-size:1rem;               /* 16 px mini : pas de zoom automatique sur iOS */
+  line-height:1.4;
+  transition:border-color var(--rigo-fast) ease, box-shadow var(--rigo-fast) ease;
+}
+textarea{min-height:140px;resize:vertical;}
+::placeholder{color:var(--rigo-muted);opacity:1;}
+
+input[type=text]:focus, input[type=email]:focus, input[type=tel]:focus,
+input[type=number]:focus, input[type=password]:focus, input[type=search]:focus,
+input[type=url]:focus, input[type=date]:focus, textarea:focus, select:focus{
+  outline:none;
+  border-color:var(--rigo-action);
+  box-shadow:0 0 0 3px rgba(17,115,154,.22);
+}
+input[type=checkbox], input[type=radio]{accent-color:var(--rigo-action);}
+
+label,
+.woocommerce form .form-row label{
+  font-family:var(--rigo-sans);
+  font-size:var(--rigo-fs-sm);
+  font-weight:700;
+  color:var(--rigo-ink);
+}
+.woocommerce form .form-row .required{color:var(--rigo-danger);text-decoration:none;}
+
+/* Champ en erreur (WooCommerce classique et blocs) */
+.woocommerce form .form-row.woocommerce-invalid .input-text,
+.wc-block-components-text-input.has-error input,
+input[aria-invalid=true], textarea[aria-invalid=true]{
+  border-color:var(--rigo-danger);
+  box-shadow:0 0 0 3px rgba(179,38,30,.14);
+}
+.wc-block-components-validation-error,
+.wpforms-error{color:var(--rigo-danger);font-size:var(--rigo-fs-sm);font-weight:700;}
+
+/* ===========================================================
+   6. LAYOUT
+   =========================================================== */
+/* Conteneur partagé : en-tête, pied de page, hero boutique, accueil.
+   Les conteneurs Blocksy (.ct-container) reçoivent la même boîte via
+   les variables de la section 2 + la gouttière ci-dessous. */
+.container,
+.rigo-container,
+.ct-container,
+.ct-container-narrow{
+  width:100%;
   max-width:var(--rigo-container);
   margin-left:auto;
   margin-right:auto;
-  padding-left:clamp(16px,4vw,32px);
-  padding-right:clamp(16px,4vw,32px);
+  padding-left:var(--rigo-gutter);
+  padding-right:var(--rigo-gutter);
+  box-sizing:border-box;
 }
+.ct-container-narrow{max-width:calc(var(--rigo-measure) + 2 * var(--rigo-gutter));}
 
-section{
-  padding-top:clamp(56px,7vw,96px);
-  padding-bottom:clamp(56px,7vw,96px);
-}
-section.marquee-wrap{padding-top:18px;padding-bottom:18px;background:var(--rigo-ink);}
-section.hero{padding-top:clamp(48px,6vw,80px);padding-bottom:clamp(48px,6vw,80px);}
+/* Zone principale : c'est le conteneur Blocksy qui porte la respiration
+   verticale (--theme-content-vertical-spacing), pas <main>. */
+main.site-main{background:transparent;}
 
-/* Alternance : sections crème / cream-warm */
-.rigol-preview-root > section.story,
-.rigol-preview-root > section.methode,
-.rigol-preview-root > section.press,
-.rigol-preview-root > section.proof{
-  background:var(--rigo-cream-warm);
+/* — Titre de page (pages de contenu, blog, panier, commande, compte) —
+   Bandeau pleine largeur, même langage que le hero de la boutique. */
+body:not(.single-product) .site-main .hero-section[data-type="type-1"]{
+  position:relative;
+  z-index:0;
+  width:100%;
+  max-width:none;
+  margin:0 0 var(--rigo-block-y);
+  padding:clamp(32px,6vw,64px) var(--rigo-gutter) clamp(24px,4vw,40px);
+  text-align:center;
+  box-sizing:border-box;
 }
+/* Le fond déborde jusqu'aux bords de l'écran quel que soit le conteneur parent */
+body:not(.single-product) .site-main .hero-section[data-type="type-1"]::before{
+  content:"";
+  position:absolute;
+  top:0; bottom:0; left:50%;
+  width:100vw;
+  transform:translateX(-50%);
+  background:linear-gradient(180deg,var(--rigo-cream-warm) 0%,var(--rigo-cream) 100%);
+  border-bottom:1px solid var(--rigo-border);
+  z-index:-1;
+}
+body:not(.single-product) .site-main .hero-section .entry-header{
+  max-width:880px;
+  margin:0 auto;
+  padding:0;
+}
+.site-main .hero-section .page-title{
+  max-width:26ch;
+  margin:0 auto;
+  font-size:var(--rigo-fs-h1);
+}
+.site-main .hero-section .page-description{
+  max-width:60ch;
+  margin:var(--rigo-sp-4) auto 0;
+  color:var(--rigo-ink-soft);
+  font-size:var(--rigo-fs-lead);
+  line-height:1.55;
+}
+.site-main .hero-section .entry-meta{
+  margin-top:var(--rigo-sp-3);
+  justify-content:center;
+  color:var(--rigo-muted);
+  font-size:var(--rigo-fs-sm);
+}
+/* Le bandeau colle à l'en-tête : on retire la respiration haute du conteneur */
+body:not(.single-product) .site-main [class*="ct-container"]:has(.hero-section[data-type="type-1"]){padding-top:0;}
+
+/* — Colonne de lecture (pages de contenu, articles) — */
+body.page:not(.home):not(.woocommerce-page) .entry-content,
+body.single-post .entry-content{
+  max-width:calc(var(--rigo-measure) + 2 * var(--rigo-gutter));
+  margin-left:auto;
+  margin-right:auto;
+  padding-left:var(--rigo-gutter);
+  padding-right:var(--rigo-gutter);
+  box-sizing:border-box;
+}
+.entry-content > * + h2{margin-top:var(--rigo-sp-7);}
+.entry-content > * + h3{margin-top:var(--rigo-sp-6);}
+.entry-content h2, .entry-content h3{margin-bottom:var(--rigo-sp-3);}
+.entry-content ul, .entry-content ol{padding-left:1.25em;margin:0 0 1.1em;}
+.entry-content li{margin-bottom:.4em;}
+.entry-content li::marker{color:var(--rigo-green);}
+.entry-content blockquote{
+  margin:var(--rigo-sp-6) 0;
+  padding:var(--rigo-sp-4) var(--rigo-sp-5);
+  border-left:4px solid var(--rigo-sky);
+  background:var(--rigo-paper);
+  border-radius:0 var(--rigo-r-md) var(--rigo-r-md) 0;
+  font-size:var(--rigo-fs-lead);
+  color:var(--rigo-ink);
+}
+.entry-content .has-large-font-size{font-size:var(--rigo-fs-lead) !important;line-height:1.55;color:var(--rigo-ink);}
+
+/* Tableaux : défilement horizontal interne plutôt que débordement de page */
+.entry-content table,
+.woocommerce-Tabs-panel table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:var(--rigo-fs-md);
+}
+.entry-content .wp-block-table{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.entry-content th, .entry-content td{
+  padding:12px 14px;
+  border:1px solid var(--rigo-border);
+  text-align:left;
+  vertical-align:top;
+}
+.entry-content th{background:var(--rigo-cream-warm);color:var(--rigo-ink);font-weight:800;}
 
 /* ===========================================================
-   6. CARDS — produits & contenus
+   7. CARTES, BADGES, NOTIFICATIONS
    =========================================================== */
-.rigo-card,
-ul.products li.product,
-.wc-block-grid__product{
-  background:#fff;
-  border-radius:var(--rigo-r-md);
+.rigo-card{
+  background:var(--rigo-paper);
   border:1px solid var(--rigo-border);
-  padding:20px;
+  border-radius:var(--rigo-r-md);
+  padding:var(--rigo-sp-5);
   box-shadow:var(--rigo-sh-1);
-  transition:box-shadow 200ms ease, transform 200ms ease;
+  transition:box-shadow var(--rigo-med) ease, transform var(--rigo-med) var(--rigo-ease);
 }
-.rigo-card:hover,
-ul.products li.product:hover{
-  box-shadow:var(--rigo-sh-2);
-  transform:translateY(-2px);
-}
+a.rigo-card:hover,
+.rigo-card--hover:hover{box-shadow:var(--rigo-sh-2);transform:translateY(-2px);}
 
-ul.products li.product .woocommerce-loop-product__title,
-.wc-block-grid__product-title{
-  font-family:var(--rigo-serif);
-  font-weight:700;
-  font-size:1.2rem;
-  color:var(--rigo-ink);
-  margin-bottom:8px;
+/* Pastille (niveau scolaire, « nouveau », stock) */
+.rigo-card-eyebrow,
+.rigo-badge-pill{
+  display:inline-flex;
+  align-items:center;
+  width:fit-content;
+  padding:4px 10px;
+  border-radius:var(--rigo-r-pill);
+  background:var(--rigo-green-soft);
+  color:var(--rigo-green-dark);
+  font-family:var(--rigo-sans);
+  font-size:.75rem;
+  font-weight:800;
+  letter-spacing:.06em;
   line-height:1.3;
+  text-transform:uppercase;
 }
 
+/* Prix */
 .price, .woocommerce-Price-amount{
   font-family:var(--rigo-sans);
   font-weight:800;
   color:var(--rigo-ink);
 }
-body.woocommerce div.product p.price,
-body.woocommerce div.product p.price .woocommerce-Price-amount,
-body.woocommerce div.product p.price bdi,
-body.woocommerce ul.products li.product .price,
-body.woocommerce ul.products li.product .price .woocommerce-Price-amount,
-body.woocommerce ul.products li.product .price bdi{
+.price del, .price del .woocommerce-Price-amount{color:var(--rigo-muted);font-weight:600;font-size:.85em;}
+.price ins{background:transparent;text-decoration:none;}
+.price ins .woocommerce-Price-amount{color:var(--rigo-accent);}
+
+/* Badges WooCommerce (promo, rupture) */
+.onsale, [class*="ct-woo-badge-"], .out-of-stock-badge{
+  --badge-background-color:var(--rigo-accent);
+  --badge-text-color:#fff;
+  border-radius:var(--rigo-r-pill);
   font-family:var(--rigo-sans);
   font-weight:800;
+  letter-spacing:.04em;
+}
+.out-of-stock-badge{--badge-background-color:var(--rigo-ink);}
+.stock.in-stock{color:var(--rigo-green-dark);font-weight:700;font-size:var(--rigo-fs-sm);}
+.stock.out-of-stock{color:var(--rigo-danger);font-weight:700;font-size:var(--rigo-fs-sm);}
+
+/* Messages WooCommerce — classiques et blocs, même gabarit */
+.woocommerce-message,
+.woocommerce-info,
+.woocommerce-error,
+.woocommerce-thankyou-order-received,
+.wc-block-components-notice-banner{
+  --background-color:var(--rigo-paper);
+  --theme-text-color:var(--rigo-ink);
+  --theme-link-hover-color:var(--rigo-action-dark);
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:var(--rigo-sp-3) var(--rigo-sp-4);
+  margin:0 0 var(--rigo-sp-5);
+  padding:var(--rigo-sp-4) var(--rigo-sp-5);
+  background-color:var(--rigo-paper);
+  border:1px solid var(--rigo-border);
+  border-left:4px solid var(--rigo-action);
+  border-radius:var(--rigo-r-sm);
+  box-shadow:var(--rigo-sh-1);
+  color:var(--rigo-ink);
+  font-size:var(--rigo-fs-md);
+  list-style:none;
+}
+.woocommerce-message,
+.wc-block-components-notice-banner.is-success{border-left-color:var(--rigo-green);}
+.woocommerce-error,
+.wc-block-components-notice-banner.is-error{
+  --background-color:var(--rigo-danger-soft);
+  --theme-text-color:var(--rigo-ink);
+  background-color:var(--rigo-danger-soft);
+  border-color:#F0C9C5;
+  border-left-color:var(--rigo-danger);
   color:var(--rigo-ink);
 }
-body.woocommerce div.product p.price{
-  font-size:1.6rem;
-  margin-top:.4em;
-  margin-bottom:1em;
-}
+.woocommerce-error a, .wc-block-components-notice-banner.is-error a{color:var(--rigo-danger);font-weight:700;}
+.woocommerce-message .button,
+.woocommerce-info .button{min-height:40px;padding:8px 18px;margin-left:auto;}
+.woocommerce-notices-wrapper:empty{display:none;}
 
 /* ===========================================================
-   7. WOOCOMMERCE — fiche produit & shop
+   8. EN-TÊTE, MEGA-MENU, MENU MOBILE
+   Balisage : includes/universal-header-footer-chrome.php
    =========================================================== */
-.product_title,
-.woocommerce-products-header__title{
-  font-family:var(--rigo-serif);
-  font-weight:700;
-  color:var(--rigo-ink);
-}
-.woocommerce-products-header__title{
-  font-size:clamp(2.4rem,5vw,4rem);
+
+/* Le header/footer natifs de Blocksy ne sont pas utilisés */
+header#header.ct-header,
+footer#footer.ct-footer,
+.ct-announcement-bar{display:none;}
+
+/* — Bandeau d'annonce — */
+.rigo-promo-bar{
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:36px;
+  padding:6px 48px;
+  background:var(--rigo-ink);
+  color:#fff;
   text-align:center;
 }
-.woocommerce-tabs .panel{
-  background:#fff;
-  border-radius:var(--rigo-r-md);
-  border:1px solid var(--rigo-border);
-  padding:24px;
+.rigo-promo-bar[hidden]{display:none;}
+.rigo-promo-text{
+  margin:0;
+  color:inherit;
+  font-size:var(--rigo-fs-xs);
+  font-weight:700;
+  line-height:1.35;
+  text-wrap:balance;
+}
+.rigo-promo-close{
+  position:absolute;
+  top:50%; right:4px;
+  transform:translateY(-50%);
+  display:grid; place-items:center;
+  width:44px; height:44px;
+  padding:0;
+  background:none; border:0; border-radius:50%;
+  color:#fff; opacity:.75;
+  cursor:pointer;
+  transition:opacity var(--rigo-fast) ease, background-color var(--rigo-fast) ease;
+}
+.rigo-promo-close:hover{opacity:1;background:rgba(255,255,255,.12);}
+.rigo-promo-bar :focus-visible{outline-color:var(--rigo-yellow);}
+
+/* — Barre d'en-tête — */
+.site-header{
+  position:sticky;
+  top:0;
+  z-index:var(--rigo-z-header);
+  width:100%;
+  background:rgba(251,248,241,.94);
+  -webkit-backdrop-filter:saturate(140%) blur(12px);
+  backdrop-filter:saturate(140%) blur(12px);
+  border-bottom:1px solid var(--rigo-border);
+  transition:transform var(--rigo-med) var(--rigo-ease), box-shadow var(--rigo-med) ease;
+}
+.rigo-header-scrolled .site-header{box-shadow:0 2px 16px rgba(42,29,15,.08);}
+.rigo-header-hidden .site-header{transform:translateY(-100%);box-shadow:none;}
+
+.site-header .header-inner{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:var(--rigo-sp-4);
+  min-height:64px;
+  padding-top:8px;
+  padding-bottom:8px;
+}
+@media (min-width:1024px){
+  .site-header .header-inner{min-height:72px;gap:var(--rigo-sp-5);}
 }
 
-/* ===========================================================
-   8. HEADER — navigation
-   =========================================================== */
-header, .site-header{
-  background:rgba(251,248,241,.92);
-  backdrop-filter:saturate(140%) blur(14px);
-  -webkit-backdrop-filter:saturate(140%) blur(14px);
+/* — Marque — */
+.site-header .brand{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  min-height:44px;
+  flex-shrink:0;
+  text-decoration:none;
+}
+.site-header .brand-pato{display:inline-flex;}
+.site-header .brand-pato img{
+  width:40px; height:40px;
+  object-fit:contain;
+  filter:drop-shadow(0 2px 4px rgba(42,29,15,.15));
+}
+.brand-word{
+  font-family:var(--rigo-script);
+  font-weight:700;
+  font-size:1.75rem;
+  letter-spacing:.005em;
+  line-height:1;
+  white-space:nowrap;
+}
+.brand-word span{display:inline-block;transition:transform var(--rigo-med) var(--rigo-ease);}
+.site-header .brand:hover .brand-word span:nth-child(odd){transform:translateY(-2px) rotate(-4deg);}
+.site-header .brand:hover .brand-word span:nth-child(even){transform:translateY(2px) rotate(3deg);}
+/* Très petits écrans : on garde logo + wordmark sans pousser les actions */
+@media (max-width:359px){
+  .site-header .brand-pato img{width:34px;height:34px;}
+  .site-header .brand-word{font-size:1.5rem;}
+}
+
+/* — Navigation desktop (≥ 1024 px) — */
+.site-header .nav{
+  display:none;
+  align-items:center;
+  gap:2px;
+  font-family:var(--rigo-sans);
+}
+@media (min-width:1024px){.site-header .nav{display:flex;}}
+
+.site-header .nav-link{
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  min-height:44px;
+  padding:0 12px;
+  border-radius:var(--rigo-r-sm);
+  color:var(--rigo-ink);
+  font-size:var(--rigo-fs-md);
+  font-weight:700;
+  text-decoration:none;
+  white-space:nowrap;
+  transition:color var(--rigo-fast) ease, background-color var(--rigo-fast) ease;
+}
+.site-header .nav-link:hover{
+  color:var(--rigo-action-dark);
+  background:var(--rigo-action-soft);
+}
+/* Page courante : filet sous le libellé */
+.site-header .nav-link[aria-current=page]::after{
+  content:"";
+  position:absolute;
+  left:12px; right:12px; bottom:6px;
+  height:2px;
+  border-radius:2px;
+  background:var(--rigo-action);
+}
+
+/* Entrée « Boutique » = lien + bouton chevron (ouvre le mega-menu) */
+.nav-has-mega{display:inline-flex;align-items:center;}
+.nav-has-mega .nav-link{padding-right:4px;}
+.nav-mega-toggle{
+  display:grid; place-items:center;
+  width:32px; height:44px;
+  margin-left:-2px;
+  padding:0;
+  background:none; border:0; border-radius:var(--rigo-r-sm);
+  color:var(--rigo-ink);
+  cursor:pointer;
+  transition:color var(--rigo-fast) ease, background-color var(--rigo-fast) ease;
+}
+.nav-mega-toggle:hover{color:var(--rigo-action-dark);background:var(--rigo-action-soft);}
+.nav-chevron{transition:transform var(--rigo-med) var(--rigo-ease);}
+.nav-mega-toggle[aria-expanded=true]{color:var(--rigo-action-dark);}
+.nav-mega-toggle[aria-expanded=true] .nav-chevron{transform:rotate(180deg);}
+
+/* — Actions (compte, panier, menu) — */
+.site-header .header-actions{display:flex;align-items:center;gap:2px;flex-shrink:0;}
+.header-action-btn{
+  position:relative;
+  display:inline-grid; place-items:center;
+  width:44px; height:44px;
+  border-radius:50%;
+  color:var(--rigo-ink);
+  text-decoration:none;
+  transition:color var(--rigo-fast) ease, background-color var(--rigo-fast) ease;
+}
+.header-action-btn:hover{color:var(--rigo-action-dark);background:var(--rigo-action-soft);}
+/* Le compte reste accessible dans le tiroir sur petit écran */
+@media (max-width:479px){.site-header .account{display:none;}}
+
+.site-header .cart-count{
+  position:absolute;
+  top:3px; right:1px;
+  display:grid; place-items:center;
+  min-width:19px; height:19px;
+  padding:0 5px;
+  background:var(--rigo-accent);
+  border:2px solid var(--rigo-cream);
+  border-radius:var(--rigo-r-pill);
+  color:#fff;
+  font-size:.6875rem;
+  font-weight:800;
+  line-height:1;
+}
+.site-header .cart-count[data-cart-count="0"]{display:none;}
+
+/* — Hamburger (< 1024 px) — */
+.hamburger{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:5px;
+  width:44px; height:44px;
+  padding:11px 10px;
+  background:none; border:0; border-radius:var(--rigo-r-sm);
+  cursor:pointer;
+  transition:background-color var(--rigo-fast) ease;
+}
+.hamburger:hover{background:var(--rigo-action-soft);}
+.hamburger span{
+  display:block;
+  width:100%; height:2px;
+  background:var(--rigo-ink);
+  border-radius:2px;
+  transform-origin:center;
+  transition:transform var(--rigo-med) var(--rigo-ease), opacity var(--rigo-fast) ease;
+}
+.hamburger[aria-expanded=true] span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.hamburger[aria-expanded=true] span:nth-child(2){opacity:0;transform:scaleX(0);}
+.hamburger[aria-expanded=true] span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+@media (min-width:1024px){.hamburger{display:none;}}
+
+/* — Mega-menu —
+   Enfant de <header> (sticky = bloc conteneur) : `top:100%` le colle sous
+   l'en-tête sans aucune mesure JS, quel que soit l'état du bandeau d'annonce. */
+.mega-panel{
+  position:absolute;
+  top:100%; left:0; right:0;
+  max-height:calc(100vh - var(--rigo-hdr-h,72px) - 48px);
+  max-height:calc(100dvh - var(--rigo-hdr-h,72px) - 48px);
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  background:var(--rigo-paper);
+  border-top:1px solid var(--rigo-border);
+  border-bottom:1px solid var(--rigo-border);
+  box-shadow:0 24px 48px -12px rgba(42,29,15,.18);
+  opacity:0;
+  visibility:hidden;
+  transform:translateY(-8px);
+  pointer-events:none;
+  transition:opacity var(--rigo-fast) ease, transform var(--rigo-med) var(--rigo-ease), visibility 0s linear var(--rigo-med);
+}
+.mega-panel.is-open{
+  opacity:1;
+  visibility:visible;
+  transform:translateY(0);
+  pointer-events:auto;
+  transition:opacity var(--rigo-fast) ease, transform var(--rigo-med) var(--rigo-ease), visibility 0s;
+}
+/* Jamais de mega-menu sous 1024 px : la navigation passe par le tiroir */
+@media (max-width:1023px){.mega-panel{display:none;}}
+
+.mega-panel .mega-inner{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr)) minmax(220px,260px);
+  gap:var(--rigo-sp-6);
+  padding-top:var(--rigo-sp-6);
+  padding-bottom:var(--rigo-sp-6);
+}
+.mega-col-title{
+  margin:0 0 var(--rigo-sp-2);
+  padding-bottom:var(--rigo-sp-3);
+  border-bottom:1px solid var(--rigo-border);
+  color:var(--rigo-muted);
+  font-family:var(--rigo-sans);
+  font-size:.75rem;
+  font-weight:800;
+  letter-spacing:.1em;
+  line-height:1.3;
+  text-transform:uppercase;
+}
+.mega-list{list-style:none;margin:0;padding:0;}
+.mega-list li{margin:0;}
+.mega-product-link{
+  display:block;
+  margin:0 -12px;
+  padding:9px 12px;
+  border-radius:var(--rigo-r-sm);
+  text-decoration:none;
+  transition:background-color var(--rigo-fast) ease;
+}
+.mega-product-link:hover{background:var(--rigo-cream-warm);}
+.mega-product-name{
+  display:block;
+  color:var(--rigo-ink);
+  font-size:var(--rigo-fs-md);
+  font-weight:700;
+  line-height:1.3;
+}
+.mega-product-link:hover .mega-product-name{color:var(--rigo-action-dark);}
+.mega-product-sub{
+  display:block;
+  margin-top:2px;
+  color:var(--rigo-muted);
+  font-size:var(--rigo-fs-xs);
+  line-height:1.4;
+}
+
+.mega-col--cta{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  align-self:start;
+  gap:var(--rigo-sp-3);
+  padding:var(--rigo-sp-5);
+  background:var(--rigo-cream-warm);
+  border:1px solid var(--rigo-border);
+  border-radius:var(--rigo-r-md);
+  text-align:center;
+}
+.mega-col--cta img{
+  width:56px; height:56px;
+  object-fit:contain;
+  filter:drop-shadow(0 2px 6px rgba(42,29,15,.15));
+}
+.mega-cta-label{
+  margin:0;
+  color:var(--rigo-ink);
+  font-family:var(--rigo-serif);
+  font-size:1.125rem;
+  font-weight:700;
+  line-height:1.25;
+}
+.mega-cta-desc{margin:0;color:var(--rigo-ink-soft);font-size:var(--rigo-fs-sm);line-height:1.5;}
+.mega-col--cta .btn{width:100%;}
+.mega-all-btn{
+  color:var(--rigo-action);
+  font-size:var(--rigo-fs-sm);
+  font-weight:700;
+  text-decoration:none;
+}
+.mega-all-btn:hover{text-decoration:underline;}
+
+/* — Tiroir de navigation (< 1024 px) — */
+body.mobile-menu-open{overflow:hidden;}
+.mobile-menu{
+  position:fixed;
+  inset:0;
+  z-index:var(--rigo-z-drawer);
+  background:rgba(42,29,15,.5);
+  opacity:0;
+  visibility:hidden;
+  transition:opacity var(--rigo-med) ease, visibility 0s linear var(--rigo-med);
+}
+.mobile-menu.is-open{
+  opacity:1;
+  visibility:visible;
+  transition:opacity var(--rigo-med) ease, visibility 0s;
+}
+@media (min-width:1024px){.mobile-menu{display:none;}}
+
+.mobile-menu-inner{
+  position:absolute;
+  top:0; right:0; bottom:0;
+  display:flex;
+  flex-direction:column;
+  width:min(400px,100%);
+  background:var(--rigo-paper);
+  box-shadow:-12px 0 40px rgba(42,29,15,.16);
+  transform:translateX(100%);
+  transition:transform var(--rigo-med) var(--rigo-ease);
+  outline:none;
+}
+.mobile-menu.is-open .mobile-menu-inner{transform:translateX(0);}
+
+.mobile-menu-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-shrink:0;
+  min-height:64px;
+  padding:8px 10px 8px var(--rigo-sp-5);
+  background:var(--rigo-cream);
   border-bottom:1px solid var(--rigo-border);
 }
-header a, .site-header a{
-  font-family:var(--rigo-sans);
-  font-weight:600;
+.mobile-menu-brand{display:inline-flex;align-items:center;min-height:44px;text-decoration:none;}
+.mobile-close{
+  display:grid; place-items:center;
+  width:44px; height:44px;
+  padding:0;
+  background:none; border:0; border-radius:50%;
   color:var(--rigo-ink);
+  cursor:pointer;
+  transition:background-color var(--rigo-fast) ease;
 }
+.mobile-close:hover{background:var(--rigo-cream-warm);}
+
+.mobile-nav{
+  flex:1;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+}
+.mobile-link,
+.mobile-summary{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:var(--rigo-sp-3);
+  min-height:52px;
+  padding:10px var(--rigo-sp-5);
+  border-bottom:1px solid var(--rigo-border);
+  color:var(--rigo-ink);
+  font-family:var(--rigo-sans);
+  font-size:1rem;
+  font-weight:700;
+  line-height:1.3;
+  text-decoration:none;
+  transition:background-color var(--rigo-fast) ease, color var(--rigo-fast) ease;
+}
+.mobile-link:hover,
+.mobile-summary:hover{background:var(--rigo-cream);color:var(--rigo-action-dark);}
+.mobile-link[aria-current=page]{color:var(--rigo-action-dark);box-shadow:inset 3px 0 0 var(--rigo-action);}
+.mobile-link--strong{font-weight:800;}
+
+.mobile-summary{cursor:pointer;list-style:none;user-select:none;}
+.mobile-summary::-webkit-details-marker{display:none;}
+.mobile-summary::after{
+  content:"";
+  flex-shrink:0;
+  width:9px; height:9px;
+  margin-right:4px;
+  border-right:2px solid currentColor;
+  border-bottom:2px solid currentColor;
+  transform:rotate(45deg) translate(-2px,-2px);
+  transition:transform var(--rigo-med) var(--rigo-ease);
+}
+.mobile-details[open] > .mobile-summary{background:var(--rigo-cream);}
+.mobile-details[open] > .mobile-summary::after{transform:rotate(-135deg) translate(-2px,-2px);}
+
+.mobile-submenu{
+  padding:var(--rigo-sp-1) 0 var(--rigo-sp-2);
+  background:var(--rigo-cream);
+  border-bottom:1px solid var(--rigo-border);
+}
+.mobile-sub-link{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  min-height:48px;
+  padding:7px var(--rigo-sp-5) 7px var(--rigo-sp-6);
+  text-decoration:none;
+}
+.mobile-sub-name{color:var(--rigo-ink);font-size:var(--rigo-fs-md);font-weight:700;line-height:1.3;}
+.mobile-sub-meta{color:var(--rigo-muted);font-size:var(--rigo-fs-xs);line-height:1.35;}
+.mobile-sub-link:hover .mobile-sub-name{color:var(--rigo-action-dark);}
+
+.mobile-menu-foot{
+  flex-shrink:0;
+  padding:var(--rigo-sp-4) var(--rigo-sp-5) calc(var(--rigo-sp-4) + env(safe-area-inset-bottom,0px));
+  background:var(--rigo-cream);
+  border-top:1px solid var(--rigo-border);
+}
+.mobile-cta{width:100%;}
 
 /* ===========================================================
-   9. FORMS — input, textarea, select
+   9. PIED DE PAGE
    =========================================================== */
-input[type=text], input[type=email], input[type=tel], input[type=number], input[type=password],
-textarea, select{
+.site-footer{
+  position:relative;
+  margin-top:calc(var(--rigo-section-y) + 40px);
+  padding:var(--rigo-sp-5) 0 var(--rigo-sp-6);
+  background:var(--rigo-ink);
+  color:rgba(255,255,255,.86);
   font-family:var(--rigo-sans);
-  font-size:16px;
-  padding:12px 14px;
+  --rigo-focus:var(--rigo-yellow);
+}
+/* La bande de réassurance précède le pied de page : pas de marge entre les deux */
+.rigo-trust-strip + .site-footer{margin-top:60px;}
+.site-footer .footer-grass{
+  position:absolute;
+  top:-59px; left:0;
+  display:block;
+  width:100%; height:60px;
+  pointer-events:none;
+}
+.site-footer .footer-inner{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:var(--rigo-sp-6);
+  padding-top:var(--rigo-sp-7);
+  padding-bottom:var(--rigo-sp-7);
+}
+@media (min-width:560px){
+  .site-footer .footer-inner{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--rigo-sp-6) var(--rigo-sp-5);}
+  .site-footer .footer-brand{grid-column:1 / -1;}
+}
+@media (min-width:900px){
+  .site-footer .footer-inner{grid-template-columns:repeat(4,minmax(0,1fr));}
+}
+@media (min-width:1180px){
+  .site-footer .footer-inner{grid-template-columns:1.5fr 1fr 1fr 1.25fr 1fr;gap:var(--rigo-sp-6);}
+  .site-footer .footer-brand{grid-column:auto;}
+}
+.site-footer .footer-logo{display:inline-flex;align-items:center;gap:10px;margin-bottom:var(--rigo-sp-4);}
+.site-footer .footer-logo img{width:40px;height:40px;object-fit:contain;}
+.site-footer .footer-logo .brand-word{font-size:1.625rem;}
+.site-footer .footer-brand p{
+  max-width:38ch;
+  margin:0 0 var(--rigo-sp-4);
+  color:rgba(255,255,255,.86);
+  font-size:var(--rigo-fs-md);
+  line-height:1.6;
+}
+.site-footer .footer-address{font-size:var(--rigo-fs-sm);}
+.site-footer .footer-address strong{color:#fff;}
+.site-footer .footer-address a{color:#fff;text-decoration:underline;}
+
+.site-footer .footer-col-title,
+.site-footer .footer-col h4{
+  margin:0 0 var(--rigo-sp-3);
+  color:#fff;
+  font-family:var(--rigo-sans);
+  font-size:.8125rem;
+  font-weight:800;
+  letter-spacing:.1em;
+  line-height:1.3;
+  text-transform:uppercase;
+}
+.site-footer .footer-col a{
+  display:flex;
+  align-items:center;
+  min-height:36px;
+  padding:4px 0;
+  color:rgba(255,255,255,.86);
+  font-size:var(--rigo-fs-md);
+  line-height:1.35;
+  text-decoration:none;
+  transition:color var(--rigo-fast) ease;
+}
+.site-footer .footer-col a:hover{color:var(--rigo-yellow);text-decoration:underline;}
+
+.site-footer .footer-bottom{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:space-between;
+  gap:var(--rigo-sp-2) var(--rigo-sp-5);
+  padding-top:var(--rigo-sp-5);
+  border-top:1px solid rgba(255,255,255,.14);
+  color:rgba(255,255,255,.8);
+  font-size:var(--rigo-fs-xs);
+}
+.site-footer .footer-bottom p{margin:0;color:inherit;font-size:inherit;}
+.site-footer .footer-made{font-family:var(--rigo-script);font-size:1.125rem;}
+.site-footer .footer-heart{color:#FF7A66;}
+
+/* ===========================================================
+   10. ÉLÉMENTS FLOTTANTS & TIROIRS
+   Un seul « dock » en bas d'écran. Les boutons flottants partagent la
+   même ligne de base et remontent ensemble quand une barre fixe occupe
+   le bas (barre d'achat mobile → --rigo-bottom-bar).
+   =========================================================== */
+.rigo-contact-fab,
+.rigo-quiz-fab{
+  position:fixed;
+  bottom:calc(16px + var(--rigo-bottom-bar) + env(safe-area-inset-bottom,0px));
+  z-index:var(--rigo-z-dock);
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  min-height:48px;
+  padding:0 18px 0 14px;
+  border-radius:var(--rigo-r-pill);
+  font-family:var(--rigo-sans);
+  font-size:var(--rigo-fs-sm);
+  font-weight:800;
+  line-height:1;
+  text-decoration:none;
+  white-space:nowrap;
+  cursor:pointer;
+  box-shadow:var(--rigo-sh-2);
+  transition:transform var(--rigo-fast) ease, box-shadow var(--rigo-fast) ease,
+             background-color var(--rigo-fast) ease, bottom var(--rigo-med) var(--rigo-ease);
+}
+.rigo-contact-fab:hover,
+.rigo-quiz-fab:hover{transform:translateY(-2px);box-shadow:var(--rigo-sh-3);}
+
+.rigo-contact-fab{
+  right:16px;
+  background:var(--rigo-action);
+  border:2px solid var(--rigo-action);
+  color:#fff;
+}
+.rigo-contact-fab:hover{background:var(--rigo-action-dark);border-color:var(--rigo-action-dark);color:#fff;}
+.rigo-contact-fab svg{width:20px;height:20px;flex-shrink:0;}
+
+.rigo-quiz-fab{
+  left:16px;
+  background:var(--rigo-paper);
+  border:2px solid var(--rigo-border);
+  color:var(--rigo-ink);
+}
+.rigo-quiz-fab:hover{background:var(--rigo-paper);border-color:var(--rigo-ink);}
+.rigo-quiz-fab-icon{font-size:1.125rem;line-height:1;}
+
+@media (min-width:1024px){
+  .rigo-contact-fab{right:24px;}
+  .rigo-quiz-fab{left:24px;}
+  .rigo-contact-fab, .rigo-quiz-fab{bottom:24px;}
+}
+/* Mobile : le contact devient une pastille icône seule, le quiz garde un libellé court.
+   Deux pastilles compactes sur la même ligne au lieu de deux bandeaux qui se chevauchent. */
+@media (max-width:767px){
+  .rigo-contact-fab{width:48px;padding:0;justify-content:center;}
+  .rigo-contact-fab-label{
+    position:absolute; width:1px; height:1px; overflow:hidden;
+    clip:rect(0,0,0,0); white-space:nowrap;
+  }
+  .rigo-quiz-fab{padding:0 16px 0 12px;}
+  .rigo-quiz-fab-label{max-width:none;}
+}
+/* Fiche produit, panier, commande, pages utilitaires : pas de sollicitation flottante
+   pour le quiz (l'utilisateur a déjà choisi ou lit un texte légal) */
+body.single-product .rigo-quiz-fab,
+body.woocommerce-cart .rigo-quiz-fab,
+body.woocommerce-checkout .rigo-quiz-fab,
+body.woocommerce-account .rigo-quiz-fab,
+body.woocommerce-cart .rigo-contact-fab,
+body.woocommerce-checkout .rigo-contact-fab,
+body.page-id-99 .rigo-quiz-fab,
+body.page-id-99 .rigo-contact-fab,
+body.page-id-85 .rigo-quiz-fab,
+body.page-id-86 .rigo-quiz-fab,
+body.page-id-87 .rigo-quiz-fab,
+body.page-id-88 .rigo-quiz-fab,
+body.page-template-utility .rigo-quiz-fab{display:none;}
+/* Un tiroir ou le menu est ouvert : le dock s'efface */
+body.mobile-menu-open .rigo-contact-fab,
+body.mobile-menu-open .rigo-quiz-fab{opacity:0;pointer-events:none;}
+
+/* — Tiroirs latéraux (panier, upsell) : pas d'ombre qui fuit quand ils sont fermés — */
+#rigo-cart-drawer:not(.is-open),
+#rigo-upsell-drawer:not(.is-open){box-shadow:none;}
+
+/* ===========================================================
+   11. BOUTIQUE — archives produit
+   Balisage : includes/shop-archive-redesign.php
+   =========================================================== */
+
+/* — Hero — */
+.rigo-shop-hero{
+  position:relative;
+  padding:clamp(32px,6vw,64px) 0 clamp(24px,4vw,40px);
+  background:linear-gradient(180deg,var(--rigo-cream-warm) 0%,var(--rigo-cream) 100%);
+  border-bottom:1px solid var(--rigo-border);
+  text-align:center;
+}
+.rigo-shop-hero-inner{position:relative;max-width:880px;}
+.rigo-shop-hero-eyebrow{
+  margin:0 0 var(--rigo-sp-2);
+  color:var(--rigo-green-dark);
+  font-family:var(--rigo-script);
+  font-size:1.25rem;
+  font-weight:700;
+  line-height:1.2;
+}
+.rigo-shop-hero-title{
+  margin:0 0 var(--rigo-sp-3);
+  font-size:var(--rigo-fs-h1);
+}
+.rigo-shop-hero-sub{
+  max-width:60ch;
+  margin:0 auto var(--rigo-sp-5);
+  color:var(--rigo-ink-soft);
+  font-size:var(--rigo-fs-lead);
+  line-height:1.55;
+}
+
+/* — Filtres par catégorie — */
+.rigo-shop-filters{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:var(--rigo-sp-2);
+  margin:0 0 var(--rigo-sp-5);
+}
+.rigo-shop-filter{
+  display:inline-flex;
+  align-items:center;
+  min-height:44px;
+  padding:0 20px;
+  background:var(--rigo-paper);
   border:1.5px solid var(--rigo-border);
-  border-radius:var(--rigo-r-sm);
-  background:#fff;
+  border-radius:var(--rigo-r-pill);
   color:var(--rigo-ink);
-  transition:border-color 150ms ease, box-shadow 150ms ease;
+  font-family:var(--rigo-sans);
+  font-size:var(--rigo-fs-md);
+  font-weight:700;
+  text-decoration:none;
+  transition:background-color var(--rigo-fast) ease, border-color var(--rigo-fast) ease, color var(--rigo-fast) ease;
 }
-input:focus, textarea:focus, select:focus{
-  outline:none;
-  border-color:var(--rigo-green);
-  box-shadow:0 0 0 3px rgba(92,142,46,.18);
+.rigo-shop-filter:hover{border-color:var(--rigo-ink);color:var(--rigo-ink);}
+.rigo-shop-filter.is-active{
+  background:var(--rigo-ink);
+  border-color:var(--rigo-ink);
+  color:#fff;
 }
 
+.rigo-shop-hero-trust{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:var(--rigo-sp-1) var(--rigo-sp-5);
+  color:var(--rigo-ink-soft);
+  font-size:var(--rigo-fs-sm);
+}
+.rigo-shop-hero-trust strong{color:var(--rigo-ink);font-weight:800;}
+
+/* — Éléments WooCommerce remplacés par le hero — */
+.woocommerce.archive .woocommerce-products-header,
+.woocommerce.archive .woocommerce-result-count,
+.woocommerce.archive .woocommerce-ordering,
+.woocommerce.archive .woo-listing-top{display:none;}
+
+/* — Grille —
+   Blocksy pilote sa grille par variables (--shop-columns, --grid-columns-gap) :
+   on les redéfinit au lieu d'écraser la grille. Colonnes fluides : 4 en large,
+   3 en tablette paysage, 2 en tablette portrait et mobile (jamais 1 colonne
+   géante, jamais de carte sous ~135 px). */
+.woocommerce ul.products[data-products],
+.woocommerce-page ul.products[data-products],
+ul.products[data-products]{
+  --shop-columns:repeat(auto-fill,minmax(232px,1fr));
+  --grid-columns-gap:var(--rigo-sp-5);
+  --product-element-spacing:0px;
+  --theme-object-fit:contain;
+  row-gap:var(--rigo-sp-5);
+  margin:0;
+  padding:0;
+  list-style:none;
+}
+@media (max-width:640px){
+  .woocommerce ul.products[data-products],
+  .woocommerce-page ul.products[data-products],
+  ul.products[data-products]{
+    --shop-columns:repeat(2,minmax(0,1fr));
+    --grid-columns-gap:var(--rigo-sp-3);
+    row-gap:var(--rigo-sp-3);
+  }
+}
+
+/* — Carte produit — */
+.woocommerce ul.products li.product{
+  display:flex;
+  flex-direction:column;
+  float:none;
+  width:auto;
+  margin:0;
+  padding:0;
+  overflow:hidden;
+  background:var(--rigo-paper);
+  border:1px solid var(--rigo-border);
+  border-radius:var(--rigo-r-md);
+  box-shadow:var(--rigo-sh-1);
+  text-align:left;
+  transition:transform var(--rigo-med) var(--rigo-ease), box-shadow var(--rigo-med) ease, border-color var(--rigo-fast) ease;
+}
+.woocommerce ul.products li.product:hover,
+.woocommerce ul.products li.product:focus-within{
+  transform:translateY(-3px);
+  box-shadow:var(--rigo-sh-3);
+  border-color:#D8D0BD;
+}
+
+/* Visuel : zone carrée crème, packaging entier (contain), Pato en filigrane sans photo */
+.woocommerce ul.products li.product figure{display:block;width:100%;margin:0;}
+.woocommerce ul.products li.product .ct-media-container{
+  position:relative;
+  display:block;
+  aspect-ratio:1 / 1;
+  margin:0;
+  overflow:hidden;
+  background:var(--rigo-cream) url("https://rigolettres.fr/wp-content/uploads/2026/04/logo-pato-provisoire.png") center / 72px no-repeat;
+  border-bottom:1px solid var(--rigo-border);
+  border-radius:0;
+}
+.woocommerce ul.products li.product .ct-media-container img{
+  position:relative;
+  display:block;
+  width:100%;
+  height:100%;
+  margin:0;
+  padding:var(--rigo-sp-4);
+  object-fit:contain;
+  background:var(--rigo-cream);
+  box-sizing:border-box;
+  transition:transform var(--rigo-med) var(--rigo-ease);
+}
+.woocommerce ul.products li.product:hover .ct-media-container img{transform:scale(1.04);}
+
+.woocommerce ul.products li.product .rigo-card-body{
+  display:flex;
+  flex-direction:column;
+  flex:1;
+  gap:var(--rigo-sp-2);
+  padding:var(--rigo-sp-4);
+}
+.woocommerce ul.products li.product .rigo-card-eyebrow{
+  margin:var(--rigo-sp-4) var(--rigo-sp-4) 0;
+}
+.woocommerce ul.products li.product .rigo-card-eyebrow + .rigo-card-body{padding-top:var(--rigo-sp-2);}
+
+.woocommerce ul.products li.product .woocommerce-loop-product__title{
+  margin:0;
+  padding:0;
+  color:var(--rigo-ink);
+  font-family:var(--rigo-sans);
+  font-size:1.0625rem;
+  font-weight:800;
+  line-height:1.3;
+  letter-spacing:-.005em;
+}
+.woocommerce ul.products li.product .woocommerce-loop-product__title a{color:inherit;text-decoration:none;}
+.woocommerce ul.products li.product .price{
+  margin:auto 0 0;
+  padding-top:var(--rigo-sp-1);
+  font-size:1.1875rem;
+  line-height:1.2;
+}
+/* La catégorie est déjà donnée par les filtres et le fil d'Ariane */
+.woocommerce ul.products li.product .entry-meta{display:none;}
+.woocommerce ul.products li.product .ct-woo-card-actions{margin:0;}
+.woocommerce ul.products li.product .button,
+.woocommerce ul.products li.product .add_to_cart_button{
+  width:100%;
+  min-height:44px;
+  margin:var(--rigo-sp-2) 0 0;
+  padding:10px 16px;
+  font-size:var(--rigo-fs-sm);
+}
+.woocommerce ul.products li.product .button.added::after{content:" ✓";}
+.woocommerce ul.products li.product .added_to_cart{
+  display:block;
+  margin-top:var(--rigo-sp-2);
+  font-size:var(--rigo-fs-sm);
+  font-weight:700;
+  text-align:center;
+}
+@media (max-width:640px){
+  .woocommerce ul.products li.product .rigo-card-body{padding:var(--rigo-sp-3);}
+  .woocommerce ul.products li.product .rigo-card-eyebrow{margin:var(--rigo-sp-3) var(--rigo-sp-3) 0;font-size:.6875rem;}
+  .woocommerce ul.products li.product .woocommerce-loop-product__title{font-size:var(--rigo-fs-md);}
+  .woocommerce ul.products li.product .price{font-size:1.0625rem;}
+  .woocommerce ul.products li.product .button,
+  .woocommerce ul.products li.product .add_to_cart_button{padding:8px 10px;}
+}
+
+/* Pagination */
+.woocommerce nav.woocommerce-pagination,
+.ct-pagination{margin-top:var(--rigo-sp-7);}
+.woocommerce nav.woocommerce-pagination ul{border:0;display:flex;justify-content:center;gap:var(--rigo-sp-2);}
+.woocommerce nav.woocommerce-pagination ul li{border:0;}
+.woocommerce nav.woocommerce-pagination ul li a,
+.woocommerce nav.woocommerce-pagination ul li span,
+.ct-pagination .page-numbers{
+  display:grid; place-items:center;
+  min-width:44px; height:44px;
+  padding:0 8px;
+  border:1.5px solid var(--rigo-border);
+  border-radius:var(--rigo-r-pill);
+  background:var(--rigo-paper);
+  color:var(--rigo-ink);
+  font-weight:700;
+  text-decoration:none;
+}
+.woocommerce nav.woocommerce-pagination ul li span.current,
+.ct-pagination .page-numbers.current{background:var(--rigo-ink);border-color:var(--rigo-ink);color:#fff;}
+
 /* ===========================================================
-   7b. FICHE PRODUIT — refonte UX/UI
+   12. FICHE PRODUIT
    =========================================================== */
+
+/* — Conteneur : même boîte que l'en-tête et la boutique — */
+body.single-product div.product.type-product,
+body.single-product .site-main .hero-section{
+  width:100%;
+  max-width:var(--rigo-container);
+  margin-left:auto;
+  margin-right:auto;
+  padding-left:var(--rigo-gutter);
+  padding-right:var(--rigo-gutter);
+  box-sizing:border-box;
+}
+body.single-product .site-main .hero-section .entry-header{margin:0;padding:0;}
 
 /* --- Breadcrumb : séparateur ›, padding, font --- */
 .woocommerce-breadcrumb,
@@ -419,7 +1724,7 @@ body.woocommerce div.product .flex-control-thumbs img{
 body.woocommerce div.product .flex-control-thumbs img:hover,
 body.woocommerce div.product .flex-control-thumbs img.flex-active{
   opacity:1;
-  border-color:var(--rigo-green);
+  border-color:var(--rigo-action);
 }
 body.woocommerce div.product .woocommerce-product-gallery__trigger{
   background:rgba(255,255,255,.92);
@@ -447,7 +1752,7 @@ body.woocommerce div.product .product_meta{
   margin-top:24px;
 }
 body.woocommerce div.product .product_meta a{
-  color:var(--rigo-green-dark);
+  color:var(--rigo-action);
   text-decoration:none;
 }
 body.woocommerce div.product .product_meta > span{
@@ -491,9 +1796,9 @@ body.woocommerce div.product form.cart .quantity .ct-increase{
   width:42px !important;
   height:auto !important;
   min-height:46px;
-  background:var(--rigo-cream, #FAF6EC) !important;
-  color:var(--rigo-ink, #2A1D0F) !important;
-  border:1.5px solid var(--rigo-border) !important;
+  background:var(--rigo-cream) !important;
+  color:var(--rigo-ink) !important;
+  border:1.5px solid var(--rigo-field-border) !important;
   cursor:pointer;
   user-select:none;
   font-size:18px;
@@ -520,8 +1825,8 @@ body.woocommerce div.product form.cart .quantity .ct-decrease:hover,
 body.woocommerce div.product form.cart .quantity .ct-increase:hover,
 body.woocommerce div.product form.cart .quantity .ct-decrease:focus-visible,
 body.woocommerce div.product form.cart .quantity .ct-increase:focus-visible{
-  background:var(--rigo-cream-dark, #ECE3CB) !important;
-  color:var(--rigo-blue, #27B4E5) !important;
+  background:var(--rigo-action-soft) !important;
+  color:var(--rigo-action-dark) !important;
   outline:none;
 }
 body.woocommerce div.product form.cart .quantity input.qty{
@@ -531,7 +1836,7 @@ body.woocommerce div.product form.cart .quantity input.qty{
   text-align:center;
   font-weight:700;
   font-size:16px;
-  border:1.5px solid var(--rigo-border) !important;
+  border:1.5px solid var(--rigo-field-border) !important;
   border-radius:0 !important;
   background:#fff;
   /* Cache les spin buttons natifs (chevrons hover bleu Chrome/Safari/Firefox)
@@ -546,8 +1851,8 @@ body.woocommerce div.product form.cart .quantity input.qty::-webkit-inner-spin-b
 }
 body.woocommerce div.product form.cart .quantity input.qty:focus{
   outline:none;
-  border-color:var(--rigo-blue,#27B4E5) !important;
-  box-shadow:inset 0 0 0 1.5px var(--rigo-blue,#27B4E5);
+  border-color:var(--rigo-action) !important;
+  box-shadow:inset 0 0 0 1.5px var(--rigo-action);
   position:relative;
   z-index:1;
 }
@@ -610,7 +1915,7 @@ body.single-product div.product .woocommerce-tabs ul.wc-tabs li.active a,
 body.single-product div.product .woocommerce-tabs ul.tabs li a:hover,
 body.single-product div.product .woocommerce-tabs ul.wc-tabs li a:hover{
   color:var(--rigo-ink) !important;
-  border-bottom-color:var(--rigo-green) !important;
+  border-bottom-color:var(--rigo-action) !important;
 }
 body.single-product div.product .woocommerce-tabs .panel{
   background:#fff !important;
@@ -708,1106 +2013,512 @@ body.woocommerce div.product #reviews .comment_container{
   margin-bottom:12px;
 }
 
-/* ===========================================================
-   11. UNIVERSAL CHROME — header/footer injectés par PHP
-       (cf. includes/universal-header-footer-chrome.php)
-   =========================================================== */
-
-/* Masque le header/footer Blocksy natif partout — on injecte le nôtre */
-header#header.ct-header,
-footer#footer.ct-footer{display:none !important;}
-body.ct-header-sticky,
-body.has-ct-header-spacing{padding-top:0 !important;}
-
-/*
- * Sur la home, le contenu de la page (id=21) embarque son propre header.
- * Notre chrome universel est maintenant injecté sur TOUTES les pages.
- * On masque le header natif de la home pour éviter le doublon.
- * (Le footer home est conservé — notre footer injecté reste désactivé sur front page.)
- */
-body.home .site-header:not(#site-header){display:none !important;}
-
-/* Masquer l'ancienne barre promo du contenu de page — remplacée par #rigo-promo-bar */
-.ct-announcement-bar,[data-id="announcement_bar"],.blocksy-announcement-bar{display:none !important;}
-/* Masquer aussi le doublon `.announce` provenant du contenu Gutenberg de la home (page id=21) */
-.announce{display:none !important;}
-
-/* ── Promo bar ── */
-#rigo-promo-bar{
-  background:#2a1d0f;
-  color:#fff;
-  font-size:13px;
-  text-align:center;
-  padding:8px 40px 8px 16px;
-  position:relative;
-  line-height:1.4;
-}
-.rigo-promo-close{
-  position:absolute;
-  right:12px; top:50%;
-  transform:translateY(-50%);
-  background:none; border:none;
-  color:#fff; font-size:18px; line-height:1;
-  cursor:pointer; opacity:.7; padding:4px;
-}
-.rigo-promo-close:hover{opacity:1;}
-
-.site-header .container,
-.site-footer .container{
-  max-width:var(--rigo-container);
-  margin:0 auto;
-  padding:0 clamp(16px,4vw,32px);
-}
-
-.visually-hidden{
-  position:absolute; width:1px; height:1px; padding:0; margin:-1px;
-  overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
-}
-
-/* ───────── HEADER ───────── */
-.site-header{
-  position:sticky; top:0; z-index:100;
-  background:rgba(251,248,241,.92);
-  backdrop-filter:saturate(140%) blur(14px);
-  -webkit-backdrop-filter:saturate(140%) blur(14px);
-  border-bottom:1px solid var(--rigo-border);
-  width:100%;
-}
-.site-header .header-inner{
-  display:flex; align-items:center; justify-content:space-between;
-  gap:24px; padding:14px clamp(16px,4vw,32px);
-}
-@media (min-width:768px){
-  .site-header .header-inner{padding:16px clamp(16px,4vw,32px);}
-}
-
-.site-header .brand{
-  display:inline-flex; align-items:center; gap:10px;
-  padding:4px 0; text-decoration:none;
-  transition:transform .2s cubic-bezier(.2,.8,.2,1);
-  flex-shrink:0;
-}
-.site-header .brand:hover{transform:rotate(-2deg);}
-.site-header .brand-pato img{
-  width:40px; height:40px; object-fit:contain;
-  filter:drop-shadow(0 2px 4px rgba(42,29,15,.15));
-}
-.site-header .brand-word,
-.site-footer .brand-word{
-  font-family:var(--rigo-script);
-  font-weight:700;
-  font-size:26px;
-  letter-spacing:-.01em;
-  line-height:1;
-}
-.site-header .brand-word span{display:inline-block; transition:transform .25s cubic-bezier(.2,.8,.2,1);}
-.site-header .brand:hover .brand-word span:nth-child(odd){transform:translateY(-2px) rotate(-4deg);}
-.site-header .brand:hover .brand-word span:nth-child(even){transform:translateY(2px) rotate(3deg);}
-
-/* ───────── NAV desktop ───────── */
-.site-header .nav{
-  display:none;
-  align-items:center;
-  gap:4px;
-  font-weight:700;
-  font-size:14.5px;
-  font-family:var(--rigo-sans);
-}
-@media (min-width:1024px){.site-header .nav{display:flex;}}
-
-/* Liens simples et lien-racine du mega */
-.site-header .nav-link,
-.site-header .nav > a{
-  position:relative;
-  display:inline-flex; align-items:center; gap:3px;
+/* — Titre et prix — */
+body.woocommerce div.product .product_title{font-size:var(--rigo-fs-h1);}
+body.woocommerce div.product p.price{
+  margin:0 0 var(--rigo-sp-4);
   color:var(--rigo-ink);
-  padding:6px 10px;
-  border-radius:var(--rigo-r-sm);
-  text-decoration:none;
-  transition:color .2s, background .2s;
-}
-.site-header .nav-link:hover,
-.site-header .nav > a:hover{
-  color:var(--rigo-green-dark);
-  background:rgba(92,142,46,.07);
-}
-/* Supprime le pseudo-element ::after hérité d'anciens styles */
-.site-header .nav-link::after,
-.site-header .nav > a::after{display:none;}
-
-/* ───────── HEADER ACTIONS ───────── */
-.site-header .header-actions{display:flex; align-items:center; gap:4px;}
-.header-action-btn{
-  position:relative;
-  display:inline-flex; align-items:center; justify-content:center;
-  width:40px; height:40px; border-radius:50%;
-  color:var(--rigo-ink); text-decoration:none;
-  transition:background .2s, color .2s;
-}
-.header-action-btn:hover{
-  background:rgba(92,142,46,.10);
-  color:var(--rigo-green-dark);
-}
-.site-header .cart-count{
-  position:absolute; top:2px; right:2px;
-  min-width:18px; height:18px; padding:0 5px;
-  background:var(--rigo-accent); color:#fff;
-  font-size:11px; font-weight:800;
-  border-radius:9px;
-  display:grid; place-items:center;
-  border:2px solid var(--rigo-cream);
-  line-height:1;
-}
-.site-header .cart-count[data-cart-count="0"]{display:none;}
-
-/* ===========================================================
-   12. MEGA-MENU
-   =========================================================== */
-
-/* ── Wrapper nav item avec mega ── */
-.nav-has-mega{position:relative;}
-
-/* Chevron */
-.nav-chevron{
-  opacity:.55;
-  transition:transform .22s ease, opacity .2s;
-  flex-shrink:0;
-}
-.nav-has-mega:hover .nav-chevron,
-.nav-link[aria-expanded="true"] .nav-chevron{
-  transform:rotate(180deg);
-  opacity:1;
-}
-
-/*
- * Le mega-panel est HORS du <header> dans le DOM pour éviter le piège
- * will-change:transform du sticky-nav (qui crée une stacking context et
- * emprisonne les position:fixed enfants).
- */
-.mega-panel{
-  position:fixed;
-  top:var(--rigo-hdr-h, 73px);
-  left:0; right:0;
-  background:#fff;
-  border-top:2.5px solid var(--rigo-green);
-  border-bottom:1px solid var(--rigo-border);
-  box-shadow:0 16px 48px rgba(42,29,15,.11);
-  z-index:600;
-  /* Caché par défaut */
-  opacity:0;
-  visibility:hidden;
-  transform:translateY(-6px);
-  pointer-events:none;
-  transition:opacity .22s ease, transform .22s ease, visibility 0s linear .22s;
-}
-.mega-panel.is-open{
-  opacity:1;
-  visibility:visible;
-  transform:translateY(0);
-  pointer-events:auto;
-  transition:opacity .22s ease, transform .22s ease, visibility 0s;
-}
-
-/* ⚠️ Spécificité forcée via `.mega-panel .mega-inner` : sur la home, le
-   `<style>` inline du contenu Gutenberg (page 21) contient `.container {
-   padding-top: 0 }` qui écrase `.mega-inner { padding-top: 28px }` à
-   spécificité égale (`.mega-inner.container`). Préfixer par `.mega-panel`
-   donne 0,2,0 > 0,1,0 et gagne la cascade. */
-.mega-panel .mega-inner{
-  display:grid;
-  grid-template-columns:repeat(3,1fr) 240px;
-  gap:0 36px;
-  padding-top:28px;
-  padding-bottom:28px;
-}
-
-/* ── Colonnes ── */
-.mega-col-title{
-  font-family:var(--rigo-serif);
-  font-weight:700;
-  font-size:.9rem;
-  color:var(--rigo-ink);
-  margin:0 0 12px;
-  padding-bottom:10px;
-  border-bottom:1.5px solid var(--rigo-border);
-  letter-spacing:-.01em;
-}
-
-.mega-product-link{
-  display:block;
-  padding:8px 10px;
-  border-radius:var(--rigo-r-sm);
-  margin:2px -10px;
-  text-decoration:none;
-  transition:background .15s ease;
-}
-.mega-product-link:hover{background:var(--rigo-cream);}
-.mega-product-name{
-  display:block;
-  font-family:var(--rigo-sans);
-  font-weight:700;
-  font-size:13px;
-  color:var(--rigo-ink);
-  line-height:1.3;
-}
-.mega-product-sub{
-  display:block;
-  font-size:11.5px;
-  color:var(--rigo-muted);
-  margin-top:2px;
-}
-.mega-see-all{
-  display:block;
-  margin-top:10px;
-  padding:5px 10px;
-  font-size:12.5px;
-  font-weight:700;
-  color:var(--rigo-green-dark);
-  text-decoration:none;
-  transition:color .15s;
-}
-.mega-see-all:hover{color:var(--rigo-green); text-decoration:underline;}
-
-/* ── CTA column ── */
-.mega-col--cta{
-  background:var(--rigo-cream-warm);
-  border-radius:var(--rigo-r-md);
-  border:1px solid var(--rigo-border);
-  padding:20px 18px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  text-align:center;
-  gap:10px;
-}
-.mega-col--cta img{
-  width:56px; height:56px;
-  object-fit:contain;
-  filter:drop-shadow(0 2px 6px rgba(42,29,15,.15));
-}
-.mega-cta-label{
-  font-family:var(--rigo-serif);
-  font-weight:700;
-  font-size:.95rem;
-  color:var(--rigo-ink);
-  margin:0; line-height:1.3;
-}
-.mega-cta-desc{
-  font-size:12px;
-  color:var(--rigo-muted);
-  margin:0; line-height:1.5;
-}
-.mega-col--cta .btn-primary{
-  font-size:13px; padding:10px 16px;
-  width:100%; justify-content:center; text-align:center;
-}
-.mega-all-btn{
-  font-size:12px; font-weight:600;
-  color:var(--rigo-muted);
-  text-decoration:none;
-  margin-top:2px;
-  transition:color .15s;
-}
-.mega-all-btn:hover{color:var(--rigo-ink); text-decoration:underline;}
-
-/* ===========================================================
-   13. HAMBURGER & MOBILE MENU
-   =========================================================== */
-
-/* ── Hamburger ── */
-.hamburger{
-  display:flex; flex-direction:column; justify-content:center; gap:5px;
-  width:40px; height:40px; padding:9px 8px;
-  background:none; border:none; cursor:pointer;
-  border-radius:var(--rigo-r-sm);
-  transition:background .2s;
-}
-.hamburger:hover{background:rgba(42,29,15,.06);}
-@media (min-width:1024px){.hamburger{display:none;}}
-.hamburger span{
-  display:block; width:100%; height:2px;
-  background:var(--rigo-ink); border-radius:2px;
-  transition:transform .3s ease, opacity .25s ease;
-  transform-origin:center;
-}
-.hamburger[aria-expanded="true"] span:nth-child(1){transform:translateY(7px) rotate(45deg);}
-.hamburger[aria-expanded="true"] span:nth-child(2){opacity:0; transform:scaleX(0);}
-.hamburger[aria-expanded="true"] span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
-
-/* ── Overlay ── */
-body.mobile-menu-open{overflow:hidden;}
-.mobile-menu{
-  position:fixed; inset:0; z-index:200;
-  background:rgba(42,29,15,.45);
-  backdrop-filter:blur(2px);
-  opacity:0; visibility:hidden;
-  transition:opacity .3s ease, visibility 0s linear .3s;
-}
-.mobile-menu.is-open{
-  opacity:1; visibility:visible;
-  transition:opacity .3s ease, visibility 0s;
-}
-
-/* ── Drawer droit ── */
-.mobile-menu-inner{
-  position:absolute; top:0; right:0; bottom:0;
-  width:min(360px,92vw);
-  background:#fff;
-  display:flex; flex-direction:column; overflow-y:auto;
-  transform:translateX(100%);
-  transition:transform .35s cubic-bezier(.2,.8,.2,1);
-  box-shadow:-8px 0 32px rgba(42,29,15,.12);
-}
-.mobile-menu.is-open .mobile-menu-inner{transform:translateX(0);}
-
-.mobile-menu-head{
-  display:flex; align-items:center; justify-content:space-between;
-  padding:14px 18px;
-  background:var(--rigo-cream); border-bottom:1px solid var(--rigo-border);
-  position:sticky; top:0; z-index:1;
-}
-.mobile-menu-head .brand-word{font-size:22px;}
-.mobile-close{
-  display:flex; align-items:center; justify-content:center;
-  width:36px; height:36px; background:none; border:none;
-  border-radius:50%; cursor:pointer; color:var(--rigo-ink);
-  transition:background .2s;
-}
-.mobile-close:hover{background:rgba(42,29,15,.08);}
-
-.mobile-nav{flex:1; padding:6px 0;}
-
-/* Boutique accordion (<details>) */
-.mobile-details{border-bottom:1px solid var(--rigo-border);}
-.mobile-summary{
-  display:flex; align-items:center; justify-content:space-between;
-  padding:14px 18px;
-  font-family:var(--rigo-sans); font-weight:700; font-size:15px;
-  color:var(--rigo-ink); cursor:pointer; list-style:none;
-  user-select:none; transition:background .15s;
-}
-.mobile-summary::-webkit-details-marker{display:none;}
-.mobile-summary::after{content:'+'; font-size:18px; font-weight:400; color:var(--rigo-muted);}
-.mobile-details[open] .mobile-summary::after{content:'−';}
-.mobile-summary:hover{background:var(--rigo-cream);}
-
-.mobile-submenu{padding:10px 18px 16px; background:var(--rigo-cream);}
-.mobile-sub-label{
-  font-size:10px; font-weight:800; text-transform:uppercase;
-  letter-spacing:.1em; color:var(--rigo-muted);
-  margin:14px 0 4px; padding-top:10px;
-  border-top:1px solid var(--rigo-border);
-}
-.mobile-sub-label:first-child{margin-top:0; border-top:none;}
-.mobile-sub-link{
-  display:block; padding:8px 0;
-  font-size:13.5px; font-family:var(--rigo-sans); font-weight:500;
-  color:var(--rigo-ink-soft); text-decoration:none;
-  border-bottom:1px solid rgba(231,226,213,.5);
-  transition:color .15s;
-}
-.mobile-sub-link:hover{color:var(--rigo-green-dark);}
-.mobile-see-all-btn{
-  display:block; margin-top:12px; padding:9px 14px;
-  font-size:13px; font-weight:700; color:var(--rigo-green-dark);
-  text-decoration:none; text-align:center;
-  background:rgba(92,142,46,.08); border-radius:var(--rigo-r-sm);
-  transition:background .15s;
-}
-.mobile-see-all-btn:hover{background:rgba(92,142,46,.16);}
-
-.mobile-link{
-  display:block; padding:14px 18px;
-  font-family:var(--rigo-sans); font-weight:600; font-size:15px;
-  color:var(--rigo-ink); text-decoration:none;
-  border-bottom:1px solid var(--rigo-border);
-  transition:background .15s, color .15s;
-}
-.mobile-link:hover{background:var(--rigo-cream); color:var(--rigo-green-dark);}
-
-.mobile-menu-foot{
-  padding:16px 18px;
-  background:var(--rigo-cream); border-top:1px solid var(--rigo-border);
-  position:sticky; bottom:0;
-}
-.mobile-cta{display:block; width:100%; text-align:center; justify-content:center;}
-
-/* ───────── FOOTER ───────── */
-.site-footer{
-  background:var(--rigo-ink);
-  color:rgba(255,255,255,.85);
-  padding:20px 0 32px;
-  position:relative;
-  margin-top:48px;
-  font-family:var(--rigo-sans);
-}
-.site-footer .footer-grass{
-  position:absolute;
-  top:-60px; left:0; right:0;
-  width:100%; height:80px;
-  display:block; pointer-events:none;
-  z-index:2;
-}
-.site-footer .footer-inner{
-  display:grid;
-  grid-template-columns:1fr;
-  gap:32px;
-  padding-top:56px;
-  padding-bottom:48px;
-}
-@media (min-width:768px){
-  .site-footer .footer-inner{grid-template-columns:1fr 1fr; gap:40px;}
-}
-@media (min-width:1100px){
-  .site-footer .footer-inner{grid-template-columns:1.4fr 1fr 1fr 1.2fr 1fr; gap:40px;}
-}
-.site-footer .footer-logo{
-  display:inline-flex; align-items:center; gap:10px;
-  margin-bottom:14px;
-}
-.site-footer .footer-logo img{width:40px; height:40px;}
-.site-footer .footer-logo .brand-word{font-size:24px; color:#fff;}
-.site-footer .footer-brand p{
-  font-size:14.5px; line-height:1.6;
-  color:rgba(255,255,255,.7);
-  margin:0 0 18px; max-width:360px;
-}
-.site-footer .footer-address{font-size:13.5px; color:rgba(255,255,255,.55);}
-.site-footer .footer-col h4{
-  font-family:var(--rigo-script);
-  font-weight:700;
-  font-size:20px;
-  margin:0 0 16px;
-  color:#fff;
-  letter-spacing:-.01em;
-}
-.site-footer .footer-col a{
-  display:block;
-  padding:4px 0;
-  font-size:14px;
-  color:rgba(255,255,255,.7);
-  text-decoration:none;
-  transition:color .2s, transform .2s;
-}
-.site-footer .footer-col a:hover{
-  color:#FBCF33;
-  transform:translateX(3px);
-}
-.site-footer .footer-bottom{
-  display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center;
-  padding-top:24px;
-  border-top:1px solid rgba(255,255,255,.08);
-  gap:12px;
-  font-size:13px;
-  color:rgba(255,255,255,.55);
-}
-.site-footer .footer-made{
-  font-family:var(--rigo-script);
-  font-size:15px;
-  margin:0;
-}
-.site-footer .footer-bottom p{margin:0;}
-
-.site-footer, .site-header{overflow-wrap:anywhere; word-break:normal;}
-.site-footer img, .site-header img{max-width:100%; height:auto;}
-
-/* ===========================================================
-   14. SPRINT 8 — backlog visuel Arthur (2026-05-08 suite 8)
-   Fixes regroupés : sticky robuste, contraste footer, newsletter input,
-   wrap du seuil de livraison offerte, marges desktop pages contenu, bordure CTA bleus.
-   =========================================================== */
-
-/* --- 14.1 Sticky header robuste ---
-   `position:sticky` casse si un ancêtre a `overflow:hidden|auto|scroll`.
-   En complément du sticky existant (section 11), on fournit un fallback
-   `position:fixed` activé via la classe `html.rigo-header-fixed` que le
-   JS sticky peut poser si le sticky ne tient pas. La règle ci-dessous
-   est inerte par défaut — actif uniquement quand la classe est ajoutée. */
-html.rigo-header-fixed .site-header,
-html.rigo-header-fixed #site-header{
-  position:fixed !important;
-  top:0; left:0; right:0;
-  z-index:500;
-}
-html.rigo-header-fixed body{
-  padding-top:var(--rigo-hdr-h, 73px);
-}
-
-/* Ceinture/bretelles : forcer le sticky du header injecté contre tout
-   override Blocksy/Customizer arrivant après. */
-header#site-header.site-header,
-header.site-header--injected{
-  position:sticky !important;
-  top:0 !important;
-  z-index:500 !important;
-}
-
-/* --- 14.2 Footer — contraste WCAG AA ---
-   Avant : rgba(255,255,255,.55) sur fond ink (≈ ratio 4.0 < 4.5 AA).
-   Après : .82 sur les liens et footer-bottom (~6.5 ratio). */
-.site-footer .footer-col a{
-  color:rgba(255,255,255,.82) !important;
-}
-.site-footer .footer-bottom,
-.site-footer .footer-bottom p{
-  color:rgba(255,255,255,.82) !important;
-}
-.site-footer .footer-address{
-  color:rgba(255,255,255,.78) !important;
-}
-.site-footer .footer-brand p{
-  color:rgba(255,255,255,.88) !important;
-}
-
-/* --- 14.3 Newsletter popup — input visible quand on tape ---
-   Le placeholder est gris, mais sans `color` explicite sur l'input, le
-   texte saisi héritait d'une règle parent qui le rendait blanc sur fond
-   crème (illisible). Force ink + background paper. */
-#rigo-popup .rigo-popup-form input[type=email],
-.rigo-popup-form input[type=email],
-#rigo-popup-form input[type=email]{
-  color:var(--rigo-ink) !important;
-  background:#fff !important;
-  -webkit-text-fill-color:var(--rigo-ink) !important;
-  caret-color:var(--rigo-ink);
-}
-#rigo-popup .rigo-popup-form input[type=email]::placeholder{
-  color:var(--rigo-muted) !important;
-  opacity:1;
-}
-
-/* Couvre aussi les éventuels champs newsletter intégrés au footer
-   (si un module newsletter footer est ajouté plus tard). */
-.site-footer input[type=email],
-.site-footer input[type=text]{
-  color:var(--rigo-ink) !important;
-  background:#fff !important;
-  -webkit-text-fill-color:var(--rigo-ink) !important;
-}
-
-/* --- 14.4 Seuil de livraison offerte insécable ("80 €") ---
-   Empêche le wrap entre le chiffre et le symbole € sur les libellés
-   livraison gratuite. On force un white-space:nowrap sur les labels
-   typés, en complément du `&nbsp;` injecté côté PHP. */
-.rigo-promo-bar,
-.rigo-promo-bar span,
-.rigo-trust-item strong,
-.rigo-drawer-shipping-note,
-.rigo-ship-free-eligible,
-.rigo-ship-threshold,
-.rigo-shipbar-msg{
-  white-space:normal;
-}
-.rigo-promo-bar .nowrap,
-.rigo-trust-item .nowrap,
-.rigo-shipbar-msg .nowrap{
-  white-space:nowrap;
-}
-
-/* --- 14.5 Marges/padding desktop pages contenu ---
-   Les pages article/contenu (À propos, Méthode, légales…) étaient
-   resserrées contre les bords sur desktop. On élargit le padding latéral
-   et on plafonne la largeur de lecture à ~760px pour le confort de
-   lecture (typo Fraunces/Nunito en mesure 60-72 caractères). */
-.entry-content,
-.page-content,
-.ct-container .entry-content,
-body.page:not(.home):not(.woocommerce-page) .entry-content,
-body.single-post .entry-content{
-  max-width:760px;
-  margin-left:auto;
-  margin-right:auto;
-  padding-left:clamp(20px, 4vw, 40px);
-  padding-right:clamp(20px, 4vw, 40px);
-}
-@media (min-width:1100px){
-  body.page:not(.home):not(.woocommerce-page) .entry-content,
-  body.single-post .entry-content{
-    padding-left:48px;
-    padding-right:48px;
-  }
-}
-/* Ne s'applique pas au shop ni à la fiche produit (qui ont leur layout
-   2 colonnes natif WooCommerce). */
-body.woocommerce-page .entry-content,
-body.archive .entry-content,
-body.single-product .entry-content{
-  max-width:none;
-}
-
-/* --- 14.6 CTA bleus — pas de bordure verte ---
-   Override des règles Blocksy / focus / hover qui peuvent ajouter un
-   `border-color:var(--rigo-green)` sur les boutons bleus secondaires
-   (cas vu sur formulaires WPForms et boutons WP block style "secondary"). */
-.btn-secondary,
-.btn-secondary:hover,
-.btn-secondary:focus,
-.btn-secondary:focus-visible,
-.rigo-cta--secondary,
-.rigo-cta--secondary:hover,
-.rigo-cta--secondary:focus,
-.wp-block-button.is-style-secondary .wp-block-button__link,
-.wpforms-form button[type=submit],
-.wpforms-form input[type=submit]{
-  border-color:var(--rigo-sky) !important;
-  box-shadow:0 6px 18px rgba(30,159,203,.25) !important;
-}
-.btn-secondary:focus-visible,
-.rigo-cta--secondary:focus-visible{
-  outline:3px solid rgba(30,159,203,.35);
-  outline-offset:2px;
-  /* Pas de halo vert au focus sur un CTA bleu */
-  box-shadow:0 6px 18px rgba(30,159,203,.30) !important;
-}
-
-/* Couvre aussi la couleur de halo focus globale qui posait un anneau
-   vert autour des boutons bleus (cf. section 9 input:focus). On force
-   un halo bleu uniquement sur les CTAs bleus, sans toucher au focus
-   des inputs (qui restent vert pour signaler la saisie active). */
-button.btn-secondary:focus,
-a.btn-secondary:focus,
-button.rigo-cta--secondary:focus,
-a.rigo-cta--secondary:focus{
-  outline:none;
-  box-shadow:0 0 0 3px rgba(30,159,203,.30) !important;
-}
-
-/* ===========================================================
-   16. PAGES UTILITAIRES — contact, légales, livraison
-   (sprint 9 fix, 2026-05-10)
-   =========================================================== */
-
-/* --- 16.1 Grid contact (2 colonnes desktop, 1 col mobile) --- */
-.rigo-contact-grid{
-  display:grid;
-  grid-template-columns:1fr;
-  gap:20px;
-  margin:24px 0 36px;
-}
-@media (min-width:720px){
-  .rigo-contact-grid{
-    grid-template-columns:1fr 1fr;
-    gap:24px;
-  }
-}
-.rigo-contact-card{
-  background:#fff;
-  border:1px solid var(--rigo-border);
-  border-radius:var(--rigo-r-md);
-  padding:24px 26px;
-  box-shadow:var(--rigo-sh-1);
-  transition:box-shadow 200ms ease, transform 200ms ease;
-}
-.rigo-contact-card:hover{
-  box-shadow:var(--rigo-sh-2);
-  transform:translateY(-2px);
-}
-.rigo-contact-card h2{
-  font-family:var(--rigo-serif);
-  font-size:1.25rem !important;
-  margin:0 0 12px !important;
-  letter-spacing:-0.01em;
-}
-.rigo-contact-card p{
-  margin:0 0 .9em;
-  font-size:15.5px;
+  font-size:clamp(1.5rem,1.3rem + .8vw,1.875rem);
+  line-height:1.2;
+}
+body.woocommerce div.product .woocommerce-product-details__short-description{
+  color:var(--rigo-ink-soft);
+  font-size:var(--rigo-fs-lead);
   line-height:1.6;
 }
-.rigo-contact-card p:last-child{margin-bottom:0;}
-.rigo-contact-link a{
-  font-family:var(--rigo-sans);
-  font-weight:700;
-  font-size:1.05rem;
-  color:var(--rigo-green-dark);
-  text-decoration:none;
-  border-bottom:2px solid var(--rigo-green);
-  padding-bottom:1px;
-  transition:color .15s, border-color .15s;
-  word-break:break-word;
-}
-.rigo-contact-link a:hover{
-  color:var(--rigo-green);
-  border-bottom-color:var(--rigo-green-dark);
+body.woocommerce div.product .woocommerce-product-gallery img{
+  max-height:min(70vh,640px);
+  object-fit:contain;
 }
 
-/* --- 16.2 Masquer le FAB quiz "Aide au choix" sur les pages utilitaires
-   (il chevauchait le texte adresse de la page contact). Reste actif sur
-   la home, fiche produit, shop, blog. --- */
-body.page-id-99 .rigo-quiz-fab,        /* contact */
-body.page-id-85 .rigo-quiz-fab,        /* mentions légales */
-body.page-id-86 .rigo-quiz-fab,        /* cgv */
-body.page-id-87 .rigo-quiz-fab,        /* politique confidentialité */
-body.page-id-88 .rigo-quiz-fab{        /* livraison-retours */
-  display:none !important;
+/* — Onglets sur mobile : pastilles défilantes sur une ligne, pas une pile centrée — */
+@media (max-width:767px){
+  body.single-product div.product .woocommerce-tabs ul.tabs,
+  body.single-product div.product .woocommerce-tabs ul.wc-tabs{
+    flex-wrap:nowrap !important;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+    margin-left:calc(-1 * var(--rigo-gutter)) !important;
+    margin-right:calc(-1 * var(--rigo-gutter)) !important;
+    padding:0 var(--rigo-gutter) !important;
+  }
+  body.single-product div.product .woocommerce-tabs ul.tabs::-webkit-scrollbar{display:none;}
+  body.single-product div.product .woocommerce-tabs ul.tabs li a,
+  body.single-product div.product .woocommerce-tabs ul.wc-tabs li a{
+    padding:14px 12px !important;
+    white-space:nowrap;
+    text-transform:none !important;
+    letter-spacing:0 !important;
+  }
+  body.single-product div.product .woocommerce-tabs .panel{padding:var(--rigo-sp-5) var(--rigo-sp-4) !important;}
+  body.woocommerce div.product form.cart{flex-wrap:wrap;}
+  body.woocommerce div.product form.cart .single_add_to_cart_button{flex:1 1 180px;min-height:52px;}
+  body.woocommerce div.product .related ul.products,
+  body.woocommerce div.product .upsells ul.products{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--rigo-sp-3);}
 }
 
-/* --- 16.3 Hint pour Brigitte si elle ajoute des pages utilitaires :
-   appliquer la classe `body.page-template-utility` pour bénéficier du
-   layout centré sans avoir à hardcoder les page-id ci-dessus. --- */
-body.page-template-utility .rigo-quiz-fab{
-  display:none !important;
+/* Fil d'Ariane : casse normale, discret */
+.ct-breadcrumbs{
+  --theme-text-transform:none;
+  --theme-font-weight:600;
+  --theme-font-size:var(--rigo-fs-sm);
+  text-transform:none;
 }
-
-/* --- 16.4 Forcer le centrage du content sur les pages utilitaires
-   (Blocksy peut appliquer un `.ct-container-full` qui ne centre pas
-   correctement avec un sidebar imaginaire). --- */
-body.page-id-99 main.site-main,
-body.page-id-85 main.site-main,
-body.page-id-86 main.site-main,
-body.page-id-87 main.site-main,
-body.page-id-88 main.site-main{
-  max-width:none !important;
-  width:100% !important;
-}
-body.page-id-99 main.site-main > *,
-body.page-id-85 main.site-main > *,
-body.page-id-86 main.site-main > *,
-body.page-id-87 main.site-main > *,
-body.page-id-88 main.site-main > *{
-  max-width:var(--rigo-container, 1200px);
-  margin-left:auto;
-  margin-right:auto;
-}
-
-/* --- 16.5 Page title Blocksy auto : on lui redonne du look même quand
-   il n'est pas masqué. Et on le centre. --- */
-body.page-id-99 .page-title,
-body.page-id-99 h1.entry-title,
-body.page-id-99 .ct-page-title-default{
-  text-align:left;
-  max-width:760px;
-  margin-left:auto;
-  margin-right:auto;
-  padding:clamp(28px,4vw,48px) clamp(20px,4vw,40px) 8px;
-}
+.ct-breadcrumbs a:hover{color:var(--rigo-action-dark);}
 
 /* ===========================================================
-   15. SHOP — refonte page /shop (sprint 9, 2026-05-10)
-   Hero éditorial + filtres pills + grid 3 col + cards rénovées.
-   Cf. includes/shop-archive-redesign.php pour le HTML PHP.
+   13. PANIER, COMMANDE, COMPTE — blocs WooCommerce
+   Remplace l'ancienne feuille « rigol-wc-style » collée dans le contenu
+   des pages. Même typographie, mêmes champs, mêmes boutons que le reste.
    =========================================================== */
+body.woocommerce-cart .entry-content,
+body.woocommerce-checkout .entry-content,
+body.woocommerce-account .entry-content{
+  max-width:var(--rigo-container);
+  margin-left:auto;
+  margin-right:auto;
+  padding-left:var(--rigo-gutter);
+  padding-right:var(--rigo-gutter);
+  box-sizing:border-box;
+}
+/* Les blocs occupent toute la largeur du conteneur (pas la colonne de lecture) */
+body.woocommerce-cart .entry-content > *,
+body.woocommerce-checkout .entry-content > *,
+body.woocommerce-account .entry-content > *{max-width:none;}
 
-/* --- 15.1 Hero shop --- */
-.rigo-shop-hero{
-  background:linear-gradient(180deg, var(--rigo-cream-warm) 0%, var(--rigo-cream) 100%);
-  border-bottom:1px solid var(--rigo-border);
-  padding:clamp(40px, 6vw, 72px) 0 clamp(28px, 4vw, 40px);
-  text-align:center;
-  position:relative;
-}
-.rigo-shop-hero::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background-image:
-    radial-gradient(circle at 12% 30%, rgba(139,200,75,.10) 0, transparent 35%),
-    radial-gradient(circle at 88% 70%, rgba(39,180,229,.10) 0, transparent 35%);
-  pointer-events:none;
-}
-.rigo-shop-hero-inner{
-  position:relative;
-  max-width:880px !important;
-  margin:0 auto;
-}
-.rigo-shop-hero-eyebrow{
-  font-family:var(--rigo-script);
-  font-weight:700;
-  font-size:1.15rem;
-  color:var(--rigo-green-dark);
-  margin:0 0 8px;
-}
-.rigo-shop-hero-title{
-  font-family:var(--rigo-serif);
-  font-size:clamp(2.4rem, 5vw, 3.6rem);
-  font-weight:700;
-  letter-spacing:-0.025em;
-  color:var(--rigo-ink);
-  margin:0 0 14px;
-  line-height:1.1;
-}
-.rigo-shop-hero-sub{
-  font-size:clamp(15px, 1.6vw, 17px);
-  line-height:1.55;
-  color:var(--rigo-ink-soft);
-  max-width:640px;
-  margin:0 auto 24px;
-}
-
-/* --- 15.2 Filtres catégorie en pills --- */
-.rigo-shop-filters{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-  justify-content:center;
-  margin:0 0 22px;
-}
-.rigo-shop-filter{
-  display:inline-block;
-  padding:9px 18px;
-  font-family:var(--rigo-sans);
-  font-weight:700;
-  font-size:14px;
-  color:var(--rigo-ink-soft);
-  background:#fff;
-  border:1.5px solid var(--rigo-border);
-  border-radius:var(--rigo-r-pill);
-  text-decoration:none;
-  transition:all 180ms ease;
-  letter-spacing:-0.005em;
-}
-.rigo-shop-filter:hover{
-  color:var(--rigo-green-dark);
-  border-color:var(--rigo-green);
-  background:rgba(92,142,46,.06);
-  transform:translateY(-1px);
-}
-.rigo-shop-filter.is-active{
-  background:var(--rigo-ink);
-  color:#fff;
-  border-color:var(--rigo-ink);
-}
-
-/* --- 15.3 Trust micro-row sous les filtres --- */
-.rigo-shop-hero-trust{
-  display:flex;
-  flex-wrap:wrap;
-  justify-content:center;
-  gap:8px 24px;
-  font-size:13.5px;
-  color:var(--rigo-muted);
-}
-.rigo-shop-hero-trust strong{color:var(--rigo-ink); font-weight:700;}
-
-/* --- 15.4 Grid produits (override Blocksy) --- */
-body.woocommerce.archive ul.products,
-body.post-type-archive-product ul.products,
-body.tax-product_cat ul.products{
-  display:grid !important;
-  grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)) !important;
-  gap:24px !important;
-  list-style:none !important;
-  padding:32px 0 !important;
-  margin:0 !important;
-}
-body.woocommerce.archive ul.products::before,
-body.woocommerce.archive ul.products::after{display:none !important;}
-body.woocommerce.archive ul.products li.product{
-  width:auto !important;
-  margin:0 !important;
-  float:none !important;
-  display:flex !important;
-  flex-direction:column !important;
-}
-
-/* --- 15.5 Card produit redesignée --- */
-body.woocommerce.archive ul.products li.product{
-  background:#fff;
+/* — Colonnes principale + récapitulatif — */
+.wc-block-components-sidebar-layout{gap:var(--rigo-sp-6);}
+.wc-block-components-sidebar-layout .wc-block-components-main{padding-right:0;}
+.wc-block-components-sidebar,
+.wp-block-woocommerce-checkout-order-summary-block{
+  background:var(--rigo-paper);
   border:1px solid var(--rigo-border);
   border-radius:var(--rigo-r-md);
-  padding:0 !important;
-  overflow:hidden;
-  transition:transform 220ms cubic-bezier(.2,.8,.2,1), box-shadow 220ms ease, border-color 200ms ease;
   box-shadow:var(--rigo-sh-1);
 }
-body.woocommerce.archive ul.products li.product:hover{
-  transform:translateY(-4px);
-  box-shadow:var(--rigo-sh-3);
-  border-color:var(--rigo-green);
-}
-
-/* Image carrée fond cream — même taille pour toutes les cards même
-   sans photo (placeholder). object-fit:contain pour ne pas crop les
-   packagings rectangulaires des jeux. */
-body.woocommerce.archive ul.products li.product .woocommerce-loop-product__link,
-body.woocommerce.archive ul.products li.product > a:first-of-type{
-  display:block;
-  position:relative;
-  background:var(--rigo-cream);
-  aspect-ratio:1 / 1;
-  overflow:hidden;
-  border-bottom:1px solid var(--rigo-border);
-}
-body.woocommerce.archive ul.products li.product img{
-  width:100% !important;
-  height:100% !important;
-  object-fit:contain !important;
-  padding:18px;
-  margin:0 !important;
-  display:block;
-  transition:transform 350ms cubic-bezier(.2,.8,.2,1);
-  background:transparent;
-}
-body.woocommerce.archive ul.products li.product:hover img{
-  transform:scale(1.04);
-}
-/* Placeholder (pas d'image) : garder la zone carrée + indicatif visuel */
-body.woocommerce.archive ul.products li.product .woocommerce-LoopProduct-link::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:var(--rigo-cream) url("https://rigolettres.fr/wp-content/uploads/2026/04/logo-pato-provisoire.png") center/80px no-repeat;
-  opacity:.18;
-  z-index:0;
-}
-body.woocommerce.archive ul.products li.product img + *{position:relative; z-index:1;}
-body.woocommerce.archive ul.products li.product .woocommerce-LoopProduct-link img{position:relative; z-index:1;}
-
-/* Body de la card (titre + niveau + prix + ATC) */
-body.woocommerce.archive ul.products li.product .rigo-card-body,
-body.woocommerce.archive ul.products li.product > a + *,
-body.woocommerce.archive ul.products li.product{
-  /* fallback container — on cible aussi quand .rigo-card-body n'est pas wrappé */
-}
-body.woocommerce.archive ul.products li.product .rigo-card-body{
-  padding:18px 18px 0;
-  display:flex;
-  flex-direction:column;
-  flex:1;
-}
-
-.rigo-card-eyebrow{
-  display:inline-block;
-  font-size:11px;
-  font-weight:800;
-  text-transform:uppercase;
-  letter-spacing:.08em;
-  color:var(--rigo-green-dark);
-  background:rgba(92,142,46,.10);
-  padding:4px 10px;
-  border-radius:var(--rigo-r-pill);
-  margin-bottom:8px;
-  width:fit-content;
-}
-
-body.woocommerce.archive ul.products li.product .woocommerce-loop-product__title{
-  font-family:var(--rigo-serif) !important;
-  font-size:1.05rem !important;
-  font-weight:700;
+.wc-block-components-sidebar{padding:var(--rigo-sp-5);}
+.wc-block-components-sidebar .wp-block-woocommerce-checkout-order-summary-block{border:0;box-shadow:none;padding:0;}
+.wc-block-cart__totals-title,
+.wc-block-components-checkout-order-summary__title-text,
+.wc-block-components-title.wc-block-components-title{
   color:var(--rigo-ink);
-  line-height:1.3;
-  margin:0 0 10px !important;
-  padding:0 !important;
-  letter-spacing:-0.005em;
+  font-family:var(--rigo-sans);
+  font-size:var(--rigo-fs-h3);
+  font-weight:800;
+  letter-spacing:-.005em;
+  text-transform:none;
 }
 
-body.woocommerce.archive ul.products li.product .price{
-  font-family:var(--rigo-sans) !important;
-  font-size:1.25rem !important;
-  font-weight:800;
-  color:var(--rigo-ink);
-  margin:auto 0 14px !important;
-}
-body.woocommerce.archive ul.products li.product .price del{
+/* — Lignes du panier — */
+table.wc-block-cart-items,
+table.wc-block-cart-items th,
+table.wc-block-cart-items td{border-color:var(--rigo-border);}
+table.wc-block-cart-items .wc-block-cart-items__header{
   color:var(--rigo-muted);
-  font-size:.85em;
-  font-weight:600;
-  margin-right:6px;
+  font-size:.75rem;
+  font-weight:800;
+  letter-spacing:.08em;
+  text-transform:uppercase;
 }
-body.woocommerce.archive ul.products li.product .price ins{
-  background:transparent;
-  color:var(--rigo-accent);
+.wc-block-cart-item__image img{
+  border:1px solid var(--rigo-border);
+  border-radius:var(--rigo-r-sm);
+  background:var(--rigo-cream);
+}
+.wc-block-components-product-name{
+  color:var(--rigo-ink);
+  font-size:1rem;
+  font-weight:800;
   text-decoration:none;
 }
+.wc-block-components-product-name:hover{color:var(--rigo-action-dark);text-decoration:underline;}
+.wc-block-components-product-metadata{color:var(--rigo-muted);font-size:var(--rigo-fs-sm);}
+.wc-block-components-product-price,
+.wc-block-formatted-money-amount,
+.wc-block-components-totals-item__value{color:var(--rigo-ink);font-weight:800;}
+.wc-block-components-totals-item__label{color:var(--rigo-ink-soft);}
+.wc-block-components-totals-footer-item .wc-block-components-totals-item__label,
+.wc-block-components-totals-footer-item .wc-block-components-totals-item__value{
+  color:var(--rigo-ink);
+  font-size:1.1875rem;
+  font-weight:800;
+}
+.wc-block-components-totals-wrapper,
+.wc-block-components-panel,
+.wc-block-components-order-summary-item{border-color:var(--rigo-border);}
+.wc-block-cart-item__remove-link{color:var(--rigo-muted);font-size:var(--rigo-fs-sm);}
+.wc-block-cart-item__remove-link:hover{color:var(--rigo-danger);}
 
-/* CTA "Ajouter" full-width pill bleu */
-body.woocommerce.archive ul.products li.product .button,
-body.woocommerce.archive ul.products li.product a.add_to_cart_button{
-  display:flex !important;
-  width:calc(100% - 36px) !important;
-  margin:0 18px 18px !important;
-  justify-content:center;
+/* Sélecteur de quantité */
+.wc-block-components-quantity-selector{
+  min-height:44px;
+  background:var(--rigo-paper);
+  border:1.5px solid var(--rigo-field-border);
+  border-radius:var(--rigo-r-sm);
+}
+.wc-block-components-quantity-selector::after{display:none;}
+.wc-block-components-quantity-selector .wc-block-components-quantity-selector__input{
+  min-height:0;
+  border:0;
+  box-shadow:none;
+  color:var(--rigo-ink);
+  font-weight:800;
+}
+.wc-block-components-quantity-selector .wc-block-components-quantity-selector__button{
+  min-width:40px;
+  color:var(--rigo-ink);
+  opacity:1;
+}
+.wc-block-components-quantity-selector .wc-block-components-quantity-selector__button:hover{
+  background:var(--rigo-action-soft);
+  color:var(--rigo-action-dark);
+}
+
+/* — Bouton principal — */
+.wc-block-cart__submit-button,
+.wc-block-components-checkout-place-order-button{
+  width:100%;
+  min-height:56px;
+  font-size:1.0625rem;
+}
+.wc-block-cart__submit-container{padding:0;}
+
+/* — Étapes de commande — */
+.wc-block-components-checkout-step{
+  margin-bottom:var(--rigo-sp-5);
+  padding:var(--rigo-sp-5);
+  background:var(--rigo-paper);
+  border:1px solid var(--rigo-border);
+  border-radius:var(--rigo-r-md);
+  box-shadow:var(--rigo-sh-1);
+}
+.wc-block-components-checkout-step__heading{margin:0 0 var(--rigo-sp-3);}
+.wc-block-components-checkout-step__description{color:var(--rigo-muted);font-size:var(--rigo-fs-sm);}
+.wc-block-components-checkout-step__container::after{display:none;}
+.wc-block-checkout__form .wc-block-components-checkout-step::after{display:none;}
+
+/* Champs à libellé flottant */
+.wc-block-components-text-input input,
+.wc-block-components-text-input input[type=text],
+.wc-block-components-text-input input[type=email],
+.wc-block-components-text-input input[type=tel],
+.wc-block-components-textarea,
+.wc-blocks-components-select .wc-blocks-components-select__container,
+.wc-block-components-combobox .wc-block-components-combobox-control input{
+  background-color:var(--rigo-paper);
+  border:1.5px solid var(--rigo-field-border);
+  border-radius:var(--rigo-r-sm);
+  color:var(--rigo-ink);
+  font-family:var(--rigo-sans);
+  font-size:1rem;
+}
+.wc-block-components-text-input input:focus,
+.wc-block-components-textarea:focus,
+.wc-blocks-components-select .wc-blocks-components-select__select:focus,
+.wc-block-components-combobox .wc-block-components-combobox-control input:focus{
+  border-color:var(--rigo-action);
+  box-shadow:0 0 0 3px rgba(17,115,154,.22);
+  outline:none;
+}
+.wc-block-components-text-input label,
+.wc-blocks-components-select .wc-blocks-components-select__label,
+.wc-block-components-combobox .wc-block-components-combobox-control label{
+  color:var(--rigo-muted);
+  font-family:var(--rigo-sans);
+  font-weight:600;
+}
+
+/* Choix (livraison, paiement) */
+.wc-block-components-radio-control__option{color:var(--rigo-ink);}
+.wc-block-components-radio-control--highlight-checked .wc-block-components-radio-control-accordion-option--checked-option-highlighted,
+.wc-block-components-radio-control--highlight-checked label.wc-block-components-radio-control__option--checked-option-highlighted{
+  box-shadow:inset 0 0 0 2px var(--rigo-action);
+  border-radius:var(--rigo-r-sm);
+}
+.wc-block-components-radio-control .wc-block-components-radio-control__input:checked{border-color:var(--rigo-action);}
+.wc-block-components-radio-control .wc-block-components-radio-control__input:checked::before{background:var(--rigo-action);}
+.wc-block-components-checkbox .wc-block-components-checkbox__input[type=checkbox]{
+  border:1.5px solid var(--rigo-field-border);
+  border-radius:5px;
+}
+.wc-block-components-checkbox .wc-block-components-checkbox__input[type=checkbox]:checked{
+  background:var(--rigo-action);
+  border-color:var(--rigo-action);
+}
+.wc-block-components-checkbox .wc-block-components-checkbox__mark{fill:#fff;}
+.wc-block-checkout__terms,
+.wc-block-components-checkbox__label{color:var(--rigo-ink-soft);font-size:var(--rigo-fs-sm);}
+.wc-block-components-button.is-link,
+.wc-block-components-panel__button,
+.wc-block-components-totals-coupon-link{color:var(--rigo-action);}
+
+/* — Panier vide — */
+.wp-block-woocommerce-empty-cart-block{
+  padding:var(--rigo-sp-7) var(--rigo-sp-5);
+  background:var(--rigo-paper);
+  border:1px dashed var(--rigo-field-border);
+  border-radius:var(--rigo-r-lg);
+  text-align:center;
+}
+.wp-block-woocommerce-empty-cart-block .wc-block-cart__empty-cart__title{
+  font-family:var(--rigo-serif);
+  font-size:var(--rigo-fs-h2);
+}
+.wp-block-woocommerce-empty-cart-block .wc-block-cart__empty-cart__title::before{display:none;}
+.wp-block-woocommerce-empty-cart-block h2:not(.wc-block-cart__empty-cart__title){
+  margin-top:var(--rigo-sp-7);
+  font-size:var(--rigo-fs-h3);
+  font-family:var(--rigo-sans);
+  font-weight:800;
+}
+.wp-block-woocommerce-empty-cart-block .wp-block-separator{
+  max-width:120px;
+  margin:var(--rigo-sp-6) auto;
+  border-color:var(--rigo-border);
+}
+/* Produits suggérés dans le panier vide : mêmes cartes que la boutique */
+.wc-block-grid__products{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(min(100%,200px),1fr));
+  gap:var(--rigo-sp-4);
+  margin:var(--rigo-sp-5) 0 0;
+  padding:0;
+}
+.wc-block-grid__products .wc-block-grid__product{
+  display:flex;
+  flex-direction:column;
+  width:auto;
+  max-width:none;
+  margin:0;
+  padding:0 0 var(--rigo-sp-4);
+  overflow:hidden;
+  background:var(--rigo-paper);
+  border:1px solid var(--rigo-border);
+  border-radius:var(--rigo-r-md);
+  box-shadow:var(--rigo-sh-1);
+  text-align:left;
+}
+.wc-block-grid__product .wc-block-grid__product-image{
+  margin:0 0 var(--rigo-sp-3);
+  background:var(--rigo-cream);
+  border-bottom:1px solid var(--rigo-border);
+}
+.wc-block-grid__product .wc-block-grid__product-image img{
+  width:100%;
+  aspect-ratio:1 / 1;
+  padding:var(--rigo-sp-3);
+  object-fit:contain;
+  box-sizing:border-box;
+}
+.wc-block-grid__product .wc-block-grid__product-title{
+  margin:0;
+  padding:0 var(--rigo-sp-4);
+  color:var(--rigo-ink);
+  font-family:var(--rigo-sans);
+  font-size:var(--rigo-fs-md);
+  font-weight:800;
+  line-height:1.3;
+}
+.wc-block-grid__product .wc-block-grid__product-link{text-decoration:none;}
+.wc-block-grid__product .wc-block-grid__product-price{
+  margin:var(--rigo-sp-2) 0 auto;
+  padding:0 var(--rigo-sp-4);
+  font-size:1.0625rem;
+}
+.wc-block-grid__product .wc-block-grid__product-add-to-cart{margin:var(--rigo-sp-3) var(--rigo-sp-4) 0;}
+.wc-block-grid__product .wc-block-grid__product-add-to-cart .wp-block-button__link{
+  width:100%;
+  min-height:44px;
+  padding:8px 12px;
+  font-size:var(--rigo-fs-sm);
+}
+
+/* — Mon compte — */
+.woocommerce-account .woocommerce{
+  display:grid;
+  gap:var(--rigo-sp-6);
+  align-items:start;
+}
+@media (min-width:900px){
+  .woocommerce-account.logged-in .woocommerce{grid-template-columns:240px minmax(0,1fr);}
+}
+.woocommerce-account .woocommerce > .woocommerce-notices-wrapper{grid-column:1 / -1;}
+.woocommerce-MyAccount-navigation,
+.woocommerce-MyAccount-content{float:none;width:auto;}
+.woocommerce-MyAccount-navigation ul{
+  display:flex;
+  flex-wrap:wrap;
+  gap:var(--rigo-sp-2);
+  margin:0;
+  padding:0;
+  list-style:none;
+}
+@media (min-width:900px){
+  .woocommerce-MyAccount-navigation ul{flex-direction:column;gap:2px;}
+}
+.woocommerce-MyAccount-navigation ul li{margin:0;padding:0;border:0;}
+.woocommerce-MyAccount-navigation ul li a{
+  display:flex;
   align-items:center;
-  background:var(--rigo-sky) !important;
-  color:#fff !important;
-  border:1.5px solid var(--rigo-sky) !important;
-  border-radius:var(--rigo-r-pill) !important;
-  padding:12px 18px !important;
-  font-weight:700 !important;
-  font-size:14px !important;
-  box-shadow:0 4px 12px rgba(30,159,203,.20);
-  transition:all 200ms ease;
+  min-height:44px;
+  padding:0 16px;
+  border-radius:var(--rigo-r-sm);
+  color:var(--rigo-ink);
+  font-weight:700;
+  text-decoration:none;
 }
-body.woocommerce.archive ul.products li.product .button:hover,
-body.woocommerce.archive ul.products li.product a.add_to_cart_button:hover{
-  background:var(--rigo-sky-dark) !important;
-  border-color:var(--rigo-sky-dark) !important;
-  transform:translateY(-1px);
-  box-shadow:0 8px 18px rgba(30,159,203,.28) !important;
-}
-/* Loader pendant l'ajout AJAX */
-body.woocommerce.archive ul.products li.product .button.loading{
-  opacity:.65; cursor:wait;
-}
-body.woocommerce.archive ul.products li.product .button.added::after{
-  content:" ✓"; font-weight:800;
-}
+.woocommerce-MyAccount-navigation ul li a:hover{background:var(--rigo-action-soft);color:var(--rigo-action-dark);}
+.woocommerce-MyAccount-navigation ul li.is-active a{background:var(--rigo-ink);color:#fff;}
 
-/* Container principal du shop : ajouter de l'air */
-body.post-type-archive-product .container,
-body.tax-product_cat .container{
-  padding-bottom:64px;
+/* Connexion / inscription : une carte centrée */
+.woocommerce-account:not(.logged-in) .woocommerce{max-width:480px;margin:0 auto;}
+.woocommerce form.login,
+.woocommerce form.register,
+.woocommerce form.lost_reset_password,
+.woocommerce-MyAccount-content{
+  margin:0;
+  padding:var(--rigo-sp-5);
+  background:var(--rigo-paper);
+  border:1px solid var(--rigo-border);
+  border-radius:var(--rigo-r-md);
+  box-shadow:var(--rigo-sh-1);
 }
+.woocommerce-account .woocommerce h2{font-size:var(--rigo-fs-h2);margin-bottom:var(--rigo-sp-4);}
+.woocommerce form .form-row{margin:0 0 var(--rigo-sp-4);padding:0;}
+.woocommerce form .form-row label{display:block;margin-bottom:6px;}
+.woocommerce form.login .woocommerce-form-login__rememberme{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:var(--rigo-sp-4);
+  font-weight:600;
+}
+.woocommerce form.login .button,
+.woocommerce form.register .button{width:100%;}
+.woocommerce .woocommerce-LostPassword{margin:var(--rigo-sp-4) 0 0;font-size:var(--rigo-fs-sm);text-align:center;}
+.woocommerce .show-password-input{top:50%;transform:translateY(-50%);}
 
-/* Masque le titre par défaut WC (.woocommerce-products-header) puisque
-   notre hero le remplace. */
-body.woocommerce.archive .woocommerce-products-header{
-  display:none !important;
+/* Tableaux WooCommerce classiques (commandes, adresses) */
+.woocommerce table.shop_table{
+  width:100%;
+  border:1px solid var(--rigo-border);
+  border-radius:var(--rigo-r-sm);
+  border-collapse:separate;
+  border-spacing:0;
+  font-size:var(--rigo-fs-md);
 }
-/* Masque aussi le tri WC par défaut (peut être réintégré plus tard avec
-   un dropdown stylé custom) et le compteur "X résultats". */
-body.woocommerce.archive .woocommerce-result-count,
-body.woocommerce.archive .woocommerce-ordering{
-  display:none !important;
-}
-
-/* --- 15.6 Mobile shop --- */
-@media (max-width:640px){
-  body.woocommerce.archive ul.products,
-  body.post-type-archive-product ul.products,
-  body.tax-product_cat ul.products{
-    grid-template-columns:repeat(2, 1fr) !important;
-    gap:14px !important;
-    padding:20px 0 !important;
-  }
-  body.woocommerce.archive ul.products li.product .rigo-card-body{
-    padding:12px 12px 0;
-  }
-  body.woocommerce.archive ul.products li.product .woocommerce-loop-product__title{
-    font-size:.95rem !important;
-  }
-  body.woocommerce.archive ul.products li.product .price{
-    font-size:1.05rem !important;
-    margin-bottom:10px !important;
-  }
-  body.woocommerce.archive ul.products li.product .button,
-  body.woocommerce.archive ul.products li.product a.add_to_cart_button{
-    width:calc(100% - 24px) !important;
-    margin:0 12px 12px !important;
-    padding:10px 12px !important;
-    font-size:13px !important;
-  }
-  .rigo-shop-filters{gap:6px;}
-  .rigo-shop-filter{padding:7px 14px; font-size:13px;}
-  .rigo-shop-hero-trust{gap:4px 14px; font-size:12.5px;}
+.woocommerce table.shop_table th,
+.woocommerce table.shop_table td{padding:12px 14px;border-color:var(--rigo-border);}
+.woocommerce table.shop_table th{background:var(--rigo-cream-warm);color:var(--rigo-ink);font-weight:800;}
+@media (max-width:767px){
+  .woocommerce-MyAccount-content{overflow-x:auto;-webkit-overflow-scrolling:touch;}
 }
 
 /* ===========================================================
-   10. RESPONSIVE — mobile
+   14. PAGES DE CONTENU, BLOG, UTILITAIRES
    =========================================================== */
-@media (max-width:640px){
-  body{font-size:16px;}
-  h1, .h1{font-size:clamp(2rem,9vw,2.6rem);}
-  h2, .h2{font-size:clamp(1.55rem,6.4vw,2rem);}
-  section{padding-top:48px;padding-bottom:48px;}
 
-  body.woocommerce div.product .product_title{font-size:clamp(1.8rem,7vw,2.4rem);}
-  body.woocommerce div.product p.price{font-size:1.4rem;}
-  body.woocommerce div.product .woocommerce-tabs .panel{padding:20px;}
-  body.woocommerce div.product .related ul.products,
-  body.woocommerce div.product .upsells ul.products{
-    grid-template-columns:repeat(2,1fr);
-    gap:12px;
+/* — Page contact — */
+.rigo-contact-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));
+  gap:var(--rigo-sp-5);
+  margin:var(--rigo-sp-5) 0 var(--rigo-sp-6);
+}
+.rigo-contact-card{
+  padding:var(--rigo-sp-5);
+  background:var(--rigo-paper);
+  border:1px solid var(--rigo-border);
+  border-radius:var(--rigo-r-md);
+  box-shadow:var(--rigo-sh-1);
+}
+.entry-content .rigo-contact-card h2{
+  margin:0 0 var(--rigo-sp-3);
+  font-family:var(--rigo-sans);
+  font-size:var(--rigo-fs-h3);
+  font-weight:800;
+  letter-spacing:-.005em;
+}
+.rigo-contact-card p{margin:0 0 .8em;font-size:var(--rigo-fs-md);line-height:1.6;}
+.rigo-contact-card p:last-child{margin-bottom:0;}
+.rigo-contact-link a{font-weight:800;overflow-wrap:anywhere;}
+
+/* — Blog : cartes d'articles, commentaires — */
+.entries .entry-card{
+  background:var(--rigo-paper);
+  border:1px solid var(--rigo-border);
+  border-radius:var(--rigo-r-md);
+  box-shadow:var(--rigo-sh-1);
+}
+.entries .entry-card .entry-title{
+  font-family:var(--rigo-sans);
+  font-size:var(--rigo-fs-h3);
+  font-weight:800;
+  line-height:var(--rigo-lh-snug);
+}
+.entries .entry-card .entry-title a{color:var(--rigo-ink);text-decoration:none;}
+.entries .entry-card .entry-title a:hover{color:var(--rigo-action-dark);}
+.entry-meta{color:var(--rigo-muted);}
+.ct-comments-title,
+.comment-reply-title{
+  font-family:var(--rigo-sans);
+  font-size:var(--rigo-fs-h3);
+  font-weight:800;
+}
+.ct-comments-container{background:transparent;}
+
+/* — 404 et recherche — */
+body.error404 .site-main .entry-content,
+.ct-no-results .entry-content{
+  max-width:520px;
+  margin:0 auto;
+  text-align:center;
+}
+.ct-search-form{--theme-form-field-height:52px;}
+
+/* ===========================================================
+   15. ACCESSIBILITÉ & PRÉFÉRENCES UTILISATEUR
+   =========================================================== */
+/* Focus clavier : un seul anneau, visible sur clair comme sur foncé */
+:focus-visible{
+  outline:3px solid var(--rigo-focus);
+  outline-offset:3px;
+  border-radius:4px;
+}
+.btn:focus-visible,
+.button:focus-visible,
+.wp-block-button__link:focus-visible,
+.wc-block-components-button:focus-visible,
+button.single_add_to_cart_button:focus-visible,
+.rigo-shop-filter:focus-visible,
+.rigo-contact-fab:focus-visible,
+.rigo-quiz-fab:focus-visible{border-radius:var(--rigo-r-pill);}
+/* Les champs ont leur propre halo (section 5) */
+input:focus-visible, textarea:focus-visible, select:focus-visible{outline:none;}
+/* Pas d'anneau au clic souris sur les conteneurs focalisables par script */
+[tabindex="-1"]:focus{outline:none;}
+
+/* Surfaces sombres : anneau clair */
+.mega-panel, .mobile-menu-inner{--rigo-focus:var(--rigo-action);}
+#rigo-cart-drawer, #rigo-upsell-drawer{--rigo-focus:var(--rigo-action);}
+
+/* Animations : on respecte « réduire les animations » */
+@media (prefers-reduced-motion:reduce){
+  *, *::before, *::after{
+    animation-duration:.01ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.01ms !important;
+    scroll-behavior:auto !important;
   }
-  body.woocommerce div.product form.cart{flex-direction:column;align-items:stretch;}
-  body.woocommerce div.product .quantity input.qty{width:100%;}
+}
+@media (prefers-reduced-motion:no-preference){
+  html{scroll-behavior:smooth;}
+}
+
+/* Impression : contenu seul */
+@media print{
+  .site-header, .rigo-promo-bar, .site-footer, .rigo-contact-fab, .rigo-quiz-fab,
+  .mobile-menu, .mega-panel, #rigo-sticky-atc, .rigo-trust-strip{display:none !important;}
+  body{background:#fff;}
 }

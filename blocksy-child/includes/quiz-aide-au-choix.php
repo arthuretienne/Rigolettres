@@ -214,47 +214,16 @@ add_action('wp_footer', function () {
 
     <style id="rigo-quiz-css">
     /* ── Floating CTA ────────────────────────────────────────────────────── */
-    .rigo-quiz-fab {
-        position: fixed;
-        bottom: calc(24px + env(safe-area-inset-bottom, 0px));
-        left: 16px;
-        z-index: 750;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        background: #F7F4ED;
-        color: #374151;
-        border: 2px solid #E7E2D5;
-        border-radius: 9999px;
-        padding: 10px 18px 10px 14px;
-        font-family: "Nunito", sans-serif;
-        font-size: 13px;
-        font-weight: 700;
-        box-shadow: 0 4px 16px rgba(0,0,0,.12);
-        cursor: pointer;
-        transition: transform 200ms, box-shadow 200ms, background 200ms;
-        white-space: nowrap;
-    }
-    .rigo-quiz-fab:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 24px rgba(0,0,0,.18);
-        background: #fff;
-    }
-    .rigo-quiz-fab-icon { font-size: 18px; line-height: 1; }
-    @media (max-width: 600px) {
-        .rigo-quiz-fab {
-            bottom: calc(140px + env(safe-area-inset-bottom, 0px)); /* au-dessus sticky ATC */
-            font-size: 12px;
-            padding: 8px 14px 8px 10px;
-        }
-        .rigo-quiz-fab-label { max-width: 140px; overflow: hidden; text-overflow: ellipsis; }
-    }
+
+
+
+    
 
     /* ── Modal ───────────────────────────────────────────────────────────── */
     .rigo-quiz-modal {
         position: fixed;
         inset: 0;
-        z-index: 10000;
+        z-index: var(--rigo-z-modal);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -269,7 +238,7 @@ add_action('wp_footer', function () {
     .rigo-quiz-backdrop {
         position: absolute;
         inset: 0;
-        background: rgba(31, 41, 55, .72);
+        background: rgba(42,29,15, .72);
         backdrop-filter: blur(4px);
         -webkit-backdrop-filter: blur(4px);
     }
@@ -283,8 +252,8 @@ add_action('wp_footer', function () {
         max-height: 90vh;
         overflow-y: auto;
         box-shadow: 0 24px 64px rgba(0,0,0,.32);
-        font-family: "Nunito", sans-serif;
-        color: #374151;
+        font-family: var(--rigo-sans);
+        color: var(--rigo-ink);
         animation: rigoQuizSlide 280ms cubic-bezier(.2,.8,.2,1);
     }
     @keyframes rigoQuizSlide {
@@ -298,20 +267,20 @@ add_action('wp_footer', function () {
         width: 32px;
         height: 32px;
         border: 0;
-        background: #F7F4ED;
+        background: var(--rigo-cream-warm);
         border-radius: 50%;
         font-size: 20px;
         line-height: 1;
         cursor: pointer;
-        color: #6B7280;
+        color: var(--rigo-muted);
         transition: background 150ms, transform 150ms;
     }
-    .rigo-quiz-close:hover { background: #E7E2D5; transform: rotate(90deg); }
+    .rigo-quiz-close:hover { background: var(--rigo-border); transform: rotate(90deg); }
 
     /* Progress */
     .rigo-quiz-progress {
         height: 4px;
-        background: #F7F4ED;
+        background: var(--rigo-cream-warm);
         border-radius: 2px;
         margin: 0 0 28px;
         overflow: hidden;
@@ -319,7 +288,7 @@ add_action('wp_footer', function () {
     .rigo-quiz-progress-bar {
         height: 100%;
         width: 33%;
-        background: linear-gradient(90deg, #27B4E5, #68a033);
+        background: linear-gradient(90deg, var(--rigo-action), var(--rigo-green-dark));
         border-radius: 2px;
         transition: width 300ms cubic-bezier(.2,.8,.2,1);
     }
@@ -332,20 +301,20 @@ add_action('wp_footer', function () {
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: .12em;
-        color: #27B4E5;
+        color: var(--rigo-action);
         margin-bottom: 8px;
     }
     .rigo-quiz-box h2 {
-        font-family: "Kalam", cursive;
+        font-family: var(--rigo-serif);
         font-size: 28px;
         font-weight: 700;
-        color: #2D2420;
+        color: var(--rigo-ink);
         margin: 0 0 8px;
         line-height: 1.2;
     }
     .rigo-quiz-sub {
         font-size: 14px;
-        color: #6B7280;
+        color: var(--rigo-muted);
         margin: 0 0 24px;
     }
 
@@ -364,8 +333,8 @@ add_action('wp_footer', function () {
         align-items: flex-start;
         gap: 4px;
         padding: 16px;
-        background: #F7F4ED;
-        border: 2px solid #E7E2D5;
+        background: var(--rigo-cream-warm);
+        border: 2px solid var(--rigo-border);
         border-radius: 12px;
         cursor: pointer;
         text-align: left;
@@ -374,23 +343,23 @@ add_action('wp_footer', function () {
     }
     .rigo-quiz-option:hover {
         background: #fff;
-        border-color: #27B4E5;
+        border-color: var(--rigo-action);
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(39, 180, 229, .15);
+        box-shadow: 0 4px 12px rgba(17,115,154, .15);
     }
     .rigo-quiz-option.selected {
-        background: #E8F6FD;
-        border-color: #27B4E5;
+        background: var(--rigo-action-soft);
+        border-color: var(--rigo-action);
     }
     .rigo-quiz-option-emoji { font-size: 22px; line-height: 1; }
     .rigo-quiz-option-title {
         font-weight: 800;
         font-size: 14px;
-        color: #2D2420;
+        color: var(--rigo-ink);
     }
     .rigo-quiz-option-meta {
         font-size: 12px;
-        color: #9CA3AF;
+        color: var(--rigo-muted);
     }
 
     /* Résultat */
@@ -398,7 +367,7 @@ add_action('wp_footer', function () {
         display: grid;
         grid-template-columns: 140px 1fr;
         gap: 20px;
-        background: linear-gradient(135deg, #FFF8E6, #F7F4ED);
+        background: linear-gradient(135deg, #FFF8E6, var(--rigo-cream-warm));
         border: 2px solid #FBCF33;
         border-radius: 14px;
         padding: 20px;
@@ -428,22 +397,22 @@ add_action('wp_footer', function () {
     }
     .rigo-quiz-hero-info { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
     .rigo-quiz-hero-name {
-        font-family: "Kalam", cursive;
+        font-family: var(--rigo-serif);
         font-size: 22px;
         font-weight: 700;
-        color: #2D2420;
+        color: var(--rigo-ink);
         margin: 0;
     }
     .rigo-quiz-hero-short {
         font-size: 13px;
-        color: #4B5563;
+        color: var(--rigo-ink-soft);
         line-height: 1.5;
         margin: 0;
     }
     .rigo-quiz-hero-price {
         font-size: 18px;
         font-weight: 800;
-        color: #68a033;
+        color: var(--rigo-green-dark);
     }
     .rigo-quiz-hero-ctas {
         display: flex;
@@ -467,7 +436,7 @@ add_action('wp_footer', function () {
         font-family: inherit;
     }
     .rigo-quiz-btn-primary {
-        background: #68a033;
+        background: var(--rigo-green-dark);
         color: #fff;
     }
     .rigo-quiz-btn-primary:hover {
@@ -477,21 +446,21 @@ add_action('wp_footer', function () {
     }
     .rigo-quiz-btn-secondary {
         background: transparent;
-        border: 1.5px solid #27B4E5;
-        color: #27B4E5;
+        border: 1.5px solid var(--rigo-action);
+        color: var(--rigo-action);
     }
     .rigo-quiz-btn-secondary:hover {
-        background: #27B4E5;
+        background: var(--rigo-action);
         color: #fff;
     }
 
     .rigo-quiz-alts h3 {
-        font-family: "Nunito", sans-serif;
+        font-family: var(--rigo-sans);
         font-size: 13px;
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: .08em;
-        color: #9CA3AF;
+        color: var(--rigo-muted);
         margin: 20px 0 12px;
     }
     .rigo-quiz-alts-grid {
@@ -504,15 +473,15 @@ add_action('wp_footer', function () {
         gap: 12px;
         align-items: center;
         padding: 12px;
-        background: #F7F4ED;
-        border: 1.5px solid #E7E2D5;
+        background: var(--rigo-cream-warm);
+        border: 1.5px solid var(--rigo-border);
         border-radius: 10px;
         text-decoration: none;
         transition: all 180ms;
     }
     .rigo-quiz-alt:hover {
         background: #fff;
-        border-color: #27B4E5;
+        border-color: var(--rigo-action);
         transform: translateY(-2px);
     }
     .rigo-quiz-alt-img {
@@ -526,13 +495,13 @@ add_action('wp_footer', function () {
     .rigo-quiz-alt-name {
         font-size: 13px;
         font-weight: 700;
-        color: #2D2420;
+        color: var(--rigo-ink);
         margin: 0 0 2px;
         line-height: 1.3;
     }
     .rigo-quiz-alt-price {
         font-size: 13px;
-        color: #68a033;
+        color: var(--rigo-green-dark);
         font-weight: 700;
     }
 
@@ -543,23 +512,23 @@ add_action('wp_footer', function () {
         align-items: center;
         margin-top: 24px;
         padding-top: 18px;
-        border-top: 1px solid #E7E2D5;
+        border-top: 1px solid var(--rigo-border);
         flex-wrap: wrap;
         gap: 10px;
     }
     .rigo-quiz-restart {
         background: transparent;
         border: 0;
-        color: #6B7280;
+        color: var(--rigo-muted);
         font-family: inherit;
         font-size: 13px;
         cursor: pointer;
         padding: 6px 0;
         font-weight: 600;
     }
-    .rigo-quiz-restart:hover { color: #27B4E5; text-decoration: underline; }
+    .rigo-quiz-restart:hover { color: var(--rigo-action); text-decoration: underline; }
     .rigo-quiz-see-all {
-        color: #27B4E5;
+        color: var(--rigo-action);
         font-size: 13px;
         font-weight: 700;
         text-decoration: none;

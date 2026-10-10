@@ -28,7 +28,7 @@ add_action('wp_footer', function () {
     $product_id = $product->get_id();
     $nonce = wp_create_nonce('wc_store_api');
     ?>
-    <div id="rigo-sticky-atc" role="region" aria-label="Ajouter au panier" style="display:none">
+    <div id="rigo-sticky-atc" role="region" aria-label="Ajouter au panier">
       <div class="rigo-sticky-inner">
         <div class="rigo-sticky-info">
           <span class="rigo-sticky-name"><?php echo $name; ?></span>
@@ -42,11 +42,11 @@ add_action('wp_footer', function () {
 
     <style>
     #rigo-sticky-atc {
-      position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: var(--rigo-z-sticky);
       background: #fff;
-      border-top: 2px solid #E7E2D5;
-      box-shadow: 0 -4px 20px rgba(31,41,55,.12);
-      padding: 12px 16px 16px;
+      border-top: 2px solid var(--rigo-border);
+      box-shadow: 0 -4px 20px rgba(42,29,15,.12);
+      padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
       transform: translateY(100%);
       transition: transform .32s cubic-bezier(.22,.61,.36,1);
       will-change: transform;
@@ -63,32 +63,32 @@ add_action('wp_footer', function () {
     }
     .rigo-sticky-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
     .rigo-sticky-name {
-      font-family: "Nunito", sans-serif;
+      font-family: var(--rigo-sans);
       font-weight: 800; font-size: 14px;
-      color: #1F2937;
+      color: var(--rigo-ink);
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     .rigo-sticky-price {
-      font-family: "Nunito", sans-serif;
+      font-family: var(--rigo-sans);
       font-weight: 700; font-size: 15px;
-      color: #27B4E5;
+      color: var(--rigo-action);
     }
     .rigo-sticky-btn {
       flex-shrink: 0;
-      background: #27B4E5; color: #fff;
-      font-family: "Nunito", sans-serif;
+      background: var(--rigo-action); color: #fff;
+      font-family: var(--rigo-sans);
       font-weight: 800; font-size: 14px;
       border: 0; border-radius: 9999px;
       padding: 12px 20px;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(39,180,229,.4);
+      box-shadow: 0 4px 12px rgba(17,115,154,.4);
       transition: background .2s, transform .15s, box-shadow .2s;
       white-space: nowrap;
     }
-    .rigo-sticky-btn:hover { background: #1E92BC; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(39,180,229,.5); }
+    .rigo-sticky-btn:hover { background: var(--rigo-action-dark); transform: translateY(-1px); box-shadow: 0 6px 16px rgba(17,115,154,.5); }
     .rigo-sticky-btn:active { transform: scale(.97); }
     .rigo-sticky-btn.is-loading { opacity: .7; pointer-events: none; }
-    .rigo-sticky-btn.is-added { background: #8BC84B; }
+    .rigo-sticky-btn.is-added { background: var(--rigo-green); }
     </style>
 
     <script>
@@ -111,6 +111,8 @@ add_action('wp_footer', function () {
         if (shouldShow !== showing) {
           showing = shouldShow;
           bar.classList.toggle('is-visible', showing);
+          // Le dock flottant (contact, quiz) remonte au-dessus de la barre
+          document.documentElement.style.setProperty('--rigo-bottom-bar', showing ? bar.offsetHeight + 'px' : '0px');
         }
       }
 

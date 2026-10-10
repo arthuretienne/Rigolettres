@@ -11,15 +11,15 @@ if (!defined('ABSPATH')) exit;
  *
  * Bandeau inséré juste avant le footer : Fabriqué FR / Paiement / Retours /
  * Orthophoniste / Expédition.
- * Utilise JS pour s'insérer avant l'élément <footer> existant.
+ * Imprimée sur wp_footer en priorité 4, juste avant le pied de page (priorité 5).
  *
  * Scope : front-end
- * Priority : 40
+ * Priority : 4
  */
 
 add_action('wp_footer', function () {
     ?>
-    <section class="rigo-trust-strip" aria-label="Engagements Rigolettres" style="display:none">
+    <section class="rigo-trust-strip" aria-label="Engagements Rigolettres">
         <div class="rigo-trust-strip-inner">
 
             <div class="rigo-trust-item">
@@ -88,10 +88,10 @@ add_action('wp_footer', function () {
 
     <style id="rigo-trust-strip-css">
     .rigo-trust-strip {
-        background: #F7F4ED;
-        border-top: 1px solid #E7E2D5;
-        border-bottom: 1px solid #E7E2D5;
-        padding: 28px 20px;
+        background: var(--rigo-cream-warm);
+        border-top: 1px solid var(--rigo-border);
+        border-bottom: 1px solid var(--rigo-border);
+        padding: 28px var(--rigo-gutter);
     }
     .rigo-trust-strip-inner {
         max-width: 1200px;
@@ -113,28 +113,28 @@ add_action('wp_footer', function () {
         flex-shrink: 0;
         width: 42px; height: 42px;
         background: #fff;
-        border: 1.5px solid #E7E2D5;
+        border: 1.5px solid var(--rigo-border);
         border-radius: 50%;
         display: flex; align-items: center; justify-content: center;
     }
     .rigo-trust-icon svg {
         width: 20px; height: 20px;
-        stroke: #68a033;
+        stroke: var(--rigo-green-dark);
     }
     .rigo-trust-text {
         display: flex; flex-direction: column; gap: 2px;
     }
     .rigo-trust-text strong {
-        font-family: Nunito, sans-serif;
+        font-family: var(--rigo-sans);
         font-size: 13.5px;
         font-weight: 800;
-        color: #3a2913;
+        color: var(--rigo-ink);
         line-height: 1.3;
     }
     .rigo-trust-text span {
-        font-family: Nunito, sans-serif;
+        font-family: var(--rigo-sans);
         font-size: 12px;
-        color: #6B7280;
+        color: var(--rigo-muted);
         line-height: 1.4;
     }
     @media (max-width: 640px) {
@@ -142,17 +142,5 @@ add_action('wp_footer', function () {
         .rigo-trust-item { min-width: 140px; max-width: none; flex-basis: calc(50% - 12px); }
     }
     </style>
-
-    <script id="rigo-trust-strip-js">
-    (function () {
-        var strip = document.querySelector('.rigo-trust-strip');
-        if (!strip) return;
-        strip.style.display = '';
-        var footer = document.querySelector('footer.site-footer, footer#colophon, footer[class*="footer"], .ct-footer, #footer');
-        if (footer) {
-            footer.parentNode.insertBefore(strip, footer);
-        }
-    })();
-    </script>
     <?php
-}, 40);
+}, 4);

@@ -79,7 +79,7 @@ add_action('woocommerce_after_add_to_cart_button', function () {
         background: #FFF8E6;
         border: 1.5px solid #FBCF33;
         border-radius: 10px;
-        font-family: "Nunito", sans-serif;
+        font-family: var(--rigo-sans);
         font-size: 13.5px;
         color: #7C5800;
         line-height: 1.5;
@@ -87,7 +87,7 @@ add_action('woocommerce_after_add_to_cart_button', function () {
     .rigo-urgence-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
     .rigo-urgence-text { display: flex; flex-direction: column; gap: 3px; }
     .rigo-urgence-label strong { color: #5C4000; }
-    .rigo-urgence-timer { font-size: 12.5px; color: #9CA3AF; }
+    .rigo-urgence-timer { font-size: 12.5px; color: var(--rigo-muted); }
     .rigo-urgence-timer strong { color: #D97706; font-variant-numeric: tabular-nums; }
     </style>
 

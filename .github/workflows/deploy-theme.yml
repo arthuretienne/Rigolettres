@@ -15,6 +15,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Garde-fou : une erreur de syntaxe PHP dans le child theme = écran blanc
+      # sur tout le site. On refuse de déployer si un fichier ne passe pas le lint.
+      - name: Lint PHP
+        run: |
+          find blocksy-child -name '*.php' -print0 | xargs -0 -n1 php -l
+
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
