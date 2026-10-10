@@ -37,6 +37,39 @@
 
 ## 📓 Journal de session
 
+### 2026-10-10 (suite 3) — 🔴 API panier servie depuis le cache + tiroirs qui se marchaient dessus
+
+> Itération 2 de la boucle UI/UX. En testant les interactions (ajout au panier, tiroirs, panier vide), trois défauts fonctionnels sont sortis, dont un sérieux lié à la réactivation du cache du matin.
+
+**🔴 L'API panier de WooCommerce était mise en cache par LiteSpeed**
+- Mesuré en live avec 1 article dans le panier de test : `GET /wp-json/wc/store/v1/cart` → `x-litespeed-cache: hit`, `max-age=604800`, **0 article** renvoyé. La même URL avec un paramètre anti-cache renvoie bien 1 article.
+- Conséquences : pastille panier, tiroir panier et tiroir de confirmation affichaient le panier (vide) du premier visiteur passé après la purge ; l'en-tête `Nonce` de ce visiteur était resservi à tous (un ajout au panier fait avec ce jeton peut être refusé) ; risque d'exposer le panier d'un autre.
+- [x] 🔴 **Corrigé côté thème** : [cache-exclusion-api-panier.php](blocksy-child/includes/cache-exclusion-api-panier.php) marque toute réponse `wc/store/…` comme non cachable (action `litespeed_control_set_nocache` + en-têtes `Cache-Control: no-store, private`). Les 6 lectures du panier des modules portent en plus un paramètre anti-cache.
+- [ ] 🟠 **À faire par Arthur dans wp-admin** (ceinture et bretelles) : LiteSpeed Cache → Cache → onglet *Exclure* → « Ne pas mettre en cache les URI » : ajouter `/wp-json/wc/store`. Ou désactiver « Mettre en cache l'API REST » si rien d'autre n'en dépend.
+
+**🔴 Tiroirs**
+- [x] **Le tiroir panier s'ouvrait à la place d'autres actions.** Son écouteur attrapait tout lien vers `/cart/` et tout `aria-label` contenant « panier » : « Retirer … du panier » (page panier), « Retour au panier » (commande), « Ajouter au panier ». Il ne répond plus qu'à l'icône panier de l'en-tête, et jamais sur le panier ni la commande.
+- [x] **Deux tiroirs s'ouvraient l'un sur l'autre après un ajout au panier** (tiroir panier + tiroir de confirmation, chacun surchargeant `window.fetch`). Seul le tiroir de confirmation s'ouvre. Vérifié en live : ajout depuis une carte de l'accueil → 1 tiroir, pastille à 1.
+- [x] Tiroir de confirmation : l'identifiant du produit ajouté était toujours `null` (mauvais `arguments`), la suggestion pouvait être le produit qu'on venait d'ajouter, et l'ajout de la suggestion partait sans jeton tout en affichant « ✓ Ajouté ! » même en cas de refus.
+- [x] Tiroir panier : piège de focus, focus rendu à l'icône à la fermeture.
+
+**✅ Autres corrections livrées**
+- [x] 🔴 **Panier vide** : la grille « Nouveautés » affichait des cartes de 50 px, texte une lettre par ligne (WooCommerce impose `max-width:25%` à l'intérieur de la grille).
+- [x] 🟠 Boutons des modules (quiz, tiroirs, barre d'achat) : leurs styles propres (vert pour certains, bleu pour d'autres, quatre tailles) sont supprimés, ils utilisent le composant bouton de `style.css`.
+- [x] 🟠 Boutique : 3 colonnes en tablette (2 grosses cartes avant), 4 au maximum en large ; filigrane Pato discret derrière les visuels.
+- [x] 🟠 Accueil : hero en deux colonnes dès 768 px ; sur mobile la note manuscrite ne chevauche plus la légende du second polaroid ; la notification « Ajouté au panier » ne double plus le tiroir de confirmation.
+- [x] 🟡 Panier / commande : marge intérieure du récapitulatif sur mobile, suppression d'article et « Retour au panier » à 44 px.
+
+**🧪 Vérifié en live**
+- Débordement horizontal : **0** sur 15 gabarits aux **11 largeurs** demandées (320, 360, 375, 390, 430, 768, 820, 1024, 1280, 1440, 1920) : accueil, boutique, catégorie, 2 fiches produit, panier, commande, compte, contact, CGV, méthode, article, recherche, 404, témoignages. Un seul H1 sur chacun.
+- Rendu visuel : accueil 820 px et 390 px (toutes les sections), boutique 390 et 768 px, panier 390 px, panier vide 768 px.
+
+**⏳ Reste pour les itérations suivantes**
+- [ ] 🟠 Revérifier après propagation : en-têtes de cache de l'API panier, panier vide, tiroir panier depuis l'en-tête, barre d'achat mobile.
+- [ ] 🟠 Compte client, 404, recherche, contact, pages légales : revue visuelle mobile et tablette.
+- [ ] 🟠 Quiz et popup newsletter : revue visuelle et clavier.
+- [ ] 🟡 Rapatrier le CSS encore inline des modules dans `style.css`.
+
 ### 2026-10-10 (suite 2) — 🎨 Refonte UI/UX : un seul design system, en-tête et mega-menu réécrits
 
 > Mission « audit + refonte UI/UX + responsive » lancée par Arthur, menée en boucle (`/loop`). **Itération 1 livrée et déployée** (4 commits, CI verte). Les itérations suivantes sont listées en bas de cette entrée.

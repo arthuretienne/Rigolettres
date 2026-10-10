@@ -42,8 +42,24 @@ jobs:
             blocksy-child/ \
             ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USER }}/domains/rigolettres.fr/public_html/wp-content/themes/blocksy-child/
 
-      - name: Purger le cache LiteSpeed
+      # La purge est faite par le thème (includes/purge-cache-au-deploiement.php) à la
+      # première requête PHP qui suit un déploiement. On appelle donc une URL jamais
+      # mise en cache pour la déclencher, puis on vérifie que la page d'accueil
+      # servie aux visiteurs référence bien la feuille de style qu'on vient d'envoyer.
+      # (L'ancienne étape appelait /wp-json/litespeed/v1/purge/all, qui répond 404.)
+      - name: Déclencher la purge du cache
         run: |
-          curl -s -o /dev/null -w "%{http_code}" -X POST \
-            "https://rigolettres.fr/wp-json/litespeed/v1/purge/all" \
-            -H "Authorization: Basic $(echo -n '${{ secrets.WP_USER }}:${{ secrets.WP_APP_PASS }}' | base64)"
+          code=$(curl -s -o /dev/null -w "%{http_code}" "https://rigolettres.fr/?rigo-deploy=${{ github.sha }}")
+          echo "Réponse du site : $code"
+          test "$code" = "200"
+
+      - name: Vérifier que la page d'accueil est à jour
+        run: |
+          sleep 20
+          live=$(curl -s "https://rigolettres.fr/" | grep -o 'blocksy-child/style.css?ver=[0-9]*' | head -1)
+          fresh=$(curl -s "https://rigolettres.fr/?rigo-check=${{ github.run_id }}" | grep -o 'blocksy-child/style.css?ver=[0-9]*' | head -1)
+          echo "Page en cache : $live"
+          echo "Page fraîche  : $fresh"
+          if [ "$live" != "$fresh" ]; then
+            echo "::warning::La page d'accueil en cache n'est pas encore à jour (purge LiteSpeed ou CDN Hostinger à vérifier)."
+          fi
