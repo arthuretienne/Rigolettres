@@ -1291,3 +1291,8 @@ body.home .site-main {
     text-align: left;
   }
 }
+
+/* Ajout au panier depuis une carte : le tiroir de confirmation suffit.
+   La notification en haut d'écran ne reste que pour signaler une erreur. */
+.cart-toast:not(.error) { display: none; }
+.cart-toast { z-index: var(--rigo-z-toast); }

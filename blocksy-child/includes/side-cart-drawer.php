@@ -165,6 +165,10 @@ add_action('wp_footer', function () {
       var totalEl = document.getElementById('rigo-drawer-total');
       if (!drawer) return;
 
+      var opener = null;
+
+      function isOpen() { return drawer.classList.contains('is-open'); }
+
       function openDrawer() {
         drawer.classList.add('is-open');
         drawer.setAttribute('aria-hidden', 'false');
@@ -175,15 +179,32 @@ add_action('wp_footer', function () {
       }
 
       function closeDrawer() {
+        if (!isOpen()) return;
         drawer.classList.remove('is-open');
         drawer.setAttribute('aria-hidden', 'true');
         overlay.classList.remove('is-open');
         document.body.style.overflow = '';
+        if (opener && document.contains(opener)) opener.focus();
+        opener = null;
       }
 
       overlay.addEventListener('click', closeDrawer);
       drawer.querySelector('.rigo-drawer-close').addEventListener('click', closeDrawer);
-      document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeDrawer(); });
+      document.addEventListener('keydown', function(e) {
+        if (!isOpen()) return;
+        if (e.key === 'Escape') { closeDrawer(); return; }
+        // Piège de focus : Tab boucle dans le tiroir
+        if (e.key === 'Tab') {
+          var items = Array.prototype.filter.call(
+            drawer.querySelectorAll('a[href], button:not([disabled])'),
+            function(el) { return el.offsetParent !== null; }
+          );
+          if (!items.length) return;
+          var first = items[0], last = items[items.length - 1];
+          if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+          else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+        }
+      });
 
       async function loadCart() {
         itemsEl.innerHTML = '<div class="rigo-drawer-loading">Chargement…</div>';
@@ -225,39 +246,25 @@ add_action('wp_footer', function () {
         }
       }
 
-      // Open on header cart icon click
-      // ⚠️ Ne JAMAIS matcher `form.cart` (utilisé par WooCommerce sur la fiche
-      // produit autour du bouton "Ajouter au panier"). On restreint donc `.cart`
-      // au pattern `a.cart` (lien) et on exclut tout élément à l'intérieur d'un
-      // `form.cart`. Sinon le clic sur "Ajouter au panier" ouvre le drawer
-      // sans déclencher le submit AJAX → produit jamais ajouté.
+      // Ouverture : uniquement l'icône panier de l'en-tête (ou un élément marqué
+      // data-rigo-cart-open). L'ancien sélecteur attrapait tout lien vers /cart/ et
+      // tout aria-label contenant « panier » : « Retirer … du panier », « Retour au
+      // panier », « Ajouter au panier »… ouvraient le tiroir à la place de leur action.
+      // Sur le panier et la commande, l'icône mène simplement à la page panier.
+      var onCartPages = document.body.classList.contains('woocommerce-cart')
+                     || document.body.classList.contains('woocommerce-checkout');
       document.addEventListener('click', function(e) {
-        if (e.target.closest('form.cart')) { return; }
-        var cartLink = e.target.closest('a[href*="/cart/"], a[href*="/panier/"], a.cart, [aria-label*="panier" i], [aria-label*="Panier"]');
-        if (cartLink && !cartLink.closest('#rigo-cart-drawer')) {
-          e.preventDefault();
-          openDrawer();
-        }
+        if (onCartPages) return;
+        var trigger = e.target.closest('.site-header a.cart, [data-rigo-cart-open]');
+        if (!trigger) return;
+        e.preventDefault();
+        opener = trigger;
+        openDrawer();
       });
 
-      // Open after successful add-to-cart
-      document.addEventListener('wc-blocks-cart-added-item', openDrawer);
-
-      // Hook into the custom add-to-cart events from sticky bar and home cards
-      var origFetch = window.fetch;
-      window.fetch = function() {
-        var url = arguments[0];
-        var promise = origFetch.apply(this, arguments);
-        if (typeof url === 'string' && url.includes('cart/add-item')) {
-          promise.then(function(res) {
-            if (res.ok) {
-              // Small delay to let cart count update first
-              setTimeout(openDrawer, 300);
-            }
-          });
-        }
-        return promise;
-      };
+      // Après un ajout au panier, c'est le tiroir de confirmation
+      // (includes/upsell-drawer-post-add-to-cart.php) qui s'ouvre, pas celui-ci :
+      // les deux s'ouvraient l'un sur l'autre.
     })();
     </script>
     <?php

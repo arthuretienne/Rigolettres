@@ -312,8 +312,15 @@ add_action('wp_footer', function () {
         var currentSuggestId   = null;
         var currentSuggestAtc  = null;
 
+        // Pas de tiroir sur le panier ni la commande (on y est déjà), ni pour l'ajout
+        // de la suggestion faite depuis ce tiroir (il redirige vers la commande).
+        var onCartPages = document.body.classList.contains('woocommerce-cart')
+                       || document.body.classList.contains('woocommerce-checkout');
+        var selfAdd = false;
+
         // ── Ouvrir le drawer ──────────────────────────────────────────────
         function openDrawer(productId) {
+            if (onCartPages || selfAdd) return;
             // Infos produit ajouté (via WC store API)
             fetch('/wp-json/wc/store/v1/cart', { credentials: 'include', cache: 'no-store' })
                 .then(function (r) { return r.json(); })
@@ -384,6 +391,7 @@ add_action('wp_footer', function () {
                 if (!currentSuggestId) return;
                 elSBtn.classList.add('loading');
                 elSBtn.textContent = '…';
+                selfAdd = true;
 
                 fetch('/wp-json/wc/store/v1/cart/add-item', {
                     method: 'POST',
@@ -394,13 +402,13 @@ add_action('wp_footer', function () {
                 .then(function (r) { return r.json(); })
                 .then(function () {
                     elSBtn.textContent = '✓ Ajouté !';
-                    elSBtn.style.background = '#27B4E5';
                     setTimeout(function () {
                         elSBtn.classList.remove('loading');
                         window.location.href = data.checkoutUrl || '/checkout/';
                     }, 800);
                 })
                 .catch(function () {
+                    selfAdd = false;
                     elSBtn.classList.remove('loading');
                     elSBtn.textContent = '+ Ajouter';
                 });
