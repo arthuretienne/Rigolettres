@@ -2784,3 +2784,17 @@ input:focus-visible, textarea:focus-visible, select:focus-visible{outline:none;}
   .rigo-navdrawer, .mega-panel, #rigo-sticky-atc, .rigo-trust-strip{display:none !important;}
   body{background:#fff;}
 }
+
+/* ===========================================================
+   16. MODULES — ajustements au design system
+   (le CSS de base de chaque module vit encore dans includes/)
+   =========================================================== */
+/* Quiz : sur mobile, 2 colonnes d'options — les 6 niveaux tiennent sans défiler */
+@media (max-width:480px){
+  .rigo-quiz-modal{padding:12px;}
+  .rigo-quiz-modal .rigo-quiz-box{padding:28px 18px 20px;}
+  .rigo-quiz-box .rigo-quiz-options{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+  .rigo-quiz-box .rigo-quiz-option{padding:12px;}
+  .rigo-quiz-box .rigo-quiz-options-wide{grid-template-columns:1fr;}
+}
+.rigo-quiz-box .rigo-quiz-option:focus-visible{border-color:var(--rigo-action);}
