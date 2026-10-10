@@ -28,6 +28,7 @@ function rigo_deploy_stamp() {
     $files = array_merge(
         [$dir . '/style.css', $dir . '/functions.php'],
         glob($dir . '/includes/*.php') ?: [],
+        glob($dir . '/template-parts/*.php') ?: [],
         glob($dir . '/assets/css/*.css') ?: []
     );
     $stamp = 0;

@@ -454,14 +454,37 @@ add_action('wp_body_open', function () {
           new MutationObserver(function(){ syncBadge(el); }).observe(el, {childList:true, characterData:true, subtree:true});
         });
       }
-      if (doc.cookie.indexOf('woocommerce_items_in_cart=') !== -1) {
+      function setBadge(count){
+        Array.prototype.forEach.call(header.querySelectorAll('.cart-count'), function(el){
+          el.textContent = String(count);
+          syncBadge(el);
+        });
+      }
+      function refreshBadge(){
         fetch('/wp-json/wc/store/v1/cart?_=' + Date.now(), {credentials:'include', cache:'no-store'})
           .then(function(r){ return r.json(); })
-          .then(function(data){
-            var count = data.items_count || 0;
-            Array.prototype.forEach.call(badges, function(el){ el.textContent = String(count); syncBadge(el); });
-          })
+          .then(function(data){ setBadge(data.items_count || 0); })
           .catch(function(){});
+      }
+      if (doc.cookie.indexOf('woocommerce_items_in_cart=') !== -1) refreshBadge();
+
+      /* Panier et commande (blocs WooCommerce) : la pastille suit le panier en direct
+         quand on change une quantité ou qu'on retire un article. */
+      window.addEventListener('load', function(){
+        var data = window.wp && window.wp.data;
+        if (!data || !data.subscribe || !data.select) return;
+        var last = null;
+        data.subscribe(function(){
+          var store = data.select('wc/store/cart');
+          if (!store || !store.getCartData) return;
+          var cart = store.getCartData();
+          var n = cart && typeof cart.itemsCount === 'number' ? cart.itemsCount : null;
+          if (n !== null && n !== last) { last = n; setBadge(n); }
+        });
+      });
+      /* Ajout au panier classique (cartes de la boutique, bouton de la fiche produit) */
+      if (window.jQuery) {
+        window.jQuery(doc.body).on('added_to_cart removed_from_cart', refreshBadge);
       }
     })();
     </script>

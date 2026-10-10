@@ -2397,21 +2397,22 @@ table.wc-block-cart-items .wc-block-cart-items__header{
   border-radius:var(--rigo-r-lg);
   text-align:center;
 }
-.wp-block-woocommerce-empty-cart-block .wc-block-cart__empty-cart__title{
-  font-family:var(--rigo-serif);
-  font-size:var(--rigo-fs-h2);
-}
-.wp-block-woocommerce-empty-cart-block .wc-block-cart__empty-cart__title::before{display:none;}
-.wp-block-woocommerce-empty-cart-block h2:not(.wc-block-cart__empty-cart__title){
-  margin-top:var(--rigo-sp-7);
-  font-size:var(--rigo-fs-h3);
+.wp-block-woocommerce-empty-cart-block h2.with-empty-cart-icon{font-size:var(--rigo-fs-h2);}
+.wp-block-woocommerce-empty-cart-block h2.with-empty-cart-icon::before{display:none;}
+.wp-block-woocommerce-empty-cart-block h2:not(.with-empty-cart-icon){
+  margin-top:0;
   font-family:var(--rigo-sans);
+  font-size:var(--rigo-fs-h3);
   font-weight:800;
+  letter-spacing:-.005em;
 }
+/* Séparateur à points de Gutenberg : 130 px de vide entre le bouton et la suite */
 .wp-block-woocommerce-empty-cart-block .wp-block-separator{
   max-width:120px;
-  margin:var(--rigo-sp-6) auto;
+  height:auto;
+  margin:var(--rigo-sp-5) auto;
   border-color:var(--rigo-border);
+  line-height:1;
 }
 /* Produits suggérés dans le panier vide : mêmes cartes que la boutique */
 /* Spécificité (0,3,0) : WooCommerce impose .wc-block-grid.has-N-columns
@@ -2664,12 +2665,17 @@ li.wc-block-product .wc-block-components-product-button .wp-block-button__link{
 .rigo-contact-link a{font-weight:800;overflow-wrap:anywhere;}
 
 /* — Blog : cartes d'articles, commentaires — */
-.entries .entry-card{
+.entries .entry-card.entry-card{
+  overflow:hidden;
   background:var(--rigo-paper);
   border:1px solid var(--rigo-border);
   border-radius:var(--rigo-r-md);
   box-shadow:var(--rigo-sh-1);
 }
+/* Résultats de recherche : auteur et date n'ont pas de sens pour un produit ou une page */
+[data-prefix="search"] .entry-card .entry-meta[data-id="meta_2"]{display:none;}
+[data-prefix="search"] .entry-card .ct-media-container{background:var(--rigo-cream);}
+[data-prefix="search"] .entry-card .ct-media-container img{object-fit:contain;}
 .entries .entry-card .entry-title{
   font-family:var(--rigo-sans);
   font-size:var(--rigo-fs-h3);
@@ -2687,14 +2693,45 @@ li.wc-block-product .wc-block-components-product-button .wp-block-button__link{
 }
 .ct-comments-container{background:transparent;}
 
-/* — 404 et recherche — */
-body.error404 .site-main .entry-content,
-.ct-no-results .entry-content{
-  max-width:520px;
+/* — 404 (gabarit : template-parts/404.php) — */
+.rigo-404 .entry-content{
+  max-width:560px;
   margin:0 auto;
   text-align:center;
 }
-.ct-search-form{--theme-form-field-height:52px;}
+.rigo-404-actions{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:var(--rigo-sp-3);
+  margin-bottom:var(--rigo-sp-5);
+}
+.rigo-404-links{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:var(--rigo-sp-2) var(--rigo-sp-3);
+  margin:0;
+  font-size:var(--rigo-fs-md);
+}
+.rigo-404-links a{display:inline-flex;align-items:center;min-height:44px;font-weight:700;}
+@media (max-width:480px){
+  .rigo-404-actions .btn{flex:1 1 100%;}
+}
+
+/* Champ de recherche Blocksy : son bouton-icône est logé dans le champ, il ne doit
+   pas prendre le gabarit des boutons du site */
+.ct-search-form .wp-element-button,
+.ct-search-form .wp-element-button:hover{
+  min-height:0;
+  padding:0;
+  background:transparent;
+  border:0;
+  box-shadow:none;
+  color:var(--rigo-ink);
+  transform:none;
+}
+.ct-search-form .wp-element-button:hover{color:var(--rigo-action-dark);}
 
 /* ===========================================================
    15. ACCESSIBILITÉ & PRÉFÉRENCES UTILISATEUR
