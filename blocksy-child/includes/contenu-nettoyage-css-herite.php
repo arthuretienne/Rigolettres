@@ -86,15 +86,17 @@ add_action('wp_enqueue_scripts', function () {
  *   - le contenu de la page contient déjà un <h1> (À propos, pages guides…)
  *   - on est sur une archive produit (le hero de la boutique porte le H1)
  */
-add_filter('blocksy:hero:enabled', function ($enabled) {
+add_filter('blocksy:hero:custom-source', function ($source) {
+    // Renvoyer false (et non null) coupe le bandeau de titre :
+    // cf. blocksy_get_page_title_source() dans inc/components/hero-section.php
     if (function_exists('is_shop') && (is_shop() || is_product_taxonomy())) {
         return false;
     }
     if (is_singular(['page', 'post'])) {
-        $post = get_post();
-        if ($post && stripos($post->post_content, '<h1') !== false) {
+        $post = get_queried_object();
+        if ($post instanceof WP_Post && stripos($post->post_content, '<h1') !== false) {
             return false;
         }
     }
-    return $enabled;
-}, 99);
+    return $source;
+}, 20);

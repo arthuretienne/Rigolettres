@@ -236,11 +236,11 @@ add_action('wp_body_open', function () {
     </header>
 
     <!-- Tiroir de navigation (mobile + tablette) -->
-    <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
-      <div class="mobile-menu-inner" role="dialog" aria-modal="true" aria-label="Menu de navigation" tabindex="-1">
+    <div class="rigo-navdrawer" id="mobile-menu" aria-hidden="true">
+      <div class="rigo-navdrawer-panel" role="dialog" aria-modal="true" aria-label="Menu de navigation" tabindex="-1">
 
-        <div class="mobile-menu-head">
-          <a class="mobile-menu-brand" href="<?php echo esc_url(home_url('/')); ?>" aria-label="Rigolettres, accueil">
+        <div class="rigo-navdrawer-head">
+          <a class="rigo-navdrawer-brand" href="<?php echo esc_url(home_url('/')); ?>" aria-label="Rigolettres, accueil">
             <?php echo rigo_wordmark_html(); ?>
           </a>
           <button type="button" class="mobile-close" aria-label="Fermer le menu" id="rigo-mobile-close">
@@ -278,12 +278,12 @@ add_action('wp_body_open', function () {
 
         </nav>
 
-        <div class="mobile-menu-foot">
+        <div class="rigo-navdrawer-foot">
           <a href="#rigo-quiz" class="btn btn-primary rigo-quiz-trigger mobile-cta">Quel jeu pour mon enfant ?</a>
         </div>
 
-      </div><!-- .mobile-menu-inner -->
-    </div><!-- .mobile-menu -->
+      </div><!-- .rigo-navdrawer-panel -->
+    </div><!-- .rigo-navdrawer -->
 
     <script>
     (function(){
@@ -313,7 +313,7 @@ add_action('wp_body_open', function () {
       /* ── Tiroir de navigation ── */
       var hamburger = doc.getElementById('rigo-hamburger');
       var drawer    = doc.getElementById('mobile-menu');
-      var panel     = drawer ? drawer.querySelector('.mobile-menu-inner') : null;
+      var panel     = drawer ? drawer.querySelector('.rigo-navdrawer-panel') : null;
       var closeBtn  = doc.getElementById('rigo-mobile-close');
       var FOCUSABLE = 'a[href], button:not([disabled]), summary, [tabindex]:not([tabindex="-1"])';
 
