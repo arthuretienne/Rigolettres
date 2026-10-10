@@ -37,6 +37,35 @@
 
 ## 📓 Journal de session
 
+### 2026-10-10 (suite 4) — Itération 3 : vérifications en conditions réelles, 404, clavier, barre d'achat
+
+**✅ Cache : tout est rentré dans l'ordre**
+- Les URL normales (`/`, `/shop/`, fiche Pato, À propos) servent le nouveau HTML ; LiteSpeed répond `hit` au second appel, le CDN ne stocke plus le HTML (`MISS`), l'API panier répond `no-store` / `DYNAMIC`.
+- Le contrôle ajouté au workflow passe : « page en cache » et « page fraîche » référencent la même feuille de style sur les 3 derniers déploiements.
+- [x] _(suite 3)_ L'action « vider le CDN dans hPanel » n'est plus bloquante : les copies périmées ont expiré. Elle reste utile si une page ancienne réapparaît.
+
+**✅ Livré**
+- [x] 🔴 **Barre d'achat mobile** : second défaut trouvé après le `display:none` inline. Elle prenait le pied de page Blocksy (masqué, position 0) pour le nôtre et se croyait toujours en bas de page. Elle n'apparaît désormais qu'une fois le bouton d'origine dépassé. Vérifié à 390 px : masquée en haut, visible au milieu (le bouton contact remonte au-dessus), masquée à l'arrivée sur le pied de page.
+- [x] 🔴 **Adresse e-mail de l'admin affichée comme auteur** dans les résultats de recherche et sous l'article (texte, `title`, lien d'archive). [auteur-public.php](blocksy-child/includes/auteur-public.php) la remplace par « Rigolettres » ; auteur et date masqués dans la recherche.
+- [x] 🟠 **Page 404** : [template-parts/404.php](blocksy-child/template-parts/404.php) remplace le champ de recherche de Blocksy (le site n'a pas de moteur de recherche) par trois sorties : boutique, aide au choix, accueil / méthode / contact.
+- [x] 🟠 **Lien d'évitement** : celui de Blocksy arrivait après tout l'en-tête (11e tabulation). Le nôtre est le premier élément de la page.
+- [x] 🟠 **Pastille panier** : suit le panier des blocs WooCommerce en direct (elle restait à 1 après suppression du dernier article sur la page panier).
+- [x] 🟡 Quiz : options en 2 colonnes sur mobile (6 niveaux sans défiler). Panier vide : 130 px de vide en moins. Cartes de résultats de recherche au gabarit du site.
+
+**🧪 Tests d'interaction faits en live**
+- Clavier, 1280 px : Tab jusqu'au chevron « Boutique », flèche bas → panneau ouvert et focus sur le premier lien, Échap → fermé, focus rendu au chevron. Anneau de focus visible.
+- Icône panier (desktop) : tiroir ouvert au-dessus de l'en-tête, focus sur « fermer », Échap → fermé, focus rendu à l'icône, défilement de page rétabli.
+- Page panier, 768 px : « Retirer du panier » ne déclenche plus le tiroir ; état « panier vide » affiché, grille à 3 cartes de 202 px.
+- Ajout au panier depuis une carte de l'accueil : un seul tiroir, pastille à 1.
+- Quiz à 390 px : ouverture, titre, options, bouton fermer de 44 px, fond de page verrouillé.
+- Grille boutique mesurée : 2 colonnes à 390 px, 3 à 768 et 820, 4 à 1024, 1280 et 1920. Hero d'accueil en 2 colonnes à 768 et 820.
+
+**⏳ Reste**
+- [ ] 🟠 Revue visuelle : 404, quiz 2 colonnes, commande mobile, contact et pages légales mobile, popup newsletter.
+- [ ] 🟠 Page de remerciement après commande : non testable sans passer une vraie commande.
+- [ ] 🟡 Rapatrier le CSS encore inline des modules dans `style.css` ; réduire les `!important` de la fiche produit.
+- [ ] 🟡 Profil WordPress : remplacer le « nom à afficher publiquement » (aujourd'hui l'adresse e-mail) — Comptes → Profil.
+
 ### 2026-10-10 (suite 3) — 🔴 API panier servie depuis le cache + tiroirs qui se marchaient dessus
 
 > Itération 2 de la boucle UI/UX. En testant les interactions (ajout au panier, tiroirs, panier vide), trois défauts fonctionnels sont sortis, dont un sérieux lié à la réactivation du cache du matin.
@@ -51,7 +80,7 @@
 - L'étape « Purger le cache LiteSpeed » du workflow appelait `/wp-json/litespeed/v1/purge/all`, **une route qui n'existe pas (404)**, et passait au vert (curl sans `--fail`). Tant que le snippet « DEV MODE » purgeait tout à chaque requête, personne ne l'a vu. Une fois le cache réactivé ce matin (durée de vie 7 jours), **les URL normales du site servaient le HTML d'avant la refonte avec la nouvelle feuille de style** — mes vérifications passaient par des URL à paramètre, donc non cachées.
 - [x] 🔴 **Purge faite par le thème** : [purge-cache-au-deploiement.php](blocksy-child/includes/purge-cache-au-deploiement.php) calcule une empreinte des fichiers du thème ; si elle a changé, `litespeed_purge_all` + `opcache_reset`, rejoués 2 minutes plus tard. Le workflow appelle une URL non cachée pour déclencher ce code, puis compare la page d'accueil en cache et une page fraîche (avertissement en cas d'écart). Vérifié : boutique, À propos, contact, pages guides, légales repassent en `miss` avec le nouveau HTML.
 - [x] 🔴 **Le CDN Hostinger garde le HTML et ne se purge pas depuis le site.** Après la purge LiteSpeed, l'accueil et la fiche Pato restaient servies par le CDN (`x-hcdn-cache-status: HIT`, âge > 1 h). Le HTML part désormais avec `Cache-Control: no-cache` : le CDN ne le stocke plus (vérifié : `MISS` à chaque requête, LiteSpeed répond en ~40 ms). Cela règle aussi la question ouverte du matin (« un changement de prix purge-t-il le CDN ? » : non, il ne le purgeait pas).
-- [ ] 🔴 **Action Arthur, une seule fois** : vider le cache du CDN dans hPanel (Sites web → rigolettres.fr → Performance → CDN → *Vider le cache*). Certaines copies d'avant le correctif (accueil, fiche Pato N°1, boutique sur certains nœuds) y traînent encore et montrent l'ancien en-tête sans style. Elles expireront seules, mais je ne connais pas leur durée de vie.
+- [x] 🔴 _(résolu de lui-même, cf. suite 4)_ **Action Arthur, une seule fois** : vider le cache du CDN dans hPanel (Sites web → rigolettres.fr → Performance → CDN → *Vider le cache*). Certaines copies d'avant le correctif (accueil, fiche Pato N°1, boutique sur certains nœuds) y traînent encore et montrent l'ancien en-tête sans style. Elles expireront seules, mais je ne connais pas leur durée de vie.
 
 **🔴 Tiroirs**
 - [x] **Le tiroir panier s'ouvrait à la place d'autres actions.** Son écouteur attrapait tout lien vers `/cart/` et tout `aria-label` contenant « panier » : « Retirer … du panier » (page panier), « Retour au panier » (commande), « Ajouter au panier ». Il ne répond plus qu'à l'icône panier de l'en-tête, et jamais sur le panier ni la commande.
@@ -157,7 +186,7 @@ Conséquences mesurées : 4 polices de titres, 5 teintes de bouton, 3 rayons de 
 - [x] 🔴 **Le badge panier de l'en-tête affiche 0 pour un visiteur ayant déjà un article.** _(déployé le 2026-10-10 avec la refonte de l'en-tête)_ Le compteur est rendu en PHP (`rigo_cart_count()`), donc figé dans la page en cache ; `wc-cart-fragments.js` n'est pas chargé sur le site, le filtre `woocommerce_add_to_cart_fragments` existant ne sert donc à rien au chargement. Correctif dans [universal-header-footer-chrome.php](blocksy-child/includes/universal-header-footer-chrome.php) : si le cookie `woocommerce_items_in_cart` est présent, le script de l'en-tête relit `/wc/store/v1/cart` et met à jour le badge. Aucune requête supplémentaire pour un visiteur sans panier. **À pousser sur `main` puis revérifier en live.**
 
 **⏳ Reste à vérifier**
-- [ ] 🟠 **Un changement de prix purge-t-il bien la home et le CDN Hostinger ?** Les prix de la home sont injectés par [home-prix-dynamiques.php](blocksy-child/includes/home-prix-dynamiques.php) puis mis en cache 7 jours. LiteSpeed purge par défaut la page d'accueil à la mise à jour d'un contenu, mais ce n'est pas testé, et la propagation de la purge au CDN (`hcdn`) non plus. Test : ré-enregistrer le produit 112 à l'identique, puis vérifier que `/` repasse en `miss`. Si ce n'est pas le cas, purger la home sur `woocommerce_update_product`.
+- [~] 🟠 _(2026-10-10 suite 3 : le CDN ne stocke plus le HTML ; reste à vérifier que LiteSpeed purge bien l'accueil quand un produit est enregistré)_ **Un changement de prix purge-t-il bien la home et le CDN Hostinger ?** Les prix de la home sont injectés par [home-prix-dynamiques.php](blocksy-child/includes/home-prix-dynamiques.php) puis mis en cache 7 jours. LiteSpeed purge par défaut la page d'accueil à la mise à jour d'un contenu, mais ce n'est pas testé, et la propagation de la purge au CDN (`hcdn`) non plus. Test : ré-enregistrer le produit 112 à l'identique, puis vérifier que `/` repasse en `miss`. Si ce n'est pas le cas, purger la home sur `woocommerce_update_product`.
 - [ ] 🟡 Contrôler dans hPanel → Tâches Cron → « Afficher le résultat » que la tâche s'exécute sans erreur, puis que la bannière « actions en retard » d'Action Scheduler disparaît dans wp-admin.
 - [x] 🟡 _(2026-10-10 : attribut renseigné + observateur, la pastille est masquée à 0)_ Le badge panier est rendu avec `data-cart-count` **sans valeur** côté PHP, donc la règle CSS `[data-cart-count="0"]{display:none}` ne s'applique jamais au premier affichage : un « 0 » reste visible sur l'icône panier.
 
