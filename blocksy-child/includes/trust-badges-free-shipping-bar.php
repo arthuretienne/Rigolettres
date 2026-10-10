@@ -94,7 +94,7 @@ add_action('wp_footer', function () {
 
       async function updateBar() {
         try {
-          var r = await fetch('/wp-json/wc/store/v1/cart', {credentials:'include', cache:'no-store'});
+          var r = await fetch('/wp-json/wc/store/v1/cart?_=' + Date.now(), {credentials:'include', cache:'no-store'});
           var data = await r.json();
           var total = data.totals ? parseInt(data.totals.total_items, 10) / 100 : 0;
           var items = data.items_count || 0;

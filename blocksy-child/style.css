@@ -2414,14 +2414,21 @@ table.wc-block-cart-items .wc-block-cart-items__header{
   border-color:var(--rigo-border);
 }
 /* Produits suggérés dans le panier vide : mêmes cartes que la boutique */
-.wc-block-grid__products{
+/* Spécificité (0,3,0) : WooCommerce impose .wc-block-grid.has-N-columns
+   .wc-block-grid__product{max-width:25%}, ce qui réduisait chaque carte au quart
+   de sa propre colonne (50 px, texte une lettre par ligne). */
+.wc-block-grid[class] .wc-block-grid__products{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(min(100%,200px),1fr));
   gap:var(--rigo-sp-4);
   margin:var(--rigo-sp-5) 0 0;
   padding:0;
 }
-.wc-block-grid__products .wc-block-grid__product{
+@media (max-width:480px){
+  .wc-block-grid[class] .wc-block-grid__products{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--rigo-sp-3);}
+}
+.wc-block-grid[class] .wc-block-grid__products .wc-block-grid__product{
+  flex:none;
   display:flex;
   flex-direction:column;
   width:auto;

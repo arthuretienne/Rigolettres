@@ -322,7 +322,7 @@ add_action('wp_footer', function () {
         function openDrawer(productId) {
             if (onCartPages || selfAdd) return;
             // Infos produit ajouté (via WC store API)
-            fetch('/wp-json/wc/store/v1/cart', { credentials: 'include', cache: 'no-store' })
+            fetch('/wp-json/wc/store/v1/cart?_=' + Date.now(), { credentials: 'include', cache: 'no-store' })
                 .then(function (r) { return r.json(); })
                 .then(function (cart) {
                     // Cherche le produit dans le panier
@@ -339,10 +339,12 @@ add_action('wp_footer', function () {
 
                     // Suggestion cross-sell
                     var suggest = (data.crossSells || {})[productId];
+                    var inCart = (cart.items || []).map(function (i) { return String(i.id); });
+                    if (suggest && inCart.indexOf(String(suggest.id)) !== -1) suggest = null;
                     if (!suggest && data.allProducts) {
-                        // Fallback : un produit différent de celui ajouté
+                        // Repli : un produit qui n'est ni celui ajouté ni déjà au panier
                         suggest = data.allProducts.find(function (p) {
-                            return String(p.id) !== String(productId);
+                            return String(p.id) !== String(productId) && inCart.indexOf(String(p.id)) === -1;
                         });
                     }
 
@@ -393,13 +395,24 @@ add_action('wp_footer', function () {
                 elSBtn.textContent = '…';
                 selfAdd = true;
 
-                fetch('/wp-json/wc/store/v1/cart/add-item', {
-                    method: 'POST',
-                    credentials: 'include',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id: currentSuggestId, quantity: 1 })
+                // L'API Store exige son jeton (en-tête Nonce) pour modifier le panier,
+                // et une réponse en erreur ne doit pas afficher « Ajouté ».
+                fetch('/wp-json/wc/store/v1/cart?_=' + Date.now(), { credentials: 'include', cache: 'no-store' })
+                .then(function (r) {
+                    var headers = { 'Content-Type': 'application/json' };
+                    var nonce = r.headers.get('Nonce') || r.headers.get('X-WC-Store-API-Nonce');
+                    if (nonce) headers['Nonce'] = nonce;
+                    return fetch('/wp-json/wc/store/v1/cart/add-item', {
+                        method: 'POST',
+                        credentials: 'include',
+                        headers: headers,
+                        body: JSON.stringify({ id: currentSuggestId, quantity: 1 })
+                    });
                 })
-                .then(function (r) { return r.json(); })
+                .then(function (r) {
+                    if (!r.ok) throw new Error('HTTP ' + r.status);
+                    return r.json();
+                })
                 .then(function () {
                     elSBtn.textContent = '✓ Ajouté !';
                     setTimeout(function () {
@@ -428,20 +441,15 @@ add_action('wp_footer', function () {
         // Méthode 2 : patch fetch natif (WC Blocks)
         var _origFetch = window.fetch;
         window.fetch = function () {
-            var url = String(arguments[0] || '');
-            var p   = _origFetch.apply(this, arguments);
+            var url  = String(arguments[0] || '');
+            var opts = arguments[1] || {};
+            var p    = _origFetch.apply(this, arguments);
             if (url.includes('/cart/add-item') || url.includes('wc-ajax=add_to_cart')) {
+                // Produit ajouté : lu dans le corps de la requête d'origine
+                var addedId = null;
+                try { addedId = JSON.parse(typeof opts.body === 'string' ? opts.body : '{}').id || null; } catch (err) {}
                 p.then(function (response) {
-                    if (response.ok) {
-                        var body = arguments[1] || {};
-                        try {
-                            var bodyStr = typeof body === 'string' ? body : JSON.stringify(body);
-                            var parsed  = JSON.parse(bodyStr);
-                            setTimeout(function () { openDrawer(parsed.id || null); }, 200);
-                        } catch (err) {
-                            setTimeout(function () { openDrawer(null); }, 200);
-                        }
-                    }
+                    if (response.ok) setTimeout(function () { openDrawer(addedId); }, 200);
                 }).catch(function () {});
             }
             return p;

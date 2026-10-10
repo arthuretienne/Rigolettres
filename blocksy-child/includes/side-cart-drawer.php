@@ -210,7 +210,7 @@ add_action('wp_footer', function () {
         itemsEl.innerHTML = '<div class="rigo-drawer-loading">Chargement…</div>';
         footerEl.style.display = 'none';
         try {
-          var r = await fetch('/wp-json/wc/store/v1/cart', {credentials:'include', cache:'no-store'});
+          var r = await fetch('/wp-json/wc/store/v1/cart?_=' + Date.now(), {credentials:'include', cache:'no-store'});
           var data = await r.json();
           renderCart(data);
         } catch(e) {

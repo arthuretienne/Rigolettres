@@ -120,7 +120,7 @@ add_action('wp_footer', function () {
         var pid = parseInt(btn.getAttribute('data-product-id'), 10);
         try {
           // Get nonce first
-          var nonceRes = await fetch('/wp-json/wc/store/v1/cart', {credentials:'include', cache:'no-store'});
+          var nonceRes = await fetch('/wp-json/wc/store/v1/cart?_=' + Date.now(), {credentials:'include', cache:'no-store'});
           var apiNonce = nonceRes.headers.get('Nonce') || nonceRes.headers.get('nonce') || nonceRes.headers.get('X-WC-Store-API-Nonce') || '';
           var headers = {'Content-Type':'application/json', 'Accept':'application/json'};
           if (apiNonce) headers['Nonce'] = apiNonce;
@@ -135,7 +135,7 @@ add_action('wp_footer', function () {
           btn.textContent = 'Ajouté ✓';
           // Sync cart count on main page
           var cartCountEls = document.querySelectorAll('[data-cart-count]');
-          var cartRes = await fetch('/wp-json/wc/store/v1/cart', {credentials:'include', cache:'no-store'});
+          var cartRes = await fetch('/wp-json/wc/store/v1/cart?_=' + Date.now(), {credentials:'include', cache:'no-store'});
           var cartData = await cartRes.json();
           var count = cartData.items_count || 0;
           cartCountEls.forEach(function(el) { el.textContent = String(count); });

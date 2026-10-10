@@ -455,7 +455,7 @@ add_action('wp_body_open', function () {
         });
       }
       if (doc.cookie.indexOf('woocommerce_items_in_cart=') !== -1) {
-        fetch('/wp-json/wc/store/v1/cart', {credentials:'include', cache:'no-store'})
+        fetch('/wp-json/wc/store/v1/cart?_=' + Date.now(), {credentials:'include', cache:'no-store'})
           .then(function(r){ return r.json(); })
           .then(function(data){
             var count = data.items_count || 0;
