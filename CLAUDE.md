@@ -180,7 +180,8 @@ Le job fait :
 1. SSH dans Hostinger via clé déployée (secret `SSH_KEY`, port 65002, user `secrets.SSH_USER`, host `secrets.SSH_HOST`)
 2. `mkdir -p` du dossier distant si absent
 3. `rsync -avz --checksum --delete` du dossier `blocksy-child/` (exclu : `.git`, `README.md`) vers `~/domains/rigolettres.fr/public_html/wp-content/themes/blocksy-child/`
-4. **Purge automatique LiteSpeed** via `POST /wp-json/litespeed/v1/purge/all` (auth basic `secrets.WP_USER` + `secrets.WP_APP_PASS`)
+4. **Purge du cache** : le workflow appelle une URL non cachée ; c'est le thème ([includes/purge-cache-au-deploiement.php](blocksy-child/includes/purge-cache-au-deploiement.php)) qui détecte le nouveau déploiement et lance `litespeed_purge_all`, rejoué 2 min plus tard. _(L'ancienne étape appelait `/wp-json/litespeed/v1/purge/all`, qui répond 404 : elle n'a jamais rien purgé.)_
+5. **Contrôle** : compare la page d'accueil en cache à une page fraîche et émet un avertissement en cas d'écart
 
 **Procédure côté Claude pour déployer une modif child theme** :
 
@@ -201,7 +202,13 @@ git checkout <branche-de-travail>  # retour sur la branche de travail
 ⚠️ **Pas besoin de Purge All manuelle** — le workflow s'en occupe.
 ⏱️ Délai d'effet : ~30-60 secondes après le push (rsync + purge).
 
-**Vérification post-deploy** : visiter https://rigolettres.fr/?nocache=$(date) ou tester l'URL impactée. Le workflow renvoie le code HTTP de la requête de purge dans les Actions GitHub.
+**Vérification post-deploy** : tester l'URL **sans paramètre** (celle que voient les visiteurs), pas seulement `?nocache=…` — une URL à paramètre contourne le cache et masque une purge ratée. Contrôle rapide :
+
+```bash
+curl -s https://rigolettres.fr/ | grep -o 'blocksy-child/style.css?ver=[0-9]*'
+```
+
+Le numéro doit changer après chaque déploiement. Le HTML est servi par LiteSpeed (`x-litespeed-cache: hit`) ; le CDN Hostinger ne le stocke plus (`Cache-Control: no-cache`), il ne garde que les fichiers statiques. **Le CDN ne peut être vidé que depuis hPanel.**
 
 **Fichiers hors `blocksy-child/`** (audit.md, CLAUDE.md, questions-en-suspens.md, etc.) ne sont **pas** déployés — ils restent dans le repo pour la doc projet, sans effet sur le site live.
 
