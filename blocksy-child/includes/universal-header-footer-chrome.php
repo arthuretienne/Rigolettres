@@ -316,6 +316,21 @@ add_action('wp_body_open', function () {
       }
       setMegaTop();
       window.addEventListener('resize', setMegaTop);
+
+      // Badge panier : la page vient du cache LiteSpeed, le compteur rendu en PHP
+      // vaut donc 0 pour tout le monde. On le resynchronise si un panier existe.
+      if (document.cookie.indexOf('woocommerce_items_in_cart=') !== -1) {
+        fetch('/wp-json/wc/store/v1/cart', {credentials:'include', cache:'no-store'})
+          .then(function(r){ return r.json(); })
+          .then(function(data){
+            var count = data.items_count || 0;
+            document.querySelectorAll('.site-header [data-cart-count]').forEach(function(el){
+              el.textContent = String(count);
+              el.setAttribute('data-cart-count', String(count));
+            });
+          })
+          .catch(function(){});
+      }
     })();
     </script>
     <?php
