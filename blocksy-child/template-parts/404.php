@@ -33,9 +33,7 @@ $rigo_shop = function_exists('rigo_shop_url') ? rigo_shop_url() : home_url('/sho
 			</div>
 			<p class="rigo-404-links">
 				<a href="<?php echo esc_url(home_url('/')); ?>">Retour à l’accueil</a>
-				<span aria-hidden="true">·</span>
 				<a href="<?php echo esc_url(home_url('/methode-syllabique/')); ?>">La méthode syllabique</a>
-				<span aria-hidden="true">·</span>
 				<a href="<?php echo esc_url(home_url('/contact/')); ?>">Nous écrire</a>
 			</p>
 		</div>
