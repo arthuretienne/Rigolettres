@@ -283,38 +283,10 @@ add_action('wp_footer', function () {
         flex-direction: column;
         gap: 10px;
     }
-    .rigo-ud-btn-primary {
-        display: block;
-        text-align: center;
-        font-family: var(--rigo-sans);
-        font-weight: 800;
-        font-size: 15px;
-        background: var(--rigo-green-dark);
-        color: #fff;
-        border: none;
-        border-radius: 9999px;
-        padding: 14px 24px;
-        text-decoration: none;
-        cursor: pointer;
-        box-shadow: 0 4px 14px rgba(104,160,51,.28);
-        transition: background 200ms;
-    }
-    .rigo-ud-btn-primary:hover { background: var(--rigo-green-dark); color: #fff; }
-    .rigo-ud-btn-secondary {
-        display: block;
-        width: 100%;
-        font-family: var(--rigo-sans);
-        font-weight: 700;
-        font-size: 14px;
-        background: transparent;
-        color: var(--rigo-ink-soft);
-        border: 1.5px solid var(--rigo-border);
-        border-radius: 9999px;
-        padding: 12px 24px;
-        cursor: pointer;
-        transition: background 200ms, color 200ms;
-    }
-    .rigo-ud-btn-secondary:hover { background: var(--rigo-cream-warm); color: var(--rigo-ink); }
+
+
+
+
 
     @media (max-width: 480px) {
         #rigo-upsell-drawer { width: 100vw; }

@@ -73,22 +73,11 @@ add_action('wp_footer', function () {
       font-weight: 700; font-size: 15px;
       color: var(--rigo-action);
     }
-    .rigo-sticky-btn {
-      flex-shrink: 0;
-      background: var(--rigo-action); color: #fff;
-      font-family: var(--rigo-sans);
-      font-weight: 800; font-size: 14px;
-      border: 0; border-radius: 9999px;
-      padding: 12px 20px;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(17,115,154,.4);
-      transition: background .2s, transform .15s, box-shadow .2s;
-      white-space: nowrap;
-    }
-    .rigo-sticky-btn:hover { background: var(--rigo-action-dark); transform: translateY(-1px); box-shadow: 0 6px 16px rgba(17,115,154,.5); }
-    .rigo-sticky-btn:active { transform: scale(.97); }
-    .rigo-sticky-btn.is-loading { opacity: .7; pointer-events: none; }
-    .rigo-sticky-btn.is-added { background: var(--rigo-green); }
+
+
+
+
+
     </style>
 
     <script>

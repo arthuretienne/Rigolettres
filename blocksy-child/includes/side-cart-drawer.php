@@ -147,17 +147,8 @@ add_action('wp_footer', function () {
       font-size: 12px; color: var(--rigo-green-dark); font-weight: 700;
       margin-bottom: 14px;
     }
-    .rigo-drawer-checkout-btn {
-      display: block; text-align: center;
-      background: var(--rigo-action); color: #fff;
-      font-family: var(--rigo-sans);
-      font-weight: 800; font-size: 16px;
-      padding: 14px; border-radius: 9999px;
-      text-decoration: none; margin-bottom: 10px;
-      box-shadow: 0 6px 16px rgba(17,115,154,.4);
-      transition: background .2s, transform .15s;
-    }
-    .rigo-drawer-checkout-btn:hover { background: var(--rigo-action-dark); transform: translateY(-1px); }
+
+
     .rigo-drawer-cart-link {
       display: block; text-align: center;
       font-size: 13px; color: var(--rigo-ink-soft);

@@ -447,6 +447,29 @@ button.single_add_to_cart_button:hover,
 .btn-sm{min-height:40px;padding:8px 18px;font-size:var(--rigo-fs-sm);}
 .btn-lg{min-height:56px;padding:16px 32px;font-size:1.0625rem;}
 
+/* — Boutons des modules : gabarit ci-dessus, seule la mise en page est locale — */
+.rigo-drawer-checkout-btn,
+.rigo-ud-btn-primary,
+.rigo-ud-btn-secondary{width:100%;}
+.rigo-drawer-checkout-btn{margin-bottom:var(--rigo-sp-3);}
+.rigo-quiz-btn-primary,
+.rigo-quiz-btn-secondary{min-height:44px;padding:8px 18px;font-size:var(--rigo-fs-sm);}
+.rigo-sticky-btn{flex-shrink:0;min-height:44px;padding:8px 20px;font-size:var(--rigo-fs-sm);white-space:nowrap;}
+.rigo-sticky-btn.is-loading{opacity:.7;pointer-events:none;}
+.rigo-sticky-btn.is-added{background-color:var(--rigo-green-dark);border-color:var(--rigo-green-dark);}
+.rigo-drawer-empty a{
+  display:inline-flex;
+  align-items:center;
+  min-height:44px;
+  padding:8px 20px;
+  background:var(--rigo-action);
+  border-radius:var(--rigo-r-pill);
+  color:#fff;
+  font-size:var(--rigo-fs-sm);
+  font-weight:800;
+  text-decoration:none;
+}
+
 /* — États — */
 .btn:active,
 .btn-primary:active,
@@ -2240,8 +2263,20 @@ table.wc-block-cart-items .wc-block-cart-items__header{
 .wc-block-components-totals-wrapper,
 .wc-block-components-panel,
 .wc-block-components-order-summary-item{border-color:var(--rigo-border);}
-.wc-block-cart-item__remove-link{color:var(--rigo-muted);font-size:var(--rigo-fs-sm);}
+.wc-block-cart-item__remove-link{
+  display:inline-grid; place-items:center;
+  min-width:44px; min-height:44px;
+  color:var(--rigo-muted);
+  font-size:var(--rigo-fs-sm);
+}
 .wc-block-cart-item__remove-link:hover{color:var(--rigo-danger);}
+.wc-block-components-checkout-return-to-cart-button{
+  display:inline-flex;
+  align-items:center;
+  min-height:44px;
+  color:var(--rigo-ink-soft);
+  font-weight:700;
+}
 
 /* Sélecteur de quantité */
 .wc-block-components-quantity-selector{
@@ -2552,7 +2587,8 @@ li.wc-block-product .wc-block-components-product-button .wp-block-button__link{
 .woocommerce form.login .button,
 .woocommerce form.register .button{width:100%;}
 .woocommerce .woocommerce-LostPassword{margin:var(--rigo-sp-4) 0 0;font-size:var(--rigo-fs-sm);text-align:center;}
-.woocommerce .show-password-input{
+.woocommerce form .show-password-input,
+.woocommerce-page form .show-password-input{
   top:50%; right:4px;
   transform:translateY(-50%);
   display:grid; place-items:center;

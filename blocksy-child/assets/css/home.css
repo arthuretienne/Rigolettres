@@ -1269,3 +1269,25 @@ body.home .site-main {
   .product-foot { padding: 14px 18px 18px; }
   .product-body { padding: 20px 18px 16px; }
 }
+
+/* Tablette : le hero passe en deux colonnes dès 768 px (au lieu d'une pile
+   « mobile agrandi » jusqu'à 1024 px). */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .hero-grid { grid-template-columns: 1.1fr .9fr; gap: 40px; }
+  .hero-ctas .btn { flex: 0 1 auto; }
+  .story-visual { max-width: 560px; margin: 0 auto; }
+}
+
+/* Mobile : la note manuscrite passait sous le second polaroid et se
+   superposait à sa légende. Elle se place sous les photos. */
+@media (max-width: 767px) {
+  .story-visual { min-height: 0; padding-bottom: 0; }
+  .polaroid-tilt-right { bottom: 72px; }
+  .handwritten-note {
+    position: relative;
+    bottom: auto; left: auto;
+    max-width: none;
+    margin: 28px 0 0;
+    text-align: left;
+  }
+}

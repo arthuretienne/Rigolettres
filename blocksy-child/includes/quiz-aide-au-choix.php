@@ -420,39 +420,11 @@ add_action('wp_footer', function () {
         flex-wrap: wrap;
         margin-top: 8px;
     }
-    .rigo-quiz-btn-primary,
-    .rigo-quiz-btn-secondary {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 10px 18px;
-        border-radius: 9999px;
-        font-size: 13px;
-        font-weight: 800;
-        text-decoration: none;
-        transition: all 180ms;
-        border: 0;
-        cursor: pointer;
-        font-family: inherit;
-    }
-    .rigo-quiz-btn-primary {
-        background: var(--rigo-green-dark);
-        color: #fff;
-    }
-    .rigo-quiz-btn-primary:hover {
-        background: #588a28;
-        color: #fff;
-        transform: translateY(-1px);
-    }
-    .rigo-quiz-btn-secondary {
-        background: transparent;
-        border: 1.5px solid var(--rigo-action);
-        color: var(--rigo-action);
-    }
-    .rigo-quiz-btn-secondary:hover {
-        background: var(--rigo-action);
-        color: #fff;
-    }
+
+
+
+
+
 
     .rigo-quiz-alts h3 {
         font-family: var(--rigo-sans);
